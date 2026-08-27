@@ -80,6 +80,14 @@ import { debounce, rafSchedule, getCurrentTheme } from '@/utils/index';
 import { isInputPending, scheduleYield } from '@/utils/after-paint';
 import { showLayerWarning } from '@/utils/layer-warning';
 import { localizeMapLabels } from '@/utils/map-locale';
+import { buildAoiGeometry } from '@/services/aoi-tools';
+import type {
+  AoiDrawMode,
+  AoiInteractionHandlers,
+  AoiOverlayState,
+  AoiShape,
+  LngLat,
+} from '@/services/aoi-tools';
 import {
   createCountryHoverQueryController,
   resolveCountryForPointerInteraction,
@@ -623,6 +631,15 @@ export class DeckGLMap {
   private aircraftFetchTimer: ReturnType<typeof setInterval> | null = null;
   private news: NewsItem[] = [];
   private newsLocations: Array<{ lat: number; lon: number; title: string; threatLevel: string; timestamp?: Date }> = [];
+  private aoiOverlay: AoiOverlayState = {
+    shapes: [],
+    draft: null,
+    pointer: null,
+    selectedShapeId: null,
+    watchedShapeIds: [],
+  };
+  private aoiDrawMode: AoiDrawMode | null = null;
+  private aoiInteractionHandlers: AoiInteractionHandlers | null = null;
   private newsLocationFirstSeen = new Map<string, number>();
   private ucdpEvents: UcdpGeoEvent[] = [];
   private displacementFlows: DisplacementFlow[] = [];
@@ -712,6 +729,27 @@ export class DeckGLMap {
   private readonly refreshCountryDragSuppression = (): void => {
     refreshCountryClickDragSuppression(this.countryClickGesture);
   };
+  private readonly handleAoiMapClick = (event: maplibregl.MapMouseEvent): void => {
+    if (!this.aoiDrawMode || !this.aoiInteractionHandlers) return;
+    event.preventDefault();
+    event.originalEvent.preventDefault();
+    event.originalEvent.stopPropagation();
+    this.aoiInteractionHandlers.onClick([event.lngLat.lng, event.lngLat.lat]);
+  };
+  private readonly handleAoiMapDoubleClick = (event: maplibregl.MapMouseEvent): void => {
+    if (!this.aoiDrawMode || !this.aoiInteractionHandlers) return;
+    event.preventDefault();
+    event.originalEvent.preventDefault();
+    event.originalEvent.stopPropagation();
+    this.aoiInteractionHandlers.onDoubleClick();
+  };
+  private readonly handleAoiPointerMove = (event: maplibregl.MapMouseEvent): void => {
+    if (!this.aoiDrawMode || !this.aoiInteractionHandlers) return;
+    this.aoiInteractionHandlers.onPointerMove([event.lngLat.lng, event.lngLat.lat]);
+  };
+  private readonly handleAoiPointerLeave = (): void => {
+    this.aoiInteractionHandlers?.onPointerMove(null);
+  };
   private attachMapLibreInteractionHandlers(): void {
     if (!this.maplibreMap) return;
     const canvas = this.maplibreMap.getCanvas();
@@ -720,19 +758,27 @@ export class DeckGLMap {
     canvas.addEventListener('pointermove', this.handleCountryClickPointerMove);
     canvas.addEventListener('pointerup', this.handleCountryClickPointerEnd);
     canvas.addEventListener('pointercancel', this.handleCountryClickPointerEnd);
+    canvas.addEventListener('pointerleave', this.handleAoiPointerLeave);
     this.maplibreMap.on('dragstart', this.markCountryDragGesture);
     this.maplibreMap.on('dragend', this.refreshCountryDragSuppression);
+    this.maplibreMap.on('click', this.handleAoiMapClick);
+    this.maplibreMap.on('dblclick', this.handleAoiMapDoubleClick);
+    this.maplibreMap.on('mousemove', this.handleAoiPointerMove);
   }
   private detachMapLibreInteractionHandlers(): void {
     if (!this.maplibreMap) return;
     const canvas = this.maplibreMap.getCanvas();
     this.maplibreMap.off('dragstart', this.markCountryDragGesture);
     this.maplibreMap.off('dragend', this.refreshCountryDragSuppression);
+    this.maplibreMap.off('click', this.handleAoiMapClick);
+    this.maplibreMap.off('dblclick', this.handleAoiMapDoubleClick);
+    this.maplibreMap.off('mousemove', this.handleAoiPointerMove);
     canvas.removeEventListener('contextmenu', this.handleContextMenu);
     canvas.removeEventListener('pointerdown', this.handleCountryClickPointerDown);
     canvas.removeEventListener('pointermove', this.handleCountryClickPointerMove);
     canvas.removeEventListener('pointerup', this.handleCountryClickPointerEnd);
     canvas.removeEventListener('pointercancel', this.handleCountryClickPointerEnd);
+    canvas.removeEventListener('pointerleave', this.handleAoiPointerLeave);
   }
   private readonly handleContextMenu = (e: MouseEvent): void => {
     e.preventDefault();
@@ -2301,12 +2347,127 @@ export class DeckGLMap {
       layers.push(...this.createNewsLocationsLayer());
     }
 
+    // Operator-authored AOIs are always the top-most overlay so measurements
+    // remain legible over dense operational layers.
+    if (this.aoiOverlay.shapes.length > 0 || this.aoiOverlay.draft) {
+      layers.push(...this.createAoiLayers());
+    }
+
     const result = layers.filter(Boolean) as LayersList;
     const elapsed = performance.now() - startTime;
     if (import.meta.env.DEV && elapsed > 16) {
       console.warn(`[DeckGLMap] buildLayers took ${elapsed.toFixed(2)}ms (>16ms budget), ${result.length} layers`);
     }
     return result;
+  }
+
+  private static aoiColor(color: string, alpha: number): [number, number, number, number] {
+    const normalized = color.startsWith('#') ? color.slice(1) : color;
+    if (!/^[0-9a-f]{6}$/i.test(normalized)) return [0, 212, 255, alpha];
+    return [
+      Number.parseInt(normalized.slice(0, 2), 16),
+      Number.parseInt(normalized.slice(2, 4), 16),
+      Number.parseInt(normalized.slice(4, 6), 16),
+      alpha,
+    ];
+  }
+
+  private createAoiLayers(): Layer[] {
+    const watchedIds = new Set(this.aoiOverlay.watchedShapeIds);
+    const polygons = this.aoiOverlay.shapes.flatMap((shape) => shape.geojson.geometry.type === 'Polygon'
+      ? [{ shape, polygon: shape.geojson.geometry.coordinates[0] as number[][] }]
+      : []);
+    const paths = this.aoiOverlay.shapes.map((shape) => ({
+      shape,
+      path: shape.geojson.geometry.type === 'Polygon'
+        ? shape.geojson.geometry.coordinates[0] as number[][]
+        : shape.geojson.geometry.coordinates as number[][],
+    }));
+    const layers: Layer[] = [];
+
+    if (polygons.length > 0) {
+      layers.push(new PolygonLayer({
+        id: 'aoi-polygons-layer',
+        data: polygons,
+        getPolygon: (item: { polygon: number[][] }) => item.polygon,
+        getFillColor: (item: { shape: AoiShape }) => DeckGLMap.aoiColor(
+          item.shape.color,
+          item.shape.id === this.aoiOverlay.selectedShapeId ? 58 : 34,
+        ),
+        filled: true,
+        stroked: false,
+        pickable: false,
+        updateTriggers: { getFillColor: [this.aoiOverlay.selectedShapeId] },
+      }));
+    }
+
+    if (paths.length > 0) {
+      layers.push(new PathLayer({
+        id: 'aoi-paths-layer',
+        data: paths,
+        getPath: (item: { path: number[][] }) => item.path as [number, number][],
+        getColor: (item: { shape: AoiShape }) => DeckGLMap.aoiColor(item.shape.color, 245),
+        getWidth: (item: { shape: AoiShape }) => item.shape.id === this.aoiOverlay.selectedShapeId
+          || watchedIds.has(item.shape.id) ? 3 : 2,
+        widthUnits: 'pixels',
+        widthMinPixels: 2,
+        capRounded: true,
+        jointRounded: true,
+        pickable: false,
+        updateTriggers: {
+          getWidth: [this.aoiOverlay.selectedShapeId, this.aoiOverlay.watchedShapeIds.join(',')],
+        },
+      }));
+    }
+
+    const draft = this.aoiOverlay.draft;
+    if (!draft) return layers;
+    const draftPoints = this.aoiOverlay.pointer && draft.points.length > 0
+      ? [...draft.points, this.aoiOverlay.pointer]
+      : draft.points;
+    const draftGeometry = buildAoiGeometry(draft.mode, draftPoints);
+    const isDraftArea = draft.mode !== 'line' && draftGeometry.length >= 3;
+
+    if (isDraftArea) {
+      layers.push(new PolygonLayer({
+        id: 'aoi-draft-fill-layer',
+        data: [{ polygon: draftGeometry }],
+        getPolygon: (item: { polygon: number[][] }) => item.polygon,
+        getFillColor: [0, 212, 255, 36],
+        filled: true,
+        stroked: false,
+        pickable: false,
+      }));
+    }
+    if (draftGeometry.length >= 2) {
+      layers.push(new PathLayer({
+        id: 'aoi-draft-path-layer',
+        data: [{ path: draft.mode === 'polygon' ? [...draftGeometry, draftGeometry[0]] : draftGeometry }],
+        getPath: (item: { path: number[][] }) => item.path as [number, number][],
+        getColor: [0, 212, 255, 255],
+        getWidth: 2,
+        widthUnits: 'pixels',
+        capRounded: true,
+        jointRounded: true,
+        pickable: false,
+      }));
+    }
+    if (draft.points.length > 0) {
+      layers.push(new ScatterplotLayer({
+        id: 'aoi-draft-vertices-layer',
+        data: draft.points,
+        getPosition: (point: number[]) => point as [number, number],
+        getRadius: 4,
+        radiusUnits: 'pixels',
+        getFillColor: [0, 212, 255, 255],
+        getLineColor: [4, 16, 22, 255],
+        getLineWidth: 1,
+        lineWidthUnits: 'pixels',
+        stroked: true,
+        pickable: false,
+      }));
+    }
+    return layers;
   }
 
   // Layer creation methods
@@ -4788,6 +4949,7 @@ export class DeckGLMap {
   }
 
   private getTooltip(info: PickingInfo): { html: string } | null {
+    if (this.aoiDrawMode) return null;
     if (!info.object) return null;
 
     const rawLayerId = info.layer?.id || '';
@@ -5110,6 +5272,7 @@ export class DeckGLMap {
   ]);
 
   private handleClick(info: PickingInfo): void {
+    if (this.aoiDrawMode) return;
     const isChoropleth = info.layer?.id ? DeckGLMap.CHOROPLETH_LAYER_IDS.has(info.layer.id) : false;
     if (!info.object || isChoropleth) {
       if (info.coordinate && this.onCountryClick) {
@@ -6817,6 +6980,27 @@ export class DeckGLMap {
   }
 
   // Data setters - all use render() for debouncing
+  public setAoiOverlay(overlay: AoiOverlayState): void {
+    this.aoiOverlay = {
+      ...overlay,
+      shapes: [...overlay.shapes],
+      watchedShapeIds: [...overlay.watchedShapeIds],
+      draft: overlay.draft ? { ...overlay.draft, points: [...overlay.draft.points] } : null,
+      pointer: overlay.pointer ? [...overlay.pointer] as LngLat : null,
+    };
+    this.render();
+  }
+
+  public setAoiInteraction(mode: AoiDrawMode | null, handlers: AoiInteractionHandlers | null): void {
+    this.aoiDrawMode = mode;
+    this.aoiInteractionHandlers = handlers;
+    const canvas = this.maplibreMap?.getCanvas();
+    if (canvas) canvas.style.cursor = mode ? 'crosshair' : '';
+    if (mode) this.maplibreMap?.doubleClickZoom.disable();
+    else this.maplibreMap?.doubleClickZoom.enable();
+    this.popup.hide();
+  }
+
   public setEarthquakes(earthquakes: Earthquake[]): void {
     this.earthquakes = earthquakes;
     this.render();
@@ -8104,6 +8288,9 @@ export class DeckGLMap {
 
   public destroy(): void {
     this.destroyed = true;
+    this.aoiInteractionHandlers?.onPointerMove(null);
+    this.aoiInteractionHandlers = null;
+    this.aoiDrawMode = null;
     this.aircraftFetchSeq += 1;
     this.settleViewportMovement(false);
     this.stopTradeAnimation();

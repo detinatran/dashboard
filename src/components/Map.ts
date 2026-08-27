@@ -89,6 +89,13 @@ import {
   updateCountryClickGestureDrag,
 } from './map-interaction-guard';
 import { resolveClusterGlContext } from './map-cluster-gl';
+import { buildAoiGeometry } from '@/services/aoi-tools';
+import type {
+  AoiDrawMode,
+  AoiInteractionHandlers,
+  AoiOverlayState,
+  LngLat,
+} from '@/services/aoi-tools';
 
 
 export type TimeRange = '1h' | '6h' | '24h' | '48h' | '7d' | 'all';
@@ -218,6 +225,15 @@ export class MapComponent {
   private aptGroupsLoaded = false;
   private webcamData: Array<WebcamEntry | WebcamCluster> = [];
   private news: NewsItem[] = [];
+  private aoiOverlay: AoiOverlayState = {
+    shapes: [],
+    draft: null,
+    pointer: null,
+    selectedShapeId: null,
+    watchedShapeIds: [],
+  };
+  private aoiDrawMode: AoiDrawMode | null = null;
+  private aoiInteractionHandlers: AoiInteractionHandlers | null = null;
   private onTechHubClick?: (hub: TechHubActivity) => void;
   private onGeoHubClick?: (hub: GeoHubActivity) => void;
   private popup: MapPopup;
@@ -434,6 +450,9 @@ export class MapComponent {
 
   public destroy(): void {
     this.destroyed = true;
+    this.aoiInteractionHandlers?.onPointerMove(null);
+    this.aoiInteractionHandlers = null;
+    this.aoiDrawMode = null;
     this.listenerAbort.abort();
     if (this.markerSettleTimer !== null) {
       clearTimeout(this.markerSettleTimer);
@@ -1012,6 +1031,7 @@ export class MapComponent {
     // Mouse drag for panning
     this.container.addEventListener('mousedown', (e) => {
       if (shouldIgnoreInteractionStart(e.target)) return;
+      if (this.aoiDrawMode) return;
       if (e.button === 0) { // Left click
         isDragging = true;
         lastPos = { x: e.clientX, y: e.clientY };
@@ -1054,6 +1074,7 @@ export class MapComponent {
     // gesture actually moves/zooms the viewport.
     this.container.addEventListener('touchstart', (e) => {
       if (shouldIgnoreInteractionStart(e.target)) return;
+      if (this.aoiDrawMode) return;
       cancelAnimationFrame(inertiaRaf);
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
@@ -1162,6 +1183,11 @@ export class MapComponent {
     }, { signal });
 
     this.container.addEventListener('click', (e) => {
+      if (this.aoiDrawMode && this.aoiInteractionHandlers) {
+        const coordinate = this.aoiCoordinateFromPointer(e.clientX, e.clientY);
+        if (coordinate) this.aoiInteractionHandlers.onClick(coordinate);
+        return;
+      }
       if (!this.onCountryClick) return;
       if (performance.now() - lastDragEndTime < 300) return;
       if (shouldSuppressCountryClick(countryClickGesture)) return;
@@ -1186,7 +1212,41 @@ export class MapComponent {
       }
     }, { signal });
 
+    this.container.addEventListener('dblclick', (event) => {
+      if (!this.aoiDrawMode || !this.aoiInteractionHandlers) return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.aoiInteractionHandlers.onDoubleClick();
+    }, { signal });
+
+    this.container.addEventListener('mousemove', (event) => {
+      if (!this.aoiDrawMode || !this.aoiInteractionHandlers) return;
+      this.aoiInteractionHandlers.onPointerMove(this.aoiCoordinateFromPointer(event.clientX, event.clientY));
+    }, { signal });
+
+    this.container.addEventListener('mouseleave', () => {
+      this.aoiInteractionHandlers?.onPointerMove(null);
+    }, { signal });
+
     this.container.style.cursor = 'grab';
+  }
+
+  private aoiCoordinateFromPointer(clientX: number, clientY: number): LngLat | null {
+    const rect = this.container.getBoundingClientRect();
+    const width = this.container.clientWidth;
+    const height = this.container.clientHeight;
+    if (width === 0 || height === 0) return null;
+    const zoom = this.state.zoom;
+    const centerOffsetX = width / 2 * (1 - zoom);
+    const centerOffsetY = height / 2 * (1 - zoom);
+    const translateX = centerOffsetX + this.state.pan.x * zoom;
+    const translateY = centerOffsetY + this.state.pan.y * zoom;
+    const rawX = (clientX - rect.left - translateX) / zoom;
+    const rawY = (clientY - rect.top - translateY) / zoom;
+    const coords = this.getProjection(width, height).invert?.([rawX, rawY]);
+    return coords && Number.isFinite(coords[0]) && Number.isFinite(coords[1])
+      ? [coords[0], coords[1]]
+      : null;
   }
 
   private async loadMapData(): Promise<void> {
@@ -1438,6 +1498,7 @@ export class MapComponent {
     if (this.state.layers.ais) steps.push(() => this.renderAisDensity(projection));
     steps.push(() => this.renderClusterLayer(projection));
     steps.push(() => this.renderOverlays(projection));
+    steps.push(() => this.renderAoiOverlay(projection));
 
     for (let i = 0; i < steps.length; i++) {
       if (chunk && (this.destroyed || token !== this.dynamicRenderToken)) return;
@@ -1456,6 +1517,68 @@ export class MapComponent {
     this.initialDynamicRendered = true;
     await this.renderDynamicLayers(width, height, true);
     if (!this.destroyed) this.applyTransform(false);
+  }
+
+  private renderAoiOverlay(projection: d3.GeoProjection): void {
+    const group = this.dynamicLayerGroup?.append('g').attr('class', 'aoi-svg-layer');
+    if (!group) return;
+    const watched = new Set(this.aoiOverlay.watchedShapeIds);
+    const line = d3.line<number[]>()
+      .x((point) => projection(point as LngLat)?.[0] ?? 0)
+      .y((point) => projection(point as LngLat)?.[1] ?? 0);
+
+    for (const shape of this.aoiOverlay.shapes) {
+      const geometry = shape.geojson.geometry;
+      const points = geometry.type === 'Polygon'
+        ? geometry.coordinates[0] as number[][]
+        : geometry.coordinates as number[][];
+      const path = line(points);
+      if (!path) continue;
+      group.append('path')
+        .attr('class', `aoi-svg-shape${watched.has(shape.id) ? ' watched' : ''}`)
+        .attr('d', path)
+        .attr('fill', geometry.type === 'Polygon' ? shape.color : 'none')
+        .attr('fill-opacity', shape.id === this.aoiOverlay.selectedShapeId ? 0.22 : 0.12)
+        .attr('stroke', shape.color)
+        .attr('stroke-width', shape.id === this.aoiOverlay.selectedShapeId || watched.has(shape.id) ? 3 : 2)
+        .attr('vector-effect', 'non-scaling-stroke')
+        .attr('pointer-events', 'none');
+    }
+
+    const draft = this.aoiOverlay.draft;
+    if (!draft) return;
+    const draftPoints = this.aoiOverlay.pointer && draft.points.length > 0
+      ? [...draft.points, this.aoiOverlay.pointer]
+      : draft.points;
+    const geometry = buildAoiGeometry(draft.mode, draftPoints);
+    const pathPoints = draft.mode === 'polygon' && geometry.length > 2
+      ? [...geometry, geometry[0] as number[]]
+      : geometry;
+    const path = line(pathPoints);
+    if (path) {
+      group.append('path')
+        .attr('class', 'aoi-svg-draft')
+        .attr('d', path)
+        .attr('fill', draft.mode !== 'line' && geometry.length >= 3 ? '#00d4ff' : 'none')
+        .attr('fill-opacity', 0.14)
+        .attr('stroke', '#00d4ff')
+        .attr('stroke-width', 2)
+        .attr('stroke-dasharray', '5 4')
+        .attr('vector-effect', 'non-scaling-stroke')
+        .attr('pointer-events', 'none');
+    }
+    for (const point of draft.points) {
+      const position = projection(point as LngLat);
+      if (!position) continue;
+      group.append('circle')
+        .attr('cx', position[0])
+        .attr('cy', position[1])
+        .attr('r', 4 / this.state.zoom)
+        .attr('fill', '#00d4ff')
+        .attr('stroke', '#041016')
+        .attr('stroke-width', 1 / this.state.zoom)
+        .attr('pointer-events', 'none');
+    }
   }
 
   private renderGrid(
@@ -4867,6 +4990,26 @@ export class MapComponent {
     if (this.state.layers.cyberThreats && !prevCyber && !this.aptGroupsLoaded) this.loadAptGroups();
     this.syncLayerButtons();
     this.render();
+  }
+
+  public setAoiOverlay(overlay: AoiOverlayState): void {
+    this.aoiOverlay = {
+      ...overlay,
+      shapes: [...overlay.shapes],
+      watchedShapeIds: [...overlay.watchedShapeIds],
+      draft: overlay.draft ? { ...overlay.draft, points: [...overlay.draft.points] } : null,
+      pointer: overlay.pointer ? [...overlay.pointer] as LngLat : null,
+    };
+    this.render();
+  }
+
+  public setAoiInteraction(mode: AoiDrawMode | null, handlers: AoiInteractionHandlers | null): void {
+    const previousHandlers = this.aoiInteractionHandlers;
+    this.aoiDrawMode = mode;
+    this.aoiInteractionHandlers = handlers;
+    this.container.style.cursor = mode ? 'crosshair' : 'grab';
+    if (!mode) previousHandlers?.onPointerMove(null);
+    this.popup.hide();
   }
 
   public setEarthquakes(earthquakes: Earthquake[]): void {

@@ -1524,6 +1524,280 @@ canvas,
   gap: 2px;
 }
 
+.aoi-workspace-toggle {
+  min-width: 38px;
+  font-size: calc(10px * var(--wm-panel-effective-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.map-pin-btn.active,
+.aoi-workspace-toggle.active {
+  color: var(--status-live);
+  border-color: color-mix(in srgb, var(--status-live) 70%, var(--border));
+  background: color-mix(in srgb, var(--status-live) 10%, var(--surface));
+}
+
+.aoi-workspace {
+  position: absolute;
+  z-index: 190;
+  top: 48px;
+  right: 8px;
+  bottom: 12px;
+  width: min(360px, calc(100% - 16px));
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  box-shadow: 0 16px 40px var(--shadow-color);
+  backdrop-filter: blur(14px);
+}
+
+.aoi-workspace[hidden] {
+  display: none;
+}
+
+.aoi-workspace-header {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+
+.aoi-workspace-title,
+.aoi-workspace-kicker {
+  display: block;
+}
+
+.aoi-workspace-title {
+  font-size: calc(12px * var(--wm-panel-effective-scale, 1));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.aoi-workspace-kicker,
+.aoi-empty,
+.aoi-draw-readout,
+.aoi-shape-meta,
+.aoi-watch-time {
+  color: var(--text-muted);
+  font-size: calc(10px * var(--wm-panel-effective-scale, 1));
+}
+
+.aoi-workspace-kicker {
+  margin-top: 3px;
+}
+
+.aoi-icon-btn {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-dim);
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.aoi-icon-btn:hover,
+.aoi-action-btn:hover,
+.aoi-mini-btn:hover,
+.aoi-mode-btn:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+.aoi-section {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.aoi-section-label {
+  margin-bottom: 8px;
+  color: var(--text-dim);
+  font-size: calc(9px * var(--wm-panel-effective-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.aoi-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.aoi-section-heading .aoi-section-label {
+  margin-bottom: 0;
+}
+
+.aoi-report-total {
+  color: var(--status-live);
+  font-size: calc(18px * var(--wm-panel-effective-scale, 1));
+}
+
+.aoi-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.aoi-mode-btn,
+.aoi-action-btn,
+.aoi-mini-btn {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.aoi-mode-btn {
+  min-height: 34px;
+  padding: 5px 4px;
+  font-size: calc(9px * var(--wm-panel-effective-scale, 1));
+  font-weight: 650;
+}
+
+.aoi-mode-btn.active,
+.aoi-mini-btn.active,
+.aoi-action-btn.primary {
+  color: var(--bg);
+  border-color: var(--status-live);
+  background: var(--status-live);
+}
+
+.aoi-mode-btn:disabled,
+.aoi-action-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.aoi-draw-readout {
+  min-height: 30px;
+  margin-top: 8px;
+  line-height: 1.45;
+}
+
+.aoi-inline-actions,
+.aoi-card-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.aoi-action-btn,
+.aoi-mini-btn {
+  padding: 6px 9px;
+  font-size: calc(9px * var(--wm-panel-effective-scale, 1));
+}
+
+.aoi-action-btn.wide {
+  width: 100%;
+  margin-top: 9px;
+}
+
+.aoi-mini-btn.danger:hover {
+  color: var(--semantic-critical);
+  border-color: var(--semantic-critical);
+  background: color-mix(in srgb, var(--semantic-critical) 10%, var(--surface));
+}
+
+.aoi-shape-list,
+.aoi-report-groups,
+.aoi-watch-log {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.aoi-shape-card {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--aoi-color);
+  border-radius: 4px;
+  background: var(--bg-secondary);
+}
+
+.aoi-shape-card.selected {
+  border-color: color-mix(in srgb, var(--aoi-color) 70%, var(--border));
+  background: color-mix(in srgb, var(--aoi-color) 7%, var(--bg-secondary));
+}
+
+.aoi-shape-select {
+  width: 100%;
+  padding: 0 0 7px;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.aoi-shape-name,
+.aoi-shape-meta {
+  display: block;
+}
+
+.aoi-shape-name {
+  margin-bottom: 2px;
+  font-size: calc(11px * var(--wm-panel-effective-scale, 1));
+}
+
+.aoi-report-row,
+.aoi-watch-event {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 28px;
+  padding: 5px 7px;
+  border-left: 2px solid var(--aoi-color);
+  background: var(--bg-secondary);
+  font-size: calc(10px * var(--wm-panel-effective-scale, 1));
+}
+
+.aoi-report-label,
+.aoi-watch-label {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aoi-watch-kind {
+  min-width: 24px;
+  color: var(--status-live);
+  font-size: calc(8px * var(--wm-panel-effective-scale, 1));
+  font-weight: 800;
+}
+
+.aoi-watch-event.exit .aoi-watch-kind {
+  color: var(--semantic-critical);
+}
+
+.aoi-empty {
+  margin: 4px 0;
+  line-height: 1.5;
+}
+
+.aoi-workspace-footer {
+  padding: 12px;
+}
+
 .map-pin-btn {
   background: transparent;
   border: 1px solid var(--border);
@@ -14878,6 +15152,7 @@ a.prediction-link:hover {
   .main-content .map-section.collapsed:not(.live-news-fullscreen) .map-resize-handle,
   .main-content .map-section.collapsed:not(.live-news-fullscreen) .map-controls,
   .main-content .map-section.collapsed:not(.live-news-fullscreen) .time-slider,
+  .main-content .map-section.collapsed:not(.live-news-fullscreen) .aoi-workspace,
   .main-content .map-section.collapsed:not(.live-news-fullscreen) .tv-exit-btn {
     display: none;
   }
@@ -14907,6 +15182,27 @@ a.prediction-link:hover {
   .map-resize-handle,
   .panel-resize-handle {
     display: none !important;
+  }
+
+  .aoi-workspace-toggle {
+    display: flex !important;
+  }
+
+  .aoi-workspace {
+    top: 46px;
+    right: max(6px, env(safe-area-inset-right, 0px));
+    bottom: max(6px, env(safe-area-inset-bottom, 0px));
+    width: min(360px, calc(100% - 12px));
+  }
+
+  .aoi-workspace.drawing {
+    bottom: auto;
+    max-height: 210px;
+  }
+
+  .aoi-workspace.drawing > .aoi-section:not(.aoi-draw-section),
+  .aoi-workspace.drawing > .aoi-workspace-footer {
+    display: none;
   }
 
   /* Simplify time slider on mobile */

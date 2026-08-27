@@ -95,6 +95,8 @@ import {
   hydrateTechHubPanelFromClusters,
 } from '@/app/hub-activity-hydration';
 import { movePanelToKeyboardZone } from '@/app/panel-keyboard-reorder';
+import type { AoiWorkspace } from '@/components/AoiWorkspace';
+import type { AoiEntityGroup } from '@/services/aoi-tools';
 
 function readSessionStorageValue(key: string): string | null {
   try {
@@ -419,6 +421,7 @@ export class PanelLayoutManager implements AppModule {
   private panelTabBar: PanelTabBar | null = null;
   private tabsState: TabsState | null = null;
   private aviationCommandBar: AviationCommandBar | null = null;
+  private aoiWorkspace: AoiWorkspace | null = null;
   private readonly applyTimeRangeFilterDebounced: (() => void) & { cancel(): void };
   private unsubscribeAuth: (() => void) | null = null;
   private proBlockUnsubscribe: (() => void) | null = null;
@@ -763,6 +766,8 @@ export class PanelLayoutManager implements AppModule {
     // Clean up aviation components
     destroyOnce(this.aviationCommandBar);
     this.aviationCommandBar = null;
+    destroyOnce(this.aoiWorkspace);
+    this.aoiWorkspace = null;
 
     // Destroy every registered panel exactly once, including lazy-created
     // and self-fetching panels that own subscriptions, intervals, or aborts.
@@ -1115,6 +1120,7 @@ export class PanelLayoutManager implements AppModule {
             </div>
             <span class="header-clock" id="headerClock" translate="no"></span>
             <div class="map-header-actions">
+              <button class="map-pin-btn aoi-workspace-toggle" id="aoiWorkspaceToggle" title="Area of interest tools" aria-controls="aoiWorkspace" aria-expanded="false" aria-busy="true" disabled>AOI</button>
               <div class="map-dimension-toggle" id="mapDimensionToggle">
                 <button class="map-dim-btn${isGlobeMode ? '' : ' active'}" data-mode="flat" title="2D Map">2D</button>
                 <button class="map-dim-btn${isGlobeMode ? ' active' : ''}" data-mode="globe" title="3D Globe">3D</button>
@@ -1133,6 +1139,7 @@ export class PanelLayoutManager implements AppModule {
             </div>
           </div>
           <div class="map-container" id="mapContainer"></div>
+          <aside class="aoi-workspace" id="aoiWorkspace" aria-label="Area of interest workspace" aria-hidden="true" hidden></aside>
           ${SITE_VARIANT === 'happy' ? '<button class="tv-exit-btn" id="tvExitBtn">Exit TV Mode</button>' : ''}
           <div class="map-resize-handle" id="mapResizeHandle"></div>
           <div class="map-bottom-grid" id="mapBottomGrid"></div>
@@ -2046,6 +2053,101 @@ export class PanelLayoutManager implements AppModule {
     return this.ctx.panels[key]?.getElement() ?? null;
   }
 
+  private getAoiEntityGroups(): AoiEntityGroup[] {
+    const cache = this.ctx.intelligenceCache;
+    const groups: AoiEntityGroup[] = [];
+    const add = (group: AoiEntityGroup): void => {
+      const entities = group.entities.filter((entity) => Number.isFinite(entity.lat) && Number.isFinite(entity.lng));
+      if (entities.length > 0) groups.push({ ...group, entities });
+    };
+
+    add({
+      key: 'aircraft',
+      label: 'Commercial aircraft',
+      color: '#00d4ff',
+      entities: (cache.aircraftPositions ?? []).map((aircraft) => ({
+        id: aircraft.icao24,
+        label: aircraft.callsign || aircraft.icao24,
+        lat: aircraft.lat,
+        lng: aircraft.lon,
+        detail: `${Math.round(aircraft.altitudeFt).toLocaleString()} ft · ${Math.round(aircraft.groundSpeedKts)} kt`,
+      })),
+    });
+    add({
+      key: 'military-aircraft',
+      label: 'Military aircraft',
+      color: '#ff4d5e',
+      entities: (cache.military?.flights ?? []).map((flight) => ({
+        id: flight.id || flight.hexCode,
+        label: flight.callsign || flight.registration || flight.hexCode,
+        lat: flight.lat,
+        lng: flight.lon,
+        detail: [flight.aircraftModel, `${Math.round(flight.altitude).toLocaleString()} ft`].filter(Boolean).join(' · '),
+      })),
+    });
+    add({
+      key: 'military-vessels',
+      label: 'Military vessels',
+      color: '#4dabf7',
+      entities: (cache.military?.vessels ?? []).map((vessel) => ({
+        id: vessel.id || vessel.mmsi,
+        label: vessel.name || vessel.hullNumber || vessel.mmsi,
+        lat: vessel.lat,
+        lng: vessel.lon,
+        detail: [vessel.vesselType, vessel.destination].filter(Boolean).join(' · '),
+      })),
+    });
+    add({
+      key: 'earthquakes',
+      label: 'Earthquakes',
+      color: '#ff9f43',
+      entities: (cache.earthquakes ?? []).map((earthquake) => ({
+        id: earthquake.id,
+        label: earthquake.place,
+        lat: earthquake.location?.latitude ?? Number.NaN,
+        lng: earthquake.location?.longitude ?? Number.NaN,
+        detail: `M${earthquake.magnitude.toFixed(1)} · ${Math.round(earthquake.depthKm)} km deep`,
+      })),
+    });
+    add({
+      key: 'conflicts',
+      label: 'Conflict events',
+      color: '#ff6b1a',
+      entities: (cache.conflicts ?? []).map((event) => ({
+        id: event.id,
+        label: event.location || event.country,
+        lat: event.lat,
+        lng: event.lon,
+        detail: [event.eventType.replace(/_/g, ' '), event.fatalities ? `${event.fatalities} fatalities` : ''].filter(Boolean).join(' · '),
+      })),
+    });
+    add({
+      key: 'protests',
+      label: 'Protests & unrest',
+      color: '#ffd166',
+      entities: (cache.protests?.events ?? []).map((event) => ({
+        id: event.id,
+        label: event.title,
+        lat: event.lat,
+        lng: event.lon,
+        detail: [event.country, event.severity].filter(Boolean).join(' · '),
+      })),
+    });
+    add({
+      key: 'outages',
+      label: 'Internet outages',
+      color: '#c77dff',
+      entities: (cache.outages ?? []).map((outage) => ({
+        id: outage.id,
+        label: outage.title,
+        lat: outage.lat,
+        lng: outage.lon,
+        detail: [outage.country, outage.severity].filter(Boolean).join(' · '),
+      })),
+    });
+    return groups;
+  }
+
   private async createPanels(): Promise<void> {
     const panelsGrid = document.getElementById('panelsGrid')!;
     this.initiallyMountedEnabledPanelCount = 0;
@@ -2835,6 +2937,13 @@ export class PanelLayoutManager implements AppModule {
       timeRange: '7d',
     }, preferGlobe, {
       isFreeTierFallbackActive: this.callbacks.isFreeTierFallbackActive,
+    });
+
+    const { AoiWorkspace } = await import('@/components/AoiWorkspace');
+    if (this.ctx.isDestroyed) return;
+    this.aoiWorkspace = new AoiWorkspace({
+      map: this.ctx.map,
+      getEntityGroups: () => this.getAoiEntityGroups(),
     });
 
     const eagerSupplyChainPanel = this.ctx.panels['supply-chain'] as SupplyChainPanel | undefined;

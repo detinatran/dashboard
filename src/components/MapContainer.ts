@@ -67,6 +67,11 @@ import type { ScenarioVisualState, ScenarioResult } from '@/config/scenario-temp
 import { getAuthState } from '@/services/auth-state';
 import { hasPremiumAccess } from '@/services/panel-gating';
 import { trackGateHit } from '@/services/analytics';
+import type {
+  AoiDrawMode,
+  AoiInteractionHandlers,
+  AoiOverlayState,
+} from '@/services/aoi-tools';
 
 export type { ScenarioVisualState, ScenarioResult };
 
@@ -205,6 +210,15 @@ export class MapContainer {
   private cachedOnAircraftPositionsUpdate: ((positions: PositionSample[]) => void) | null = null;
   private cachedOnMapContextMenu: ((payload: { lat: number; lon: number; screenX: number; screenY: number; countryCode?: string; countryName?: string }) => void) | null = null;
   private cachedOnChinaCorridorRendererCapabilityChange: ((supported: boolean) => void) | null = null;
+  private cachedAoiOverlay: AoiOverlayState = {
+    shapes: [],
+    draft: null,
+    pointer: null,
+    selectedShapeId: null,
+    watchedShapeIds: [],
+  };
+  private cachedAoiDrawMode: AoiDrawMode | null = null;
+  private cachedAoiInteractionHandlers: AoiInteractionHandlers | null = null;
 
   // ─── Data cache (survives map mode switches) ───────────────────────────────
   private cachedEarthquakes: Earthquake[] | null = null;
@@ -731,6 +745,13 @@ export class MapContainer {
     if (this.cachedOnAircraftPositionsUpdate) this.setOnAircraftPositionsUpdate(this.cachedOnAircraftPositionsUpdate);
     if (this.cachedOnMapContextMenu) this.onMapContextMenu(this.cachedOnMapContextMenu);
     if (this.escalationGettersRequested) this.applyEscalationGetters();
+    if (this.useDeckGL) {
+      this.deckGLMap?.setAoiOverlay(this.cachedAoiOverlay);
+      this.deckGLMap?.setAoiInteraction(this.cachedAoiDrawMode, this.cachedAoiInteractionHandlers);
+    } else if (!this.useGlobe) {
+      this.svgMap?.setAoiOverlay(this.cachedAoiOverlay);
+      this.svgMap?.setAoiInteraction(this.cachedAoiDrawMode, this.cachedAoiInteractionHandlers);
+    }
 
     // 2. Re-push all cached data
     if (this.cachedEarthquakes) this.setEarthquakes(this.cachedEarthquakes);
@@ -961,6 +982,27 @@ export class MapContainer {
     if (this.useGlobe) return this.globeMap?.getTimeRange() ?? this.initialState.timeRange;
     if (this.useDeckGL) return this.deckGLMap?.getTimeRange() ?? this.initialState.timeRange;
     return this.svgMap?.getTimeRange() ?? this.initialState.timeRange;
+  }
+
+  public setAoiOverlay(overlay: AoiOverlayState): void {
+    this.cachedAoiOverlay = {
+      ...overlay,
+      shapes: [...overlay.shapes],
+      watchedShapeIds: [...overlay.watchedShapeIds],
+      draft: overlay.draft ? { ...overlay.draft, points: [...overlay.draft.points] } : null,
+      pointer: overlay.pointer ? [...overlay.pointer] as [number, number] : null,
+    };
+    this.deckGLMap?.setAoiOverlay(this.cachedAoiOverlay);
+    this.svgMap?.setAoiOverlay(this.cachedAoiOverlay);
+  }
+
+  public setAoiInteraction(mode: AoiDrawMode | null, handlers: AoiInteractionHandlers | null): boolean {
+    if (mode && this.useGlobe) return false;
+    this.cachedAoiDrawMode = mode;
+    this.cachedAoiInteractionHandlers = handlers;
+    this.deckGLMap?.setAoiInteraction(mode, handlers);
+    this.svgMap?.setAoiInteraction(mode, handlers);
+    return mode === null || this.deckGLMap !== null || this.svgMap !== null;
   }
 
   public setLayers(layers: MapLayers): void {
