@@ -79,7 +79,7 @@ import { loadMcpPanels, saveMcpPanel } from '@/services/mcp-store';
 import type { McpPanelSpec } from '@/services/mcp-store';
 import { getAuthState, subscribeAuthState } from '@/services/auth-state';
 import type { AuthSession } from '@/services/auth-state';
-import { PanelGateReason, getPanelGateReason, hasPremiumAccess, resolveBillingAwareGateReason, resolveGateAction } from '@/services/panel-gating';
+import { PanelGateReason, getPanelGateReason, hasPremiumAccess, isLocalSelfHostedAccess, resolveBillingAwareGateReason, resolveGateAction } from '@/services/panel-gating';
 import { evaluateTabCap, exportLockToGateReason } from '@/services/gates/export';
 import { primeExportGateActivation } from '@/services/gates/export-resolver';
 import type { TabCapVerdict } from '@/services/gates/export-resolver';
@@ -422,6 +422,8 @@ export class PanelLayoutManager implements AppModule {
   private tabsState: TabsState | null = null;
   private aviationCommandBar: AviationCommandBar | null = null;
   private aoiWorkspace: AoiWorkspace | null = null;
+  private webcamMapToggleCleanup: (() => void) | null = null;
+  private lastCctvSelectionKey: string | null = null;
   private readonly applyTimeRangeFilterDebounced: (() => void) & { cancel(): void };
   private unsubscribeAuth: (() => void) | null = null;
   private proBlockUnsubscribe: (() => void) | null = null;
@@ -768,6 +770,8 @@ export class PanelLayoutManager implements AppModule {
     this.aviationCommandBar = null;
     destroyOnce(this.aoiWorkspace);
     this.aoiWorkspace = null;
+    this.webcamMapToggleCleanup?.();
+    this.webcamMapToggleCleanup = null;
 
     // Destroy every registered panel exactly once, including lazy-created
     // and self-fetching panels that own subscriptions, intervals, or aborts.
@@ -843,6 +847,7 @@ export class PanelLayoutManager implements AppModule {
       // for API-key-only + free-Clerk users as the lesser harm.
       if (
         reason === PanelGateReason.NONE &&
+        !isLocalSelfHostedAccess() &&
         WEB_CLERK_PRO_ONLY_PANELS.has(key) &&
         getEntitlementState() !== null &&
         !hasTier(1)
@@ -1116,11 +1121,27 @@ export class PanelLayoutManager implements AppModule {
         <div class="map-section${mapStartsCollapsed ? ' collapsed' : ''}" id="mapSection">
           <div class="panel-header">
             <div class="panel-header-left">
-              <span class="panel-title">${SITE_VARIANT === 'tech' ? t('panels.techMap') : SITE_VARIANT === 'happy' ? 'Good News Map' : t('panels.map')}</span>
+              <span class="map-status-orb" aria-hidden="true"></span>
+              <span class="map-title-stack">
+                <span class="map-kicker">Command center</span>
+                <span class="panel-title">${SITE_VARIANT === 'tech' ? t('panels.techMap') : SITE_VARIANT === 'happy' ? 'Good News Map' : t('panels.map')}</span>
+              </span>
             </div>
             <span class="header-clock" id="headerClock" translate="no"></span>
             <div class="map-header-actions">
+              <div class="map-action-group map-action-group-intel">
               <button class="map-pin-btn aoi-workspace-toggle" id="aoiWorkspaceToggle" title="Area of interest tools" aria-controls="aoiWorkspace" aria-expanded="false" aria-busy="true" disabled>AOI</button>
+              <span class="cctv-target-context" id="cctvTargetContext" aria-live="polite" hidden>
+                <span class="cctv-target-icon" aria-hidden="true">⌖</span>
+                <span class="cctv-target-label" id="cctvTargetLabel">TARGET</span>
+              </span>
+              <button class="map-pin-btn webcam-map-toggle" id="webcamMapToggle" title="Show CCTV cameras" aria-pressed="false" aria-busy="true" disabled>
+                <span class="webcam-map-toggle-icon" aria-hidden="true"></span>
+                <span>CCTV</span>
+                <span class="webcam-map-toggle-state" aria-hidden="true"></span>
+              </button>
+              </div>
+              <div class="map-action-group map-action-group-view">
               <div class="map-dimension-toggle" id="mapDimensionToggle">
                 <button class="map-dim-btn${isGlobeMode ? '' : ' active'}" data-mode="flat" title="2D Map">2D</button>
                 <button class="map-dim-btn${isGlobeMode ? ' active' : ''}" data-mode="globe" title="3D Globe">3D</button>
@@ -1136,6 +1157,7 @@ export class PanelLayoutManager implements AppModule {
                   <path d="M12 17v5M9 10.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V16a1 1 0 001 1h12a1 1 0 001-1v-.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V7a1 1 0 011-1 1 1 0 001-1V4a1 1 0 00-1-1H8a1 1 0 00-1 1v1a1 1 0 001 1 1 1 0 011 1v3.76z"/>
                 </svg>
               </button>
+              </div>
             </div>
           </div>
           <div class="map-container" id="mapContainer"></div>
@@ -2938,6 +2960,7 @@ export class PanelLayoutManager implements AppModule {
     }, preferGlobe, {
       isFreeTierFallbackActive: this.callbacks.isFreeTierFallbackActive,
     });
+    this.bindWebcamMapToggle(mapContainer);
 
     const { AoiWorkspace } = await import('@/components/AoiWorkspace');
     if (this.ctx.isDestroyed) return;
@@ -2983,6 +3006,130 @@ export class PanelLayoutManager implements AppModule {
       const extra = [...created].filter(k => !configured.has(k) && k !== 'runtime-config' && !k.startsWith('cw-') && !k.startsWith('mcp-'));
       if (extra.length) console.warn('[PanelLayoutManager] Panels created but not in ALL_PANELS:', extra);
     }
+  }
+
+  private bindWebcamMapToggle(mapContainer: HTMLElement): void {
+    this.webcamMapToggleCleanup?.();
+    const button = document.getElementById('webcamMapToggle');
+    if (!(button instanceof HTMLButtonElement)) return;
+    const targetContext = document.getElementById('cctvTargetContext');
+    const targetLabel = document.getElementById('cctvTargetLabel');
+    let selectedTarget = this.ctx.map?.getSelectedLocation() ?? null;
+
+    const targetKey = () => selectedTarget
+      ? `${selectedTarget.lat.toFixed(5)},${selectedTarget.lon.toFixed(5)}`
+      : null;
+
+    const sync = () => {
+      const enabled = Boolean(this.ctx.map?.getState().layers.webcams);
+      const busy = button.getAttribute('aria-busy') === 'true';
+      const hasNewTarget = targetKey() !== null && targetKey() !== this.lastCctvSelectionKey;
+      button.classList.toggle('active', enabled);
+      button.classList.toggle('has-target', selectedTarget !== null);
+      button.setAttribute('aria-pressed', String(enabled));
+      button.dataset.state = busy ? 'searching' : enabled ? 'active' : selectedTarget ? 'targeted' : 'idle';
+      button.title = busy
+        ? 'Finding nearest CCTV camera…'
+        : enabled && !hasNewTarget
+          ? 'CCTV active — click to turn off'
+          : selectedTarget
+            ? `Find CCTV near ${selectedTarget.lat.toFixed(2)}, ${selectedTarget.lon.toFixed(2)}`
+            : 'Show CCTV cameras';
+      if (targetContext) {
+        targetContext.hidden = selectedTarget === null;
+        targetContext.classList.toggle('searching', busy);
+      }
+      if (targetLabel && selectedTarget) {
+        targetLabel.textContent = busy
+          ? 'SEARCHING NEAR TARGET'
+          : `${selectedTarget.lat.toFixed(2)}, ${selectedTarget.lon.toFixed(2)}`;
+      }
+    };
+
+    const toggleLayer = () => {
+      const layerControl = mapContainer.querySelector<HTMLElement>('.layer-toggle[data-layer="webcams"]');
+      const checkbox = layerControl?.querySelector<HTMLInputElement>('input[type="checkbox"]');
+      if (checkbox) {
+        checkbox.click();
+      } else if (layerControl instanceof HTMLButtonElement) {
+        layerControl.click();
+      } else {
+        const enabled = !this.ctx.mapLayers.webcams;
+        this.ctx.mapLayers = { ...this.ctx.mapLayers, webcams: enabled };
+        this.ctx.map?.setLayers(this.ctx.mapLayers);
+        this.callbacks.applyMapLayerChange?.('webcams', enabled, 'programmatic');
+      }
+      window.requestAnimationFrame(sync);
+    };
+
+    const handleToggle = () => {
+      const map = this.ctx.map;
+      if (!map) return;
+      const wasEnabled = Boolean(map.getState().layers.webcams);
+      const selected = map.getSelectedLocation();
+      selectedTarget = selected;
+      const selectionKey = selected ? `${selected.lat.toFixed(5)},${selected.lon.toFixed(5)}` : null;
+      const shouldOpenForSelection = selectionKey !== null
+        && (!wasEnabled || selectionKey !== this.lastCctvSelectionKey);
+
+      if (!wasEnabled) toggleLayer();
+      else if (!shouldOpenForSelection) {
+        this.lastCctvSelectionKey = null;
+        toggleLayer();
+        return;
+      }
+
+      if (!shouldOpenForSelection) {
+        showToast('CCTV enabled — select a location to open its nearest camera');
+        return;
+      }
+
+      this.lastCctvSelectionKey = selectionKey;
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+      sync();
+      void map.openNearestCctvForSelectedLocation().then((result) => {
+        // The viewer or persistent no-source card is the interaction result;
+        // avoid a transient toast covering camera controls on small screens.
+        if (result.status === 'no-selection') showToast('Select a location before searching CCTV');
+      }).catch((error) => {
+        console.warn('[CCTV] nearest camera lookup failed:', error);
+        showToast('Could not load CCTV for the selected location');
+      }).finally(() => {
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
+        sync();
+      });
+    };
+
+    const handleLayerControl = (event: Event) => {
+      const target = event.target;
+      if (!(target instanceof Element) || !target.closest('.layer-toggle[data-layer="webcams"]')) return;
+      window.requestAnimationFrame(sync);
+    };
+
+    const handleLocationSelected = (event: Event) => {
+      if (!(event instanceof CustomEvent)) return;
+      const detail = event.detail as { lat?: unknown; lon?: unknown } | null;
+      if (!detail || typeof detail.lat !== 'number' || typeof detail.lon !== 'number') return;
+      selectedTarget = { lat: detail.lat, lon: detail.lon };
+      sync();
+    };
+
+    button.addEventListener('click', handleToggle);
+    mapContainer.addEventListener('click', handleLayerControl);
+    mapContainer.addEventListener('change', handleLayerControl);
+    mapContainer.addEventListener('worldmonitor:map-location-selected', handleLocationSelected);
+    button.disabled = false;
+    button.removeAttribute('aria-busy');
+    sync();
+
+    this.webcamMapToggleCleanup = () => {
+      button.removeEventListener('click', handleToggle);
+      mapContainer.removeEventListener('click', handleLayerControl);
+      mapContainer.removeEventListener('change', handleLayerControl);
+      mapContainer.removeEventListener('worldmonitor:map-location-selected', handleLocationSelected);
+    };
   }
 
   private cancelScheduledLoadAllIdle(): void {

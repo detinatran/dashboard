@@ -38,8 +38,8 @@ import {
 import { STARTUP_HUBS, ACCELERATORS, TECH_HQS, CLOUD_REGIONS } from '@/config/tech-geo';
 import { AI_DATA_CENTERS } from '@/config/ai-datacenters';
 import { worldTopologyUrl, UNDERSEA_CABLES, NUCLEAR_FACILITIES, SANCTIONED_COUNTRIES, ECONOMIC_CENTERS, SPACEPORTS, CRITICAL_MINERALS } from '@/config/geo-map';
-import { pinWebcam, isPinned } from '@/services/webcams/pinned-store';
 import type { WebcamEntry, WebcamCluster } from '@/generated/client/worldmonitor/webcam/v1/service_client';
+import { closeMapWebcamViewer, openMapWebcamViewer } from './MapWebcamViewer';
 import { tokenizeForMatch, matchKeyword, findMatchingKeywords } from '@/utils/keyword-match';
 import { MapPopup } from './MapPopup';
 import type { GetChokepointStatusResponse } from '@/services/supply-chain';
@@ -243,6 +243,7 @@ export class MapComponent {
   private layerZoomOverrides: Partial<Record<keyof MapLayers, boolean>> = {};
   private onStateChange?: (state: MapState) => void;
   private onCountryClick?: (country: CountryClickPayload) => void;
+  private onLocationSelect?: (lat: number, lon: number) => void;
   private highlightedAssets: Record<AssetType, Set<string>> = {
     pipeline: new Set(),
     cable: new Set(),
@@ -450,6 +451,7 @@ export class MapComponent {
 
   public destroy(): void {
     this.destroyed = true;
+    closeMapWebcamViewer(this.container);
     this.aoiInteractionHandlers?.onPointerMove(null);
     this.aoiInteractionHandlers = null;
     this.aoiDrawMode = null;
@@ -994,10 +996,16 @@ export class MapComponent {
       if (!(target instanceof Element)) return false;
       return Boolean(
         target.closest(
-          '.map-controls, .time-slider, .layer-toggles, .map-legend, .layer-help-popup, .map-popup, button, select, input, textarea, a'
+          '.map-controls, .time-slider, .layer-toggles, .map-legend, .layer-help-popup, .map-popup, .map-webcam-viewer, button, select, input, textarea, a'
         )
       );
     };
+
+    this.container.addEventListener('click', (event) => {
+      if (this.aoiDrawMode || shouldIgnoreInteractionStart(event.target)) return;
+      const coordinate = this.aoiCoordinateFromPointer(event.clientX, event.clientY);
+      if (coordinate) this.onLocationSelect?.(coordinate[1], coordinate[0]);
+    }, { capture: true, signal });
 
     // Wheel zoom with smooth delta
     this.container.addEventListener(
@@ -3717,17 +3725,36 @@ export class MapComponent {
         const size = radius * 2;
         const color = isCluster ? '#00d4ff' : (CATEGORY_COLORS[(cam as WebcamEntry).category] ?? '#888888');
         const dot = document.createElement('div');
-        dot.className = 'webcam-dot';
+        dot.className = `webcam-dot ${isCluster ? 'webcam-dot-cluster' : 'webcam-dot-camera'}`;
         dot.style.left = `${pos[0]}px`;
         dot.style.top = `${pos[1]}px`;
-        dot.style.width = `${size}px`;
-        dot.style.height = `${size}px`;
+        dot.style.width = `${isCluster ? size : 24}px`;
+        dot.style.height = `${isCluster ? size : 24}px`;
         dot.style.position = 'absolute';
         dot.style.borderRadius = '50%';
-        dot.style.backgroundColor = color;
-        dot.style.opacity = '0.75';
+        dot.style.backgroundColor = isCluster ? color : 'rgba(5, 13, 17, 0.92)';
+        dot.style.borderColor = color;
+        dot.style.boxShadow = `0 0 10px ${color}`;
+        dot.style.color = color;
+        dot.style.opacity = '0.96';
         dot.style.cursor = 'pointer';
         dot.title = isCluster ? `${(cam as WebcamCluster).count} webcams` : ((cam as WebcamEntry).title || 'Webcam');
+        dot.setAttribute('aria-label', dot.title);
+        if (isCluster) {
+          dot.textContent = String((cam as WebcamCluster).count);
+        } else {
+          const icon = document.createElement('span');
+          icon.className = 'webcam-marker-icon';
+          icon.textContent = '\u{1F4F7}';
+          icon.setAttribute('aria-hidden', 'true');
+          dot.appendChild(icon);
+          if (this.state.zoom >= 7) {
+            const label = document.createElement('span');
+            label.className = 'webcam-marker-label';
+            label.textContent = (cam as WebcamEntry).title || 'CCTV camera';
+            dot.appendChild(label);
+          }
+        }
         dot.addEventListener('click', (e) => {
           e.stopPropagation();
           if (isCluster) {
@@ -3842,87 +3869,9 @@ export class MapComponent {
   }
 
   private showWebcamTooltip(cam: WebcamEntry, clientX: number, clientY: number): void {
-    const { tooltip } = this.makeWebcamTooltipShell();
-
-    const title = document.createElement('div');
-    title.style.cssText = 'font-weight:bold;color:#00d4ff;padding-right:18px;';
-    title.textContent = `\u{1F4F7} ${cam.title || cam.category || 'Webcam'}`;
-    tooltip.appendChild(title);
-
-    const meta = document.createElement('div');
-    meta.style.cssText = 'opacity:0.7;font-size:calc(10px * var(--wm-panel-effective-scale, 1));margin-top:2px;';
-    meta.textContent = [cam.country, cam.category].filter(Boolean).join(' \u00B7 ');
-    if (meta.textContent) tooltip.appendChild(meta);
-
-    const previewDiv = document.createElement('div');
-    previewDiv.style.marginTop = '6px';
-    const loadingSpan = document.createElement('span');
-    loadingSpan.style.cssText = 'opacity:0.5;font-size:calc(10px * var(--wm-panel-effective-scale, 1));';
-    loadingSpan.textContent = 'Loading preview...';
-    previewDiv.appendChild(loadingSpan);
-    tooltip.appendChild(previewDiv);
-
-    if (cam.webcamId) {
-      const link = document.createElement('a');
-      link.href = `https://www.windy.com/webcams/${cam.webcamId}`;
-      link.target = '_blank';
-      link.rel = 'noopener';
-      link.style.cssText = 'display:block;margin-top:4px;color:#00d4ff;font-size:calc(11px * var(--wm-panel-effective-scale, 1));text-decoration:none;';
-      link.textContent = 'Open on Windy \u2197';
-      tooltip.appendChild(link);
-    }
-
-    this.placeWebcamTooltip(tooltip, clientX, clientY);
-
-    if (cam.webcamId) {
-      import('@/services/webcams').then(({ fetchWebcamImage }) => {
-        fetchWebcamImage(cam.webcamId).then(img => {
-          if (!tooltip.isConnected) return;
-          previewDiv.replaceChildren();
-          if (img.thumbnailUrl) {
-            const imgEl = document.createElement('img');
-            imgEl.src = img.thumbnailUrl;
-            imgEl.style.cssText = 'width:200px;border-radius:4px;margin-bottom:4px;';
-            imgEl.loading = 'lazy';
-            previewDiv.appendChild(imgEl);
-          } else {
-            const span = document.createElement('span');
-            span.style.cssText = 'opacity:0.5;font-size:calc(10px * var(--wm-panel-effective-scale, 1));';
-            span.textContent = 'Preview unavailable';
-            previewDiv.appendChild(span);
-          }
-
-          const pinBtn = document.createElement('button');
-          pinBtn.className = 'webcam-pin-btn';
-          const wcId = cam.webcamId;
-          if (isPinned(wcId)) {
-            pinBtn.classList.add('webcam-pin-btn--pinned');
-            pinBtn.textContent = '\u{1F4CC} Pinned';
-            pinBtn.disabled = true;
-          } else {
-            pinBtn.textContent = '\u{1F4CC} Pin';
-            pinBtn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              pinWebcam({
-                webcamId: wcId,
-                title: cam.title || img?.title || '',
-                lat: cam.lat,
-                lng: cam.lng,
-                category: cam.category || 'other',
-                country: cam.country || '',
-                playerUrl: img?.playerUrl || '',
-              });
-              pinBtn.classList.add('webcam-pin-btn--pinned');
-              pinBtn.textContent = '\u{1F4CC} Pinned';
-              pinBtn.disabled = true;
-            });
-          }
-          tooltip.appendChild(pinBtn);
-        });
-      });
-    } else {
-      previewDiv.remove();
-    }
+    void clientX;
+    void clientY;
+    openMapWebcamViewer(this.container, cam);
   }
 
   private showWebcamClusterPopup(cam: WebcamCluster, clientX: number, clientY: number): void {
@@ -4886,6 +4835,10 @@ export class MapComponent {
 
   public setOnCountryClick(cb: (country: CountryClickPayload) => void): void {
     this.onCountryClick = cb;
+  }
+
+  public setOnLocationSelect(callback: (lat: number, lon: number) => void): void {
+    this.onLocationSelect = callback;
   }
 
   public fitCountry(code: string): void {

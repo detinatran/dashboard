@@ -18,7 +18,7 @@ import type { AuthSession } from '../auth-state';
 import { getSubscription } from '../billing';
 import { deriveBillingUxState } from '../billing-state';
 import { getEntitlementState } from '../entitlements';
-import { PanelGateReason } from '../panel-gating';
+import { isLocalSelfHostedAccess, PanelGateReason } from '../panel-gating';
 import { getSecretState } from '../runtime-config';
 import {
   isExportGateActive,
@@ -59,7 +59,9 @@ function readExportGateInputs(authState: AuthSession): ExportGateInputs {
   const entitlement = getEntitlementState();
   return {
     gateActive: isExportGateActive(),
-    desktopKeyPresent: getSecretState('WORLDMONITOR_API_KEY').present,
+    // Local self-host/demo builds use the same uncapped/full-format branch as
+    // desktop API-key access, without changing production entitlement state.
+    desktopKeyPresent: isLocalSelfHostedAccess() || getSecretState('WORLDMONITOR_API_KEY').present,
     authPending: authState.isPending,
     signedIn: Boolean(authState.user),
     features: entitlement

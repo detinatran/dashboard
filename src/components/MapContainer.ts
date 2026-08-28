@@ -72,6 +72,11 @@ import type {
   AoiInteractionHandlers,
   AoiOverlayState,
 } from '@/services/aoi-tools';
+import {
+  clearMapCctvNotice,
+  openMapWebcamViewer,
+  showMapCctvUnavailable,
+} from './MapWebcamViewer';
 
 export type { ScenarioVisualState, ScenarioResult };
 
@@ -118,6 +123,11 @@ export interface MapContainerState {
   layers: MapLayers;
   timeRange: TimeRange;
 }
+
+export type NearestCctvOpenResult =
+  | { status: 'opened'; camera: WebcamEntry; distanceKm: number }
+  | { status: 'no-selection' }
+  | { status: 'no-camera'; radiusKm: number };
 
 export interface MapContainerOptions {
   chrome?: boolean;
@@ -269,6 +279,15 @@ export class MapContainer {
   private cachedDdosLocations: DdosLocationHit[] | null = null;
   private cachedChokepointData: GetChokepointStatusResponse | null | undefined;
   private cachedChinaCorridorSelection: ChinaCorridorControlTower | null = null;
+  private selectedLocation: { lat: number; lon: number } | null = null;
+
+  private rememberSelectedLocation(lat: number, lon: number): void {
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+    this.selectedLocation = { lat, lon };
+    this.container.dispatchEvent(new CustomEvent('worldmonitor:map-location-selected', {
+      detail: { lat, lon },
+    }));
+  }
 
   constructor(container: HTMLElement, initialState: MapContainerState, preferGlobe = false, options: MapContainerOptions = {}) {
     this.container = container;
@@ -737,6 +756,12 @@ export class MapContainer {
 
   private rehydrateActiveMap(): void {
     // 1. Re-wire callbacks (through own public methods for adapter safety)
+    const recordSelectedLocation = (lat: number, lon: number) => {
+      this.rememberSelectedLocation(lat, lon);
+    };
+    if (this.useGlobe) this.globeMap?.setOnLocationSelect(recordSelectedLocation);
+    else if (this.useDeckGL) this.deckGLMap?.setOnLocationSelect(recordSelectedLocation);
+    else this.svgMap?.setOnLocationSelect(recordSelectedLocation);
     if (this.cachedOnStateChanged) this.onStateChanged(this.cachedOnStateChanged);
     if (this.cachedOnLayerChange) this.setOnLayerChange(this.cachedOnLayerChange);
     if (this.cachedOnTimeRangeChanged) this.onTimeRangeChanged(this.cachedOnTimeRangeChanged);
@@ -942,6 +967,7 @@ export class MapContainer {
   }
 
   public setCenter(lat: number, lon: number, zoom?: number): number {
+    this.rememberSelectedLocation(lat, lon);
     const viewportActionToken = ++this.viewportActionToken;
     if (!this.isViewportRendererReady()) {
       this.pendingCenter = { lat, lon, zoom, actionToken: viewportActionToken };
@@ -966,6 +992,47 @@ export class MapContainer {
     if (this.useGlobe) return this.globeMap?.getCenter() ?? null;
     if (this.useDeckGL) return this.deckGLMap?.getCenter() ?? null;
     return this.svgMap?.getCenter() ?? null;
+  }
+
+  public getSelectedLocation(): { lat: number; lon: number } | null {
+    return this.selectedLocation ? { ...this.selectedLocation } : null;
+  }
+
+  public async openNearestCctvForSelectedLocation(radiusKm = 150): Promise<NearestCctvOpenResult> {
+    const selected = this.getSelectedLocation();
+    if (!selected) return { status: 'no-selection' };
+    await this.whenRendererReady();
+
+    const { fetchNearestWebcam, nearestWebcamFrom } = await import('@/services/webcams');
+    const cachedCameras = (this.cachedWebcams ?? []).filter(
+      (marker): marker is WebcamEntry => !('count' in marker),
+    );
+    const cachedNearest = nearestWebcamFrom(cachedCameras, selected, radiusKm);
+    const fetched = await fetchNearestWebcam(selected.lat, selected.lon, radiusKm);
+    const fetchedNearest = fetched.camera && fetched.distanceKm !== null
+      ? { camera: fetched.camera, distanceKm: fetched.distanceKm }
+      : null;
+    const nearest = !cachedNearest
+      ? fetchedNearest
+      : !fetchedNearest || cachedNearest.distanceKm <= fetchedNearest.distanceKm
+        ? cachedNearest
+        : fetchedNearest;
+
+    if (!nearest) {
+      showMapCctvUnavailable(this.container, selected, radiusKm);
+      return { status: 'no-camera', radiusKm };
+    }
+
+    const markers = fetched.markers.length > 0
+      ? fetched.markers
+      : (this.cachedWebcams ?? [nearest.camera]);
+    this.setWebcams(markers);
+    this.setCenter(nearest.camera.lat, nearest.camera.lng, Math.max(10, this.getState().zoom));
+    // Flying to the camera is presentation, not a new user selection. Keep the
+    // originating place so a second CCTV press can behave as the normal off toggle.
+    this.rememberSelectedLocation(selected.lat, selected.lon);
+    openMapWebcamViewer(this.container, nearest.camera);
+    return { status: 'opened', camera: nearest.camera, distanceKm: nearest.distanceKm };
   }
 
   public setTimeRange(range: TimeRange): void {
@@ -1017,6 +1084,7 @@ export class MapContainer {
       sanitized = sanitizeLockedLayers(sanitized, false);
     }
     this.initialState = { ...this.initialState, layers: sanitized };
+    if (!sanitized.webcams) clearMapCctvNotice(this.container);
     if (this.useGlobe) { this.globeMap?.setLayers(sanitized); return; }
     if (this.useDeckGL) { this.deckGLMap?.setLayers(sanitized); } else { this.svgMap?.setLayers(sanitized); }
   }
@@ -1404,8 +1472,12 @@ export class MapContainer {
 
   public onHotspotClicked(callback: (hotspot: Hotspot) => void): void {
     this.cachedOnHotspotClicked = callback;
-    if (this.useGlobe) { this.globeMap?.setOnHotspotClick(callback); return; }
-    if (this.useDeckGL) { this.deckGLMap?.setOnHotspotClick(callback); } else { this.svgMap?.onHotspotClicked(callback); }
+    const wrapped = (hotspot: Hotspot) => {
+      this.rememberSelectedLocation(hotspot.lat, hotspot.lon);
+      callback(hotspot);
+    };
+    if (this.useGlobe) { this.globeMap?.setOnHotspotClick(wrapped); return; }
+    if (this.useDeckGL) { this.deckGLMap?.setOnHotspotClick(wrapped); } else { this.svgMap?.onHotspotClicked(wrapped); }
   }
 
   public onTimeRangeChanged(callback: (range: TimeRange) => void): void {
@@ -1621,14 +1693,22 @@ export class MapContainer {
 
   public onCountryClicked(callback: (country: CountryClickPayload) => void): void {
     this.cachedOnCountryClicked = callback;
-    if (this.useGlobe) { this.globeMap?.setOnCountryClick(callback); return; }
-    if (this.useDeckGL) { this.deckGLMap?.setOnCountryClick(callback); } else { this.svgMap?.setOnCountryClick(callback); }
+    const wrapped = (country: CountryClickPayload) => {
+      this.rememberSelectedLocation(country.lat, country.lon);
+      callback(country);
+    };
+    if (this.useGlobe) { this.globeMap?.setOnCountryClick(wrapped); return; }
+    if (this.useDeckGL) { this.deckGLMap?.setOnCountryClick(wrapped); } else { this.svgMap?.setOnCountryClick(wrapped); }
   }
 
   public onMapContextMenu(callback: (payload: { lat: number; lon: number; screenX: number; screenY: number; countryCode?: string; countryName?: string }) => void): void {
     this.cachedOnMapContextMenu = callback;
-    if (this.useGlobe) { this.globeMap?.setOnMapContextMenu(callback); return; }
-    if (this.useDeckGL) { this.deckGLMap?.setOnMapContextMenu(callback); }
+    const wrapped = (payload: { lat: number; lon: number; screenX: number; screenY: number; countryCode?: string; countryName?: string }) => {
+      this.rememberSelectedLocation(payload.lat, payload.lon);
+      callback(payload);
+    };
+    if (this.useGlobe) { this.globeMap?.setOnMapContextMenu(wrapped); return; }
+    if (this.useDeckGL) { this.deckGLMap?.setOnMapContextMenu(wrapped); }
   }
 
   public fitCountry(code: string): void {

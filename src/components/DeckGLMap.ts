@@ -174,9 +174,8 @@ import {
 import { formatResilienceServerLevel } from './resilience-widget-utils';
 
 import { isAllowedPreviewUrl } from '@/utils/imagery-preview';
-import { pinWebcam, isPinned } from '@/services/webcams/pinned-store';
 import type { WebcamEntry, WebcamCluster } from '@/generated/client/worldmonitor/webcam/v1/service_client';
-import { fetchWebcamImage } from '@/services/webcams';
+import { closeMapWebcamViewer, openMapWebcamViewer } from './MapWebcamViewer';
 import { setTrustedHtml, trustedHtml } from '@/utils/dom-utils';
 import { summarizeRenderTiming, formatRenderTiming } from '@/components/map/render-timing';
 import { DeferredHeavyCommit } from '@/components/map/deferred-layer-commit';
@@ -363,6 +362,7 @@ const MARKER_ICONS = {
   star: 'data:image/svg+xml;base64,' + btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><polygon points="16,2 20,12 30,12 22,19 25,30 16,23 7,30 10,19 2,12 12,12" fill="white"/></svg>`),
   // Airplane silhouette - top-down with wings and tail (pointing north, rotated by trackDeg)
   plane: 'data:image/svg+xml;base64,' + btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M16 2 L17.5 10 L17 12 L27 17 L27 19 L17 16 L17 24 L20 26.5 L20 28 L16 27 L12 28 L12 26.5 L15 24 L15 16 L5 19 L5 17 L15 12 L14.5 10 Z" fill="white"/></svg>`),
+  camera: 'data:image/svg+xml;base64,' + btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M10 7h5l2-3h6l2 3h3a3 3 0 0 1 3 3v15a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V10a3 3 0 0 1 3-3h6Zm8 5a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm0 3a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" fill="white"/></svg>`),
 };
 
 const BASES_ICON_MAPPING = { triangleUp: { x: 0, y: 0, width: 32, height: 32, mask: true } };
@@ -709,6 +709,7 @@ export class DeckGLMap {
   private onTradeArcClick?: (segment: TradeRouteSegment, waypoints: string[], x: number, y: number) => void;
   private onTimeRangeChange?: (range: TimeRange) => void;
   private onCountryClick?: (country: CountryClickPayload) => void;
+  private onLocationSelect?: (lat: number, lon: number) => void;
   private onMapContextMenu?: (payload: { lat: number; lon: number; screenX: number; screenY: number; countryCode?: string; countryName?: string }) => void;
   private readonly countryClickGesture: CountryClickGestureTracker = createCountryClickGestureTracker();
   private readonly handleCountryClickPointerDown = (e: PointerEvent): void => {
@@ -2331,15 +2332,52 @@ export class DeckGLMap {
 
     // Webcam layer (server-side clustered markers)
     if (mapLayers.webcams && this.webcamData.length > 0) {
+      const webcamLeaves = this.webcamData.filter((marker): marker is WebcamLeafMarker => !('count' in marker));
       layers.push(new ScatterplotLayer<WebcamMarker>({
         id: 'webcam-layer',
         data: this.webcamData,
         getPosition: (d) => [d.lng, d.lat],
-        getRadius: (d) => ('count' in d ? Math.min(8 + d.count * 0.5, 24) : 6),
-        getFillColor: (d) => ('count' in d ? [0, 212, 255, 180] : [255, 215, 0, 200]) as [number, number, number, number],
+        getRadius: (d) => ('count' in d ? Math.min(9 + d.count * 0.5, 24) : 12),
+        getFillColor: (d) => ('count' in d ? [0, 212, 255, 205] : [5, 13, 17, 225]) as [number, number, number, number],
+        getLineColor: (d) => ('count' in d ? [0, 212, 255, 255] : [255, 215, 0, 255]) as [number, number, number, number],
+        getLineWidth: 2,
+        lineWidthUnits: 'pixels',
         radiusUnits: 'pixels',
+        stroked: true,
         pickable: true,
       }));
+      if (webcamLeaves.length > 0) {
+        layers.push(new IconLayer<WebcamLeafMarker>({
+          id: 'webcam-icon-layer',
+          data: webcamLeaves,
+          getPosition: (d) => [d.lng, d.lat],
+          iconAtlas: MARKER_ICONS.camera,
+          iconMapping: { camera: { x: 0, y: 0, width: 32, height: 32, mask: true } },
+          getIcon: () => 'camera',
+          getColor: [255, 215, 0, 255],
+          getSize: 15,
+          sizeUnits: 'pixels',
+          pickable: false,
+        }));
+        if (this.state.zoom >= 7 && webcamLeaves.length <= 80) {
+          layers.push(new TextLayer<WebcamLeafMarker>({
+            id: 'webcam-label-layer',
+            data: webcamLeaves,
+            getPosition: (d) => [d.lng, d.lat],
+            getText: (d) => d.title || 'CCTV camera',
+            getColor: [255, 224, 102, 255],
+            getSize: 10,
+            getPixelOffset: [0, 16],
+            getTextAnchor: 'middle',
+            getAlignmentBaseline: 'top',
+            fontFamily: 'monospace',
+            fontWeight: 700,
+            outlineColor: [0, 0, 0, 255],
+            outlineWidth: 3,
+            pickable: false,
+          }));
+        }
+      }
     }
 
     // News geo-locations (always shown if data exists)
@@ -5273,6 +5311,10 @@ export class DeckGLMap {
 
   private handleClick(info: PickingInfo): void {
     if (this.aoiDrawMode) return;
+    if (info.coordinate && this.onLocationSelect) {
+      const [lon, lat] = info.coordinate as [number, number];
+      if (Number.isFinite(lat) && Number.isFinite(lon)) this.onLocationSelect(lat, lon);
+    }
     const isChoropleth = info.layer?.id ? DeckGLMap.CHOROPLETH_LAYER_IDS.has(info.layer.id) : false;
     if (!info.object || isChoropleth) {
       if (info.coordinate && this.onCountryClick) {
@@ -5569,70 +5611,8 @@ export class DeckGLMap {
     }
   }
 
-  private async showWebcamClickPopup(webcam: WebcamEntry, x: number, y: number): Promise<void> {
-    // Remove any existing popup
-    this.container.querySelector('.deckgl-webcam-popup')?.remove();
-
-    const popup = document.createElement('div');
-    popup.className = 'deckgl-webcam-popup';
-    popup.style.position = 'absolute';
-    popup.style.left = x + 'px';
-    popup.style.top = y + 'px';
-    popup.style.zIndex = '1000';
-
-    const titleEl = document.createElement('div');
-    titleEl.className = 'deckgl-webcam-popup-title';
-    titleEl.textContent = webcam.title || webcam.webcamId || '';
-    popup.appendChild(titleEl);
-
-    const locationEl = document.createElement('div');
-    locationEl.className = 'deckgl-webcam-popup-location';
-    locationEl.textContent = webcam.country || '';
-    popup.appendChild(locationEl);
-
-    const id = webcam.webcamId;
-
-    // Fetch playerUrl for when user pins
-    const imageData = await fetchWebcamImage(id).catch(() => null);
-
-    const pinBtn = document.createElement('button');
-    pinBtn.className = 'webcam-pin-btn';
-    if (isPinned(id)) {
-      pinBtn.classList.add('webcam-pin-btn--pinned');
-      pinBtn.textContent = '\u{1F4CC} Pinned';
-      pinBtn.disabled = true;
-    } else {
-      pinBtn.textContent = '\u{1F4CC} Pin';
-      pinBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        pinWebcam({
-          webcamId: id,
-          title: webcam.title || imageData?.title || '',
-          lat: webcam.lat,
-          lng: webcam.lng,
-          category: webcam.category || 'other',
-          country: webcam.country || '',
-          playerUrl: imageData?.playerUrl || '',
-        });
-        pinBtn.classList.add('webcam-pin-btn--pinned');
-        pinBtn.textContent = '\u{1F4CC} Pinned';
-        pinBtn.disabled = true;
-      });
-    }
-    popup.appendChild(pinBtn);
-
-    const cleanup = () => {
-      popup.remove();
-      document.removeEventListener('click', closeHandler);
-      clearTimeout(autoDismiss);
-    };
-    const closeHandler = (e: MouseEvent) => {
-      if (!popup.contains(e.target as Node)) cleanup();
-    };
-    const autoDismiss = setTimeout(cleanup, 8000);
-    setTimeout(() => document.addEventListener('click', closeHandler), 0);
-
-    this.container.appendChild(popup);
+  private showWebcamClickPopup(webcam: WebcamEntry, _x: number, _y: number): void {
+    openMapWebcamViewer(this.container, webcam);
   }
 
   // Utility methods
@@ -7568,6 +7548,10 @@ export class DeckGLMap {
     this.onHotspotClick = callback;
   }
 
+  public setOnLocationSelect(callback: (lat: number, lon: number) => void): void {
+    this.onLocationSelect = callback;
+  }
+
   public setOnTradeArcClick(cb: (segment: TradeRouteSegment, waypoints: string[], x: number, y: number) => void): void {
     this.onTradeArcClick = cb;
   }
@@ -8288,6 +8272,7 @@ export class DeckGLMap {
 
   public destroy(): void {
     this.destroyed = true;
+    closeMapWebcamViewer(this.container);
     this.aoiInteractionHandlers?.onPointerMove(null);
     this.aoiInteractionHandlers = null;
     this.aoiDrawMode = null;

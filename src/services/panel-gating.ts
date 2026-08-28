@@ -35,6 +35,24 @@ export enum PanelGateReason {
 }
 
 /**
+ * Local self-host/demo builds intentionally expose the complete dashboard.
+ *
+ * Keep this tied to HTTP(S) loopback origins: the packaged Tauri app also uses
+ * a `localhost` hostname under a custom protocol, and must retain its normal
+ * subscription rules. Server-side endpoints remain responsible for their own
+ * authentication; this only removes client-side product/paywall gates.
+ */
+export function isLocalSelfHostedAccess(): boolean {
+  if (typeof location === 'undefined') return false;
+  if (location.protocol !== 'http:' && location.protocol !== 'https:') return false;
+  const hostname = location.hostname.toLowerCase();
+  return hostname === 'localhost'
+    || hostname === '127.0.0.1'
+    || hostname === '::1'
+    || hostname.endsWith('.localhost');
+}
+
+/**
  * Single source of truth for premium access.
  * Covers all access paths: desktop API key, tester keys (wm-pro-key / wm-widget-key),
  * Clerk Pro role, and Convex Dodo entitlement (the latter two via isProUser).
@@ -53,6 +71,7 @@ export enum PanelGateReason {
  * signals that aren't already covered by isProUser.
  */
 export function hasPremiumAccess(authState?: AuthSession): boolean {
+  if (isLocalSelfHostedAccess()) return true;
   if (getSecretState('WORLDMONITOR_API_KEY').present) return true;
   if (isProUser()) return true;
   if (authState?.user?.role === 'pro') return true;

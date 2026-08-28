@@ -5,6 +5,7 @@ import { deriveBillingUxState, getReactivationHref } from '@/services/billing-st
 import { getAuthState, subscribeAuthState } from '@/services/auth-state';
 import { getCurrentClerkUser, isClerkAuthEnabled } from '@/services/clerk';
 import { getSecretState } from '@/services/runtime-config';
+import { isLocalSelfHostedAccess } from '@/services/panel-gating';
 import { isProWidgetEnabled, isWidgetFeatureEnabled } from '@/services/widget-store';
 import {
   applyProBannerEntitlementHint,
@@ -127,6 +128,7 @@ function writePremiumHint(premium: boolean): void {
 
 function hasLocalUnlockPremium(): boolean {
   return (
+    isLocalSelfHostedAccess() ||
     getSecretState('WORLDMONITOR_API_KEY').present ||
     isProWidgetEnabled() ||
     isWidgetFeatureEnabled()

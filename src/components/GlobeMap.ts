@@ -71,6 +71,7 @@ import { isAllowedPreviewUrl } from '@/utils/imagery-preview';
 import { getCategoryStyle } from '@/services/webcams';
 import { pinWebcam, isPinned } from '@/services/webcams/pinned-store';
 import type { WebcamEntry, WebcamCluster } from '@/generated/client/worldmonitor/webcam/v1/service_client';
+import { closeMapWebcamViewer, openMapWebcamViewer } from './MapWebcamViewer';
 import type { TrafficAnomaly as ProtoTrafficAnomaly, DdosLocationHit } from '@/generated/client/worldmonitor/infrastructure/v1/service_client';
 import type { RadiationObservation } from '@/services/radiation';
 import type { ScenarioVisualState } from '@/config/scenario-templates';
@@ -607,6 +608,7 @@ export class GlobeMap {
 
   // Click callbacks
   private onHotspotClickCb: ((h: Hotspot) => void) | null = null;
+  private onLocationSelectCb: ((lat: number, lon: number) => void) | null = null;
 
   // Auto-rotate timer (like Sentinel: resume after 60 s idle)
   private autoRotateTimer: ReturnType<typeof setTimeout> | null = null;
@@ -827,6 +829,12 @@ export class GlobeMap {
       }, { passive: true });
       canvas.addEventListener('mouseup', scheduleResumeAutoRotate);
       canvas.addEventListener('touchend', scheduleResumeAutoRotate);
+      canvas.addEventListener('click', (event) => {
+        if (!this.globe || !this.onLocationSelectCb) return;
+        const rect = this.container.getBoundingClientRect();
+        const coords = this.globe.toGlobeCoords(event.clientX - rect.left, event.clientY - rect.top);
+        if (coords) this.onLocationSelectCb(coords.lat, coords.lng);
+      });
       canvas.addEventListener('webglcontextlost', (e) => {
         e.preventDefault();
         this.webglLost = true;
@@ -1349,6 +1357,20 @@ export class GlobeMap {
   }
 
   private handleMarkerClick(d: GlobeMarker, anchor: HTMLElement): void {
+    this.onLocationSelectCb?.(d._lat, d._lng);
+    if (d._kind === 'webcam') {
+      this.hideTooltip();
+      openMapWebcamViewer(this.container, {
+        webcamId: d.webcamId,
+        title: d.title,
+        lat: d._lat,
+        lng: d._lng,
+        category: d.category,
+        country: d.country,
+      });
+      return;
+    }
+
     if (d._kind === 'hotspot' && this.onHotspotClickCb) {
       this.onHotspotClickCb({
         id: d.id,
@@ -3136,6 +3158,10 @@ export class GlobeMap {
     this.onHotspotClickCb = cb;
   }
 
+  public setOnLocationSelect(cb: (lat: number, lon: number) => void): void {
+    this.onLocationSelectCb = cb;
+  }
+
   public setOnCountryClick(_cb: (c: CountryClickPayload) => void): void {
     // Globe country click not yet implemented — no-op
   }
@@ -4020,6 +4046,7 @@ export class GlobeMap {
   // ─── Destroy ──────────────────────────────────────────────────────────────
 
   public destroy(): void {
+    closeMapWebcamViewer(this.container);
     this.popup?.hide();
     this.popup = null;
     this.flightData.clear();

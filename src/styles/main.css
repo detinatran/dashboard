@@ -1432,6 +1432,8 @@ canvas,
 
 .map-section .panel-header {
   flex-shrink: 0;
+  position: relative;
+  z-index: 1100;
   gap: 6px;
   padding: 8px 12px;
   background: var(--surface);
@@ -1529,6 +1531,120 @@ canvas,
   font-size: calc(10px * var(--wm-panel-effective-scale, 1));
   font-weight: 700;
   letter-spacing: 0.08em;
+}
+
+.webcam-map-toggle {
+  min-width: 76px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: calc(10px * var(--wm-panel-effective-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.webcam-map-toggle-icon {
+  position: relative;
+  width: 14px;
+  height: 10px;
+  flex: 0 0 14px;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+}
+
+.webcam-map-toggle-icon::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 2px;
+  width: 5px;
+  height: 3px;
+  background: currentColor;
+  border-radius: 1px 1px 0 0;
+}
+
+.webcam-map-toggle-icon::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 3px;
+  height: 3px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+.webcam-map-toggle-state {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  background: var(--text-dim);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--text-dim) 16%, transparent);
+}
+
+.webcam-map-toggle.has-target:not(.active) {
+  color: var(--yellow);
+  border-color: color-mix(in srgb, var(--yellow) 55%, var(--border));
+}
+
+.webcam-map-toggle.has-target:not(.active) .webcam-map-toggle-state {
+  background: var(--yellow);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--yellow) 75%, transparent);
+}
+
+.map-pin-btn.webcam-map-toggle.active {
+  color: var(--yellow);
+  border-color: color-mix(in srgb, var(--yellow) 72%, var(--border));
+  background: color-mix(in srgb, var(--yellow) 12%, var(--surface));
+}
+
+.map-pin-btn.webcam-map-toggle.active .webcam-map-toggle-state {
+  background: var(--status-live);
+  box-shadow: 0 0 9px color-mix(in srgb, var(--status-live) 80%, transparent);
+}
+
+.webcam-map-toggle[data-state='searching'] .webcam-map-toggle-state,
+.cctv-target-context.searching .cctv-target-icon {
+  animation: cctv-search-pulse 0.9s ease-in-out infinite alternate;
+}
+
+.cctv-target-context {
+  max-width: 165px;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  overflow: hidden;
+  color: var(--text-dim);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: calc(9px * var(--wm-panel-effective-scale, 1));
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.cctv-target-context[hidden] {
+  display: none;
+}
+
+.cctv-target-icon {
+  color: var(--yellow);
+  font-size: calc(13px * var(--wm-panel-effective-scale, 1));
+}
+
+.cctv-target-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@keyframes cctv-search-pulse {
+  from { opacity: 0.35; transform: scale(0.86); }
+  to { opacity: 1; transform: scale(1.08); }
 }
 
 .map-pin-btn.active,
@@ -4432,6 +4548,55 @@ body.live-news-fullscreen-active .panels-grid > *:not(.live-news-fullscreen) {
 }
 
 /* Pin button in map tooltips */
+.webcam-dot {
+  z-index: 80;
+  min-width: 12px;
+  min-height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%) scale(var(--marker-scale, 1));
+  transform-origin: center;
+  border: 1px solid rgb(255 255 255 / 75%);
+  box-shadow: 0 0 9px color-mix(in srgb, var(--accent) 75%, transparent);
+  overflow: visible;
+  font-family: var(--font-mono);
+  font-size: calc(9px * var(--wm-panel-effective-scale, 1));
+  font-weight: 800;
+}
+
+.webcam-dot-camera {
+  border-width: 2px;
+}
+
+.webcam-marker-icon {
+  display: block;
+  font-size: calc(13px * var(--wm-panel-effective-scale, 1));
+  line-height: 1;
+  filter: grayscale(1) brightness(1.7) sepia(1) saturate(4);
+}
+
+.webcam-marker-label {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  max-width: 180px;
+  padding: 2px 5px;
+  transform: translateX(-50%) scale(calc(var(--label-scale, 1) / var(--marker-scale, 1)));
+  transform-origin: top center;
+  overflow: hidden;
+  color: #ffe066;
+  background: rgb(2 7 9 / 88%);
+  border: 1px solid rgb(255 215 0 / 42%);
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 70%);
+  font-size: calc(8px * var(--wm-panel-effective-scale, 1));
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .webcam-pin-btn {
   background: none;
   border: 1px solid var(--border-color, #444);
@@ -4500,6 +4665,432 @@ body.live-news-fullscreen-active .panels-grid > *:not(.live-news-fullscreen) {
   font-size: calc(0.7rem * var(--wm-panel-effective-scale, 1));
   color: var(--text-muted, #888);
   margin-bottom: 6px;
+}
+
+/* OSIRIS-style camera viewer shared by SVG, DeckGL, and globe renderers. */
+.map-cctv-notice {
+  --cctv-accent: var(--yellow);
+  position: absolute;
+  z-index: 980;
+  top: 16px;
+  left: 50%;
+  width: min(440px, calc(100% - 32px));
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  transform: translateX(-50%);
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  border: 1px solid color-mix(in srgb, var(--yellow) 68%, var(--border));
+  border-left: 4px solid var(--yellow);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 42%);
+  font-family: var(--font-mono);
+}
+
+.map-cctv-notice strong,
+.map-cctv-notice span {
+  display: block;
+}
+
+.map-cctv-notice .map-cctv-notice-hint {
+  margin-top: 5px;
+  color: var(--text-secondary);
+}
+
+.map-cctv-notice strong {
+  margin-bottom: 4px;
+  color: var(--yellow);
+  font-size: calc(12px * var(--wm-panel-effective-scale, 1));
+  letter-spacing: 0.08em;
+}
+
+.map-cctv-notice span {
+  color: var(--text-dim);
+  font-size: calc(10px * var(--wm-panel-effective-scale, 1));
+  line-height: 1.45;
+}
+
+.map-cctv-notice-close {
+  flex: 0 0 auto;
+  min-width: 32px;
+  min-height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: calc(18px * var(--wm-panel-effective-scale, 1));
+  cursor: pointer;
+}
+
+.map-cctv-notice-close:hover {
+  color: var(--text);
+  background: var(--overlay-light);
+  border-color: var(--border);
+}
+
+.map-webcam-viewer {
+  --cctv-accent: var(--yellow);
+  position: absolute;
+  /* Above map controls (500) so expanded viewer buttons remain reachable. */
+  z-index: 990;
+  right: 14px;
+  bottom: 14px;
+  width: min(640px, calc(100% - 28px));
+  max-height: calc(100% - 28px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--text);
+  background: color-mix(in srgb, var(--bg) 96%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cctv-accent) 52%, var(--border));
+  border-radius: 10px;
+  box-shadow:
+    0 22px 70px rgb(0 0 0 / 78%),
+    0 0 0 1px rgb(255 255 255 / 3%),
+    0 0 28px color-mix(in srgb, var(--cctv-accent) 8%, transparent);
+  font-family: var(--font-mono);
+  backdrop-filter: blur(14px);
+  transition: width 0.2s ease, max-height 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.map-webcam-viewer.expanded {
+  inset: 8px;
+  width: auto;
+  max-height: none;
+  border-color: color-mix(in srgb, var(--cctv-accent) 76%, var(--border));
+}
+
+.map-webcam-viewer.minimized {
+  width: min(470px, calc(100% - 28px));
+  max-height: 66px;
+}
+
+.map-webcam-viewer.minimized .map-webcam-viewer-telemetry,
+.map-webcam-viewer.minimized .map-webcam-viewer-media,
+.map-webcam-viewer.minimized .map-webcam-viewer-footer {
+  display: none;
+}
+
+.map-webcam-viewer-header {
+  flex: 0 0 auto;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--cctv-accent) 8%, transparent), transparent 48%),
+    color-mix(in srgb, var(--surface) 90%, black);
+  border-bottom: 1px solid color-mix(in srgb, var(--cctv-accent) 25%, var(--border-strong));
+}
+
+.map-webcam-viewer-telemetry {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 12px;
+  color: var(--text-dim);
+  background: color-mix(in srgb, var(--cctv-accent) 5%, black);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  font-size: calc(9px * var(--wm-panel-effective-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+
+.map-webcam-viewer-telemetry > span:first-child {
+  color: var(--cctv-accent);
+}
+
+.map-webcam-viewer-telemetry > span:last-child {
+  color: var(--status-live);
+}
+
+.map-webcam-viewer-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 60px;
+  padding: 9px 12px;
+}
+
+.map-webcam-viewer-glyph {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  color: var(--cctv-accent);
+  background: color-mix(in srgb, var(--cctv-accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cctv-accent) 65%, var(--border));
+  border-radius: 7px;
+  box-shadow: inset 0 0 12px color-mix(in srgb, var(--cctv-accent) 8%, transparent);
+}
+
+.map-webcam-viewer-glyph::before {
+  content: '';
+  width: 20px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+
+.map-webcam-viewer-glyph::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  box-shadow: -6px -9px 0 -3px currentColor;
+}
+
+.map-webcam-viewer-heading-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.map-webcam-viewer-heading-copy h3 {
+  margin: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: calc(15px * var(--wm-panel-effective-scale, 1));
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.map-webcam-viewer-heading-copy p {
+  margin: 3px 0 0;
+  overflow: hidden;
+  color: var(--cctv-accent);
+  font-size: calc(9.5px * var(--wm-panel-effective-scale, 1));
+  letter-spacing: 0.06em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.map-webcam-viewer-controls,
+.map-webcam-viewer-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.map-webcam-viewer-icon-btn,
+.map-webcam-viewer-action,
+.map-webcam-viewer-play {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: calc(10px * var(--wm-panel-effective-scale, 1));
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.map-webcam-viewer-icon-btn {
+  width: 36px;
+  padding: 0;
+  font-size: calc(16px * var(--wm-panel-effective-scale, 1));
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.map-webcam-viewer-icon-btn:hover,
+.map-webcam-viewer-icon-btn.active,
+.map-webcam-viewer-action:hover,
+.map-webcam-viewer-action.active {
+  color: var(--cctv-accent);
+  background: color-mix(in srgb, var(--cctv-accent) 8%, var(--surface));
+  border-color: var(--cctv-accent);
+}
+
+.map-webcam-viewer-icon-btn:hover {
+  transform: translateY(-1px);
+}
+
+.map-webcam-viewer-icon-btn.danger {
+  color: var(--semantic-critical);
+  border-color: color-mix(in srgb, var(--semantic-critical) 45%, var(--border));
+}
+
+.map-webcam-viewer-media {
+  position: relative;
+  min-height: 260px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(rgb(255 255 255 / 2%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 2%) 1px, transparent 1px),
+    #010504;
+  background-size: 22px 22px;
+}
+
+.map-webcam-viewer.expanded .map-webcam-viewer-media {
+  min-height: 0;
+  flex: 1;
+  aspect-ratio: auto;
+}
+
+.map-webcam-viewer-image,
+.map-webcam-viewer-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+}
+
+.map-webcam-viewer-media::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgb(255 255 255 / 1.5%) 4px);
+  box-shadow: inset 0 0 65px rgb(0 0 0 / 58%);
+}
+
+.map-webcam-viewer-media-status {
+  z-index: 3;
+  padding: 10px 14px;
+  color: var(--text-dim);
+  background: rgb(0 0 0 / 68%);
+  border: 1px solid color-mix(in srgb, var(--cctv-accent) 32%, var(--border));
+  border-radius: 6px;
+  font-size: calc(10px * var(--wm-panel-effective-scale, 1));
+  letter-spacing: 0.12em;
+}
+
+.map-webcam-viewer.loading .map-webcam-viewer-media-status::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  margin-right: 8px;
+  border: 2px solid color-mix(in srgb, var(--cctv-accent) 25%, transparent);
+  border-top-color: var(--cctv-accent);
+  border-radius: 50%;
+  vertical-align: -2px;
+  animation: cctv-loader-spin 0.8s linear infinite;
+}
+
+@keyframes cctv-loader-spin {
+  to { transform: rotate(360deg); }
+}
+
+.map-webcam-viewer-live-badge {
+  position: absolute;
+  z-index: 4;
+  top: 10px;
+  left: 10px;
+  padding: 5px 9px;
+  color: var(--text);
+  background: rgb(0 0 0 / 75%);
+  border: 1px solid color-mix(in srgb, var(--semantic-critical) 65%, var(--border));
+  border-radius: 999px;
+  font-size: calc(9px * var(--wm-panel-effective-scale, 1));
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.map-webcam-viewer-live-badge::first-letter {
+  color: var(--semantic-critical);
+}
+
+.map-webcam-viewer-play {
+  position: absolute;
+  z-index: 5;
+  min-height: 44px;
+  padding: 10px 18px;
+  color: #090700;
+  background: color-mix(in srgb, var(--cctv-accent) 90%, white);
+  border-color: color-mix(in srgb, var(--cctv-accent) 90%, white);
+  border-radius: 999px;
+  box-shadow: 0 8px 28px rgb(0 0 0 / 65%), 0 0 18px color-mix(in srgb, var(--cctv-accent) 24%, transparent);
+  font-size: calc(11px * var(--wm-panel-effective-scale, 1));
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.map-webcam-viewer-play.centered {
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+}
+
+.map-webcam-viewer-play:hover {
+  transform: translate(-50%, -50%) scale(1.04);
+  box-shadow: 0 10px 34px rgb(0 0 0 / 72%), 0 0 24px color-mix(in srgb, var(--cctv-accent) 32%, transparent);
+}
+
+.map-webcam-viewer-footer {
+  min-height: 58px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  background: color-mix(in srgb, var(--surface) 90%, black);
+  border-top: 1px solid var(--border-strong);
+}
+
+.map-webcam-viewer-feed-meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--text-dim);
+  font-size: calc(9px * var(--wm-panel-effective-scale, 1));
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.map-webcam-viewer-feed-state {
+  color: var(--status-live);
+}
+
+.map-webcam-viewer.feed-error .map-webcam-viewer-feed-state {
+  color: var(--status-unavailable);
+}
+
+.map-webcam-viewer-action {
+  min-height: 36px;
+  padding: 6px 11px;
+  white-space: nowrap;
+}
+
+.map-webcam-viewer-action.accent {
+  color: var(--cctv-accent);
+  border-color: color-mix(in srgb, var(--cctv-accent) 50%, var(--border));
+}
+
+.map-webcam-viewer-action:disabled {
+  opacity: 0.62;
+  cursor: default;
+}
+
+.map-webcam-viewer :is(button, a):focus-visible,
+.map-cctv-notice button:focus-visible {
+  outline: 2px solid var(--cctv-accent, var(--yellow));
+  outline-offset: 2px;
 }
 
 /* News Items */
@@ -15184,8 +15775,107 @@ a.prediction-link:hover {
     display: none !important;
   }
 
-  .aoi-workspace-toggle {
+  .aoi-workspace-toggle,
+  .webcam-map-toggle {
     display: flex !important;
+  }
+
+  .webcam-map-toggle {
+    min-width: 68px;
+    gap: 5px;
+  }
+
+  .cctv-target-context {
+    display: none;
+  }
+
+  .map-webcam-viewer {
+    position: fixed;
+    z-index: 1300;
+    right: 4px;
+    bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+    left: 4px;
+    width: auto;
+    max-height: calc(100dvh - 72px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    border-radius: 14px;
+    box-shadow: 0 -18px 48px rgb(0 0 0 / 72%);
+  }
+
+  .map-webcam-viewer.expanded {
+    top: max(6px, env(safe-area-inset-top, 0px));
+    right: 4px;
+    bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+    left: 4px;
+  }
+
+  .map-webcam-viewer.minimized {
+    right: 6px;
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    left: 6px;
+    width: auto;
+    max-height: 62px;
+    border: 1px solid color-mix(in srgb, var(--cctv-accent) 52%, var(--border));
+    border-radius: 10px;
+  }
+
+  .map-webcam-viewer-telemetry {
+    overflow: hidden;
+    font-size: calc(8px * var(--wm-panel-effective-scale, 1));
+  }
+
+  .map-webcam-viewer-telemetry > span:last-child {
+    display: none;
+  }
+
+  .map-webcam-viewer-heading {
+    min-height: 56px;
+    padding: 7px 8px;
+  }
+
+  .map-webcam-viewer-glyph {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+
+  .map-webcam-viewer-heading-copy h3 {
+    font-size: calc(12px * var(--wm-panel-effective-scale, 1));
+  }
+
+  .map-webcam-viewer-controls {
+    gap: 3px;
+  }
+
+  .map-webcam-viewer-icon-btn {
+    width: 34px;
+    min-height: 34px;
+  }
+
+  .map-webcam-viewer-media {
+    min-height: clamp(190px, 36vh, 330px);
+  }
+
+  .map-webcam-viewer-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .map-webcam-viewer-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .map-webcam-viewer-action {
+    min-width: 0;
+    overflow: hidden;
+    padding-inline: 6px;
+    font-size: calc(9px * var(--wm-panel-effective-scale, 1));
+    text-overflow: ellipsis;
+  }
+
+  .map-cctv-notice {
+    top: 10px;
+    width: calc(100% - 20px);
   }
 
   .aoi-workspace {
@@ -28309,4 +28999,342 @@ body.map-width-resizing {
 .ed-row:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: -2px;
+}
+
+/* ── Dashboard shell refresh ────────────────────────────────────────────────
+ * Give the dense intelligence workspace a clearer visual hierarchy without
+ * changing panel sizing contracts or interaction selectors. */
+:root {
+  --dashboard-shell-gap: 10px;
+  --dashboard-shell-radius: 12px;
+  --dashboard-shell-shadow: 0 16px 42px rgb(0 0 0 / 22%);
+}
+
+.header {
+  height: 52px;
+  margin: 8px 10px 6px;
+  padding: 7px 12px;
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--accent) 5%, transparent), transparent 34%),
+    color-mix(in srgb, var(--surface) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 82%, var(--text-dim));
+  border-radius: var(--dashboard-shell-radius);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 18%);
+  backdrop-filter: blur(18px);
+}
+
+.header :is(button, a, select) {
+  border-radius: 7px;
+}
+
+.variant-switcher,
+.region-select,
+.focus-select,
+.search-btn,
+.fullscreen-btn {
+  min-height: 32px;
+}
+
+.dashboard-tabs-mount {
+  min-height: 42px;
+  padding: 0 10px;
+}
+
+.dashboard-tabs-bar {
+  min-height: 42px;
+  align-items: center;
+  padding: 4px 0 6px;
+  background: transparent;
+  border-bottom: 0;
+}
+
+.dashboard-tablist {
+  align-items: center;
+}
+
+.dashboard-tab {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+
+.dashboard-tab.active {
+  background: color-mix(in srgb, var(--green) 9%, var(--surface));
+  border-color: color-mix(in srgb, var(--green) 62%, var(--border));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--green) 10%, transparent);
+}
+
+.dashboard-tab-label {
+  padding: 7px 12px;
+}
+
+.main-content {
+  gap: var(--dashboard-shell-gap);
+  padding: 0 10px 10px;
+  background:
+    radial-gradient(circle at 18% 0%, color-mix(in srgb, var(--accent) 4%, transparent), transparent 28%),
+    var(--bg);
+}
+
+.map-section {
+  isolation: isolate;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--border) 80%, var(--text-dim));
+  border-radius: 14px;
+  box-shadow: var(--dashboard-shell-shadow);
+}
+
+.map-section .panel-header {
+  min-height: 56px;
+  padding: 7px 10px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 42%),
+    color-mix(in srgb, var(--surface) 96%, black);
+  border-bottom-color: color-mix(in srgb, var(--border) 78%, var(--text-dim));
+}
+
+.map-section .panel-header-left {
+  gap: 9px;
+}
+
+.map-status-orb {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 9px;
+  background: var(--status-live);
+  border: 2px solid color-mix(in srgb, var(--status-live) 32%, var(--surface));
+  border-radius: 50%;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--status-live) 72%, transparent);
+}
+
+.map-title-stack {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.map-kicker {
+  color: var(--text-dim);
+  font-size: calc(8px * var(--wm-panel-effective-scale, 1));
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.map-section .panel-title {
+  font-size: calc(12px * var(--wm-panel-effective-scale, 1));
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.map-header-actions {
+  gap: 8px;
+}
+
+.map-action-group {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  background: color-mix(in srgb, var(--bg) 74%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 86%, transparent);
+  border-radius: 9px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 3%);
+}
+
+.map-action-group-intel {
+  border-color: color-mix(in srgb, var(--yellow) 18%, var(--border));
+}
+
+.map-action-group .map-pin-btn,
+.map-action-group .map-dimension-toggle {
+  min-height: 28px;
+  margin: 0;
+  border-radius: 6px;
+}
+
+.map-action-group .map-dimension-toggle {
+  border: 0;
+}
+
+.map-action-group .map-dim-btn {
+  min-width: 34px;
+  padding: 5px 9px;
+  border-radius: 5px;
+}
+
+.map-action-group .map-dim-btn.active {
+  box-shadow: 0 0 14px color-mix(in srgb, var(--green) 18%, transparent);
+}
+
+.header-clock {
+  padding: 5px 9px;
+  background: color-mix(in srgb, var(--bg) 66%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
+  border-radius: 999px;
+  font-size: calc(9px * var(--wm-panel-effective-scale, 1));
+  letter-spacing: 0.08em;
+}
+
+.panels-grid {
+  gap: var(--dashboard-shell-gap);
+  padding: 0 4px 0 0;
+}
+
+.panel {
+  border-color: color-mix(in srgb, var(--border) 84%, var(--text-dim));
+  border-radius: var(--dashboard-shell-radius);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 16%);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.panel:hover {
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--border));
+  box-shadow: 0 14px 38px rgb(0 0 0 / 22%);
+}
+
+.panel > .panel-header {
+  min-height: 42px;
+  padding: 7px 10px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 4%, transparent), transparent 34%),
+    color-mix(in srgb, var(--surface) 94%, var(--bg));
+}
+
+.panel > .panel-header .panel-title {
+  font-size: calc(11.5px * var(--wm-panel-effective-scale, 1));
+  font-weight: 750;
+  letter-spacing: 0.08em;
+}
+
+.panel > .panel-header :is(button, .icon-btn) {
+  border-radius: 7px;
+}
+
+.site-footer {
+  margin: 0 10px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--dashboard-shell-radius);
+}
+
+@media (min-width: 900px) {
+  .main-content {
+    grid-template-columns: min(max(var(--map-col-width, 60%), 220px), calc(100% - 310px)) 10px 1fr;
+    gap: 0;
+  }
+
+  .main-content.map-right:not(.map-hidden) {
+    grid-template-columns: 1fr 10px min(max(var(--map-col-width, 60%), 220px), calc(100% - 310px));
+  }
+
+  .map-width-resize-handle {
+    width: 10px;
+  }
+
+  .map-resize-handle {
+    height: 10px;
+    background: color-mix(in srgb, var(--surface) 92%, var(--bg));
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: 48px;
+    margin: 0;
+    padding: 6px 10px;
+    border-width: 0 0 1px;
+    border-radius: 0;
+  }
+
+  .dashboard-tabs-mount {
+    padding: 0 8px;
+  }
+
+  .main-content {
+    gap: 8px;
+    padding: 0 8px calc(76px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .map-section {
+    border-radius: 13px;
+  }
+
+  .map-section .panel-header {
+    min-height: 58px;
+    padding: 7px 8px;
+  }
+
+  .map-status-orb,
+  .map-kicker {
+    display: none;
+  }
+
+  .map-header-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 5px;
+  }
+
+  .map-action-group {
+    min-height: 42px;
+    gap: 3px;
+  }
+
+  .map-action-group-intel {
+    flex: 1;
+  }
+
+  .map-action-group-view {
+    flex: 0 0 auto;
+  }
+
+  .panels-grid {
+    gap: 10px !important;
+    padding: 0 0 calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .panel {
+    border-radius: 14px;
+  }
+
+  .mobile-panel-nav {
+    margin-inline: -8px;
+    padding-inline: 10px;
+  }
+
+  .mobile-tab-bar {
+    right: 8px;
+    bottom: 0;
+    left: 8px;
+    min-height: 60px;
+    padding: 5px 5px calc(5px + env(safe-area-inset-bottom, 0px));
+    border: 1px solid color-mix(in srgb, var(--border) 78%, var(--text-dim));
+    border-radius: 18px;
+    box-shadow: 0 14px 44px rgb(0 0 0 / 46%);
+  }
+
+  .mobile-tab {
+    border-radius: 12px;
+  }
+
+  .mobile-tab.active {
+    background: color-mix(in srgb, var(--accent) 13%, var(--surface));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+
+  .map-section.live-news-fullscreen {
+    bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .map-webcam-viewer,
+  .map-webcam-viewer.expanded {
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .map-webcam-viewer.minimized {
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  }
 }
