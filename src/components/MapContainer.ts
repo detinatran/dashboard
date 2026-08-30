@@ -1126,6 +1126,24 @@ export class MapContainer {
     else { this.svgMap?.setWebcams(markers); }
   }
 
+  /**
+   * Live-layer reads for the AOI sweep (selectAoiEntities). These layers are
+   * pushed into the map rather than held in ctx.intelligenceCache, so the AOI
+   * report can only see them through the map's own caches. Each returns the
+   * cache as-is — callers must not mutate the arrays.
+   */
+  public getCachedWebcams(): Array<WebcamEntry | WebcamCluster> {
+    return this.cachedWebcams ?? [];
+  }
+
+  public getCachedWeatherAlerts(): WeatherAlert[] {
+    return this.cachedWeatherAlerts ?? [];
+  }
+
+  public getCachedSatellites(): SatellitePosition[] {
+    return this.cachedSatellites ?? [];
+  }
+
   public setWeatherAlerts(alerts: WeatherAlert[]): void {
     this.cachedWeatherAlerts = alerts;
     if (this.useGlobe) { this.globeMap?.setWeatherAlerts(alerts); return; }

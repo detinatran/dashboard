@@ -1,5 +1,5 @@
 import type { WebcamEntry } from '@/generated/client/worldmonitor/webcam/v1/service_client';
-import { fetchWebcamImage, getOsirisCctvCamera } from '@/services/webcams';
+import { fetchWebcamImage, getBundledCctvCamera } from '@/services/webcams';
 import { isPinned, pinWebcam } from '@/services/webcams/pinned-store';
 
 interface ActiveViewer {
@@ -83,7 +83,7 @@ export function openMapWebcamViewer(container: HTMLElement, camera: WebcamEntry)
   closeMapWebcamViewer(container);
   clearMapCctvNotice(container);
 
-  const osirisCamera = getOsirisCctvCamera(camera.webcamId);
+  const osirisCamera = getBundledCctvCamera(camera.webcamId);
   const root = document.createElement('section');
   root.className = 'map-webcam-viewer';
   root.setAttribute('role', 'dialog');

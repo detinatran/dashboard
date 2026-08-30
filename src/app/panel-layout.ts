@@ -97,6 +97,8 @@ import {
 import { movePanelToKeyboardZone } from '@/app/panel-keyboard-reorder';
 import type { AoiWorkspace } from '@/components/AoiWorkspace';
 import type { AoiEntityGroup } from '@/services/aoi-tools';
+import { NUCLEAR_FACILITIES } from '@/config/geo-map';
+import type { WebcamEntry } from '@/services/webcams';
 
 function readSessionStorageValue(key: string): string | null {
   try {
@@ -2166,6 +2168,77 @@ export class PanelLayoutManager implements AppModule {
         lng: outage.lon,
         detail: [outage.country, outage.severity].filter(Boolean).join(' · '),
       })),
+    });
+
+    // Layers below are not in intelligenceCache — they are pushed straight into
+    // the map, so they are read back from its caches. Without these the AOI
+    // report silently omits entities the user can see inside their own polygon.
+    // getAoiEntityGroups is called per sweep, and a sweep can be requested
+    // before the map module finishes loading. A missing map means these layers
+    // are simply absent from the report, not empty — matching OSIRIS, which
+    // skips a layer whose store key has not loaded rather than reporting zero.
+    const map = this.ctx.map;
+    add({
+      key: 'nuclear',
+      label: 'Nuclear facilities',
+      color: '#ffee58',
+      // Static dataset, not a live feed. Decommissioned sites are excluded to
+      // match what the map's nuclear layer renders (DeckGLMap.createNuclearLayer).
+      entities: NUCLEAR_FACILITIES
+        .filter((facility) => facility.status !== 'decommissioned')
+        .map((facility) => ({
+          id: facility.id,
+          label: facility.name,
+          lat: facility.lat,
+          lng: facility.lon,
+          detail: [facility.type, facility.status].filter(Boolean).join(' · '),
+        })),
+    });
+    add({
+      key: 'cameras',
+      label: 'CCTV cameras',
+      color: '#00e676',
+      // Clusters carry a `count` instead of a single position, so they are not
+      // AOI entities — the same discrimination MapContainer uses.
+      entities: (map?.getCachedWebcams() ?? [])
+        .filter((marker): marker is WebcamEntry => !('count' in marker))
+        .map((camera) => ({
+          id: camera.webcamId,
+          label: camera.title || camera.webcamId,
+          lat: camera.lat,
+          lng: camera.lng,
+          detail: [camera.country, camera.category].filter(Boolean).join(' · '),
+        })),
+    });
+    add({
+      key: 'satellites',
+      label: 'Satellites',
+      color: '#e040fb',
+      entities: (map?.getCachedSatellites() ?? []).map((satellite) => ({
+        id: satellite.noradId,
+        label: satellite.name,
+        lat: satellite.lat,
+        lng: satellite.lng,
+        detail: [satellite.type, `${Math.round(satellite.alt)} km`].filter(Boolean).join(' · '),
+      })),
+    });
+    add({
+      key: 'weather',
+      label: 'Severe weather',
+      color: '#7e57c2',
+      // A weather alert is an area, not a point. Only alerts with a resolved
+      // centroid can take part in a point-in-polygon sweep; country-precision
+      // ones would place a nationwide alert at an arbitrary spot, so they are
+      // dropped rather than reported at a misleading position.
+      entities: (map?.getCachedWeatherAlerts() ?? [])
+        .filter((alert) => alert.centroid && alert.geometryPrecision !== 'country')
+        .map((alert) => ({
+          id: alert.id,
+          label: alert.headline || alert.event,
+          lat: alert.centroid![1],
+          lng: alert.centroid![0],
+          detail: [alert.event, alert.severity].filter(Boolean).join(' · '),
+        })),
     });
     return groups;
   }
