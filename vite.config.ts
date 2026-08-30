@@ -382,6 +382,77 @@ function deferDashboardStylesheetLinks(html: string, bundle: OutputBundle): stri
   });
 }
 
+/**
+ * Serves the ported OSIRIS handlers (`api/cctv*`, `api/osint/*`) in `vite dev`.
+ *
+ * Vercel gives `api/` file-based routing in production; vite dev has none, so
+ * without this the dev server hands back the handler's SOURCE TEXT instead of
+ * running it. Each module is imported through vite's SSR pipeline so TypeScript
+ * and edits are picked up without a restart.
+ */
+function osirisApiDevPlugin(): Plugin {
+  // path prefix -> module file, longest prefix first so /api/cctv/proxy is not
+  // swallowed by /api/cctv.
+  const ROUTES: Array<[string, string]> = [
+    ['/api/cctv/proxy', './api/cctv/proxy.ts'],
+    ['/api/cctv', './api/cctv/index.ts'],
+    ['/api/osint/', './api/osint/'],
+  ];
+
+  return {
+    name: 'osiris-api-dev',
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        const rawUrl = req.url;
+        if (!rawUrl?.startsWith('/api/cctv') && !rawUrl?.startsWith('/api/osint/')) return next();
+
+        const url = new URL(rawUrl, 'http://localhost');
+        let modulePath: string | null = null;
+        for (const [prefix, target] of ROUTES) {
+          if (!url.pathname.startsWith(prefix)) continue;
+          if (target.endsWith('/')) {
+            // /api/osint/<name> -> api/osint/<name>.ts, name segment only.
+            const name = url.pathname.slice(prefix.length).split('/')[0] ?? '';
+            if (!/^[a-z0-9-]+$/.test(name)) return next();
+            modulePath = `${target}${name}.ts`;
+          } else {
+            modulePath = target;
+          }
+          break;
+        }
+        if (!modulePath) return next();
+
+        try {
+          const mod = await server.ssrLoadModule(modulePath);
+          const handler = mod.default;
+          if (typeof handler !== 'function') return next();
+
+          const headers = new Headers();
+          for (const [key, value] of Object.entries(req.headers)) {
+            if (typeof value === 'string') headers.set(key, value);
+            else if (Array.isArray(value)) headers.set(key, value.join(', '));
+          }
+          const response: Response = await handler(
+            new Request(`http://localhost${rawUrl}`, { method: req.method ?? 'GET', headers }),
+          );
+
+          res.statusCode = response.status;
+          response.headers.forEach((value, key) => res.setHeader(key, value));
+          const buffer = Buffer.from(await response.arrayBuffer());
+          res.end(buffer);
+        } catch (error) {
+          // A dev-only shim: report the failure rather than leaving the request
+          // hanging, and keep the stack in the terminal.
+          console.error(`[osiris-api-dev] ${url.pathname} failed:`, error);
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ error: 'Dev handler failed' }));
+        }
+      });
+    },
+  };
+}
+
 function polymarketPlugin(): Plugin {
   const GAMMA_BASE = 'https://gamma-api.polymarket.com';
   const ALLOWED_ORDER = ['volume', 'liquidity', 'startDate', 'endDate', 'spread'];
@@ -932,6 +1003,7 @@ export default defineConfig(({ mode }) => {
       // which is always the 'full' build (variant selection is runtime by
       // hostname). Desktop and dedicated VITE_VARIANT builds skip it.
       !isDesktopBuild && activeVariant === 'full' && variantDashboardHtmlPlugin(),
+      osirisApiDevPlugin(),
       webMcpDevSecurityHeadersPlugin(),
       polymarketPlugin(),
       rssProxyPlugin(),

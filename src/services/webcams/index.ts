@@ -1,7 +1,8 @@
 import { getRpcBaseUrl } from '@/services/rpc-client';
 import type { WebcamEntry, WebcamCluster, ListWebcamsResponse, GetWebcamImageResponse } from '@/generated/client/worldmonitor/webcam/v1/service_client';
 import { WebcamServiceClient } from '@/services/generated-rpc-clients';
-import { getOsirisCctvCamera, listOsirisCctvCameras } from './osiris-cctv';
+import { getOsirisCctvCamera, listOsirisCctvCameras, type OsirisCctvCamera } from './osiris-cctv';
+import { fetchLiveCctvCameras, getLiveCctvCamera, listLiveCctvCameras } from './live-cctv';
 
 const client = new WebcamServiceClient(getRpcBaseUrl(), {
   fetch: (...args) => globalThis.fetch(...args),
@@ -58,7 +59,8 @@ function withOsirisFallback(
   response: ListWebcamsResponse,
   bounds: { w: number; s: number; e: number; n: number },
 ): ListWebcamsResponse {
-  const fallback = listOsirisCctvCameras(bounds);
+  // Static bundled catalogue plus whatever the live /api/cctv sweep has cached.
+  const fallback = [...listOsirisCctvCameras(bounds), ...listLiveCctvCameras(bounds)];
   if (fallback.length === 0) return response;
   const existingIds = new Set(response.webcams.map((camera) => camera.webcamId));
   const additions = fallback.filter((camera) => !existingIds.has(camera.webcamId));
@@ -86,6 +88,11 @@ export async function fetchWebcams(
   } catch (err) {
     console.warn('[webcams] fetch failed:', err);
     return withOsirisFallback(emptyResponse, bounds);
+  } finally {
+    // Warm the live catalogue for the NEXT call rather than awaiting it here:
+    // a global sweep hits ~37 upstreams and must never delay the first paint.
+    // Its own cache makes repeat calls free.
+    void fetchLiveCctvCameras();
   }
 }
 
@@ -119,8 +126,17 @@ export async function fetchNearestWebcam(
   };
 }
 
+/**
+ * Resolve a camera from either OSIRIS-derived catalogue: the static bundle or
+ * the live /api/cctv sweep. Both share the OsirisCctvCamera shape, so every
+ * consumer (viewer, image resolver) can treat them identically.
+ */
+export function getBundledCctvCamera(webcamId: string): OsirisCctvCamera | null {
+  return getOsirisCctvCamera(webcamId) ?? getLiveCctvCamera(webcamId);
+}
+
 export async function fetchWebcamImage(webcamId: string): Promise<GetWebcamImageResponse> {
-  const osirisCamera = getOsirisCctvCamera(webcamId);
+  const osirisCamera = getBundledCctvCamera(webcamId);
   if (osirisCamera) {
     return {
       thumbnailUrl: osirisCamera.feedUrl || '',
@@ -181,4 +197,5 @@ export function getCategoryStyle(category: string) {
 
 export type { WebcamEntry, WebcamCluster, GetWebcamImageResponse };
 export { getOsirisCctvCamera } from './osiris-cctv';
+export { fetchLiveCctvCameras, getLiveCctvCamera, listLiveCctvCameras } from './live-cctv';
 export type { OsirisCctvCamera } from './osiris-cctv';
