@@ -541,6 +541,15 @@ function sebufApiPlugin(): Plugin {
       leadsServerMod, leadsHandlerMod,
       scenarioServerMod, scenarioHandlerMod,
       shippingV2ServerMod, shippingV2HandlerMod,
+      consumerPricesServerMod, consumerPricesHandlerMod,
+      forecastServerMod, forecastHandlerMod,
+      healthDomainServerMod, healthDomainHandlerMod,
+      imageryServerMod, imageryHandlerMod,
+      radiationServerMod, radiationHandlerMod,
+      safetyServerMod, safetyHandlerMod,
+      sanctionsServerMod, sanctionsHandlerMod,
+      thermalServerMod, thermalHandlerMod,
+      webcamServerMod, webcamHandlerMod,
     ] = await Promise.all([
         import('./server/router'),
         import('./server/cors'),
@@ -597,6 +606,24 @@ function sebufApiPlugin(): Plugin {
         import('./server/worldmonitor/scenario/v1/handler'),
         import('./src/generated/server/worldmonitor/shipping/v2/service_server'),
         import('./server/worldmonitor/shipping/v2/handler'),
+        import('./src/generated/server/worldmonitor/consumer_prices/v1/service_server'),
+        import('./server/worldmonitor/consumer-prices/v1/handler'),
+        import('./src/generated/server/worldmonitor/forecast/v1/service_server'),
+        import('./server/worldmonitor/forecast/v1/handler'),
+        import('./src/generated/server/worldmonitor/health/v1/service_server'),
+        import('./server/worldmonitor/health/v1/handler'),
+        import('./src/generated/server/worldmonitor/imagery/v1/service_server'),
+        import('./server/worldmonitor/imagery/v1/handler'),
+        import('./src/generated/server/worldmonitor/radiation/v1/service_server'),
+        import('./server/worldmonitor/radiation/v1/handler'),
+        import('./src/generated/server/worldmonitor/safety/v1/service_server'),
+        import('./server/worldmonitor/safety/v1/handler'),
+        import('./src/generated/server/worldmonitor/sanctions/v1/service_server'),
+        import('./server/worldmonitor/sanctions/v1/handler'),
+        import('./src/generated/server/worldmonitor/thermal/v1/service_server'),
+        import('./server/worldmonitor/thermal/v1/handler'),
+        import('./src/generated/server/worldmonitor/webcam/v1/service_server'),
+        import('./server/worldmonitor/webcam/v1/handler'),
       ]);
 
     const serverOptions = {
@@ -604,6 +631,19 @@ function sebufApiPlugin(): Plugin {
       validateRequest: validateGeneratedRequest,
     };
     const allRoutes = [
+      // Domains that exist under api/ and are file-routed by Vercel, but were
+      // never added here — so they 404 in `vite dev` only. Keep this list in
+      // sync when adding a domain, or it works in production and not locally.
+      ...consumerPricesServerMod.createConsumerPricesServiceRoutes(consumerPricesHandlerMod.consumerPricesHandler, serverOptions),
+      ...forecastServerMod.createForecastServiceRoutes(forecastHandlerMod.forecastHandler, serverOptions),
+      ...healthDomainServerMod.createHealthServiceRoutes(healthDomainHandlerMod.healthHandler, serverOptions),
+      ...imageryServerMod.createImageryServiceRoutes(imageryHandlerMod.imageryHandler, serverOptions),
+      ...radiationServerMod.createRadiationServiceRoutes(radiationHandlerMod.radiationHandler, serverOptions),
+      ...safetyServerMod.createSafetyServiceRoutes(safetyHandlerMod.safetyHandler, serverOptions),
+      ...sanctionsServerMod.createSanctionsServiceRoutes(sanctionsHandlerMod.sanctionsHandler, serverOptions),
+      ...thermalServerMod.createThermalServiceRoutes(thermalHandlerMod.thermalHandler, serverOptions),
+      ...webcamServerMod.createWebcamServiceRoutes(webcamHandlerMod.webcamHandler, serverOptions),
+
       ...seismologyServerMod.createSeismologyServiceRoutes(seismologyHandlerMod.seismologyHandler, serverOptions),
       ...wildfireServerMod.createWildfireServiceRoutes(wildfireHandlerMod.wildfireHandler, serverOptions),
       ...climateServerMod.createClimateServiceRoutes(climateHandlerMod.climateHandler, serverOptions),
