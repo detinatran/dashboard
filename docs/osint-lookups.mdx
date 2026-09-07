@@ -1,0 +1,108 @@
+---
+title: "OSINT Lookups"
+description: "Passive reconnaissance endpoints — DNS, WHOIS, certificate transparency, CVE, BGP, MAC vendor, host exposure, sanctions screening and blockchain wallet tracing."
+---
+
+Endpoints under `/api/osint/*` that resolve a single identifier against a public
+registry. They are read-only lookups against data that is already published —
+none of them probe, scan, or connect to the subject of the query.
+
+<Warning>
+These endpoints exist for the dashboard's own RECON panel and are **not part of
+the public API contract**. They may change or be removed without notice. Prefer
+the domain RPC services (`/api/<domain>/v1/*`) for stable integrations.
+</Warning>
+
+## Endpoints
+
+| Endpoint | Parameter | Upstream | Returns |
+|----------|-----------|----------|---------|
+| `GET /api/osint/dns` | `domain` | Google DNS-over-HTTPS | A, AAAA, MX, NS, TXT, CNAME, SOA records |
+| `GET /api/osint/whois` | `domain` | rdap.org | RDAP registration record, cross-checked against OFAC SDN |
+| `GET /api/osint/certs` | `domain` | crt.sh | Certificate transparency log entries |
+| `GET /api/osint/cve` | `cve` | cve.circl.lu, cveawg.mitre.org | Vulnerability detail, CVSS, references |
+| `GET /api/osint/bgp` | `query` | RIPEstat | ASN overview, prefixes, announcing peers. Accepts an ASN, IP, or prefix |
+| `GET /api/osint/mac` | `mac` | maclookup.app | OUI vendor and registered address |
+| `GET /api/osint/shodan` | `ip` | Shodan InternetDB | Open ports, hostnames, CPEs, known vulns |
+| `GET /api/osint/sanctions` | `query`, `schema`, `limit` | OpenSanctions (US OFAC SDN mirror) | Matching sanctioned persons, entities and vessels |
+| `GET /api/osint/crypto` | `address`, `chain` | blockstream / mempool.space, Blockscout | Wallet balance, transaction summary, risk indicators |
+
+All upstreams are keyless. Shodan uses **InternetDB**, the free endpoint that
+serves pre-indexed data — not the authenticated scanning API.
+
+## What is deliberately absent
+
+The upstream OSIRIS project also ships active-reconnaissance routes. They were
+**not** ported:
+
+| Not available | Why |
+|---------------|-----|
+| Port scanning | Connects to hosts the caller does not control |
+| Subnet sweep | Same, at network scale |
+| Username enumeration | Probes dozens of third-party sites per query |
+| Breach / infostealer lookup | Redistributes leaked personal data |
+
+If you need those, run them from infrastructure you own and are authorised to
+test, not from a shared deployment.
+
+## Rate limits
+
+Per-IP, enforced in-process by `api/osint/lib/ssrf-guard.ts`:
+
+| Endpoint | Limit |
+|----------|-------|
+| `cve` | 30 / minute |
+| `dns`, `whois`, `certs`, `bgp`, `sanctions`, `crypto` | 20 / minute |
+| `mac`, `shodan` | **unmetered** |
+
+Exceeding a limit returns `429` with `{"error":"Rate limit exceeded"}`.
+
+<Note>
+`mac` and `shodan` currently have no rate limit. Both call keyless upstreams that
+apply their own throttling, but a deployment exposed to untrusted callers should
+add one — these are the routes that can be driven hardest.
+</Note>
+
+The counter is per process, not shared across serverless instances, so the
+effective ceiling on a multi-instance deployment is higher than the number above.
+Treat it as a guard against accidental loops rather than as an abuse control.
+
+## SSRF protection
+
+`osint/bgp`, `osint/shodan` and `osint/crypto` accept caller-supplied addresses.
+Before any request is made, `ssrf-guard.ts` rejects:
+
+- Private ranges — `10/8`, `172.16/12`, `192.168/16`
+- Loopback — `127/8`, `::1`
+- Link-local — `169.254/16`, including the `169.254.169.254` cloud metadata endpoint
+- Carrier-grade NAT — `100.64/10`
+- Reserved and multicast blocks
+
+A malformed address scores as blocked rather than as `NaN`, which would compare
+false against every range and defeat the check.
+
+## Response shape
+
+Every endpoint returns JSON. Errors carry an `error` string and an appropriate
+status:
+
+| Status | Meaning |
+|--------|---------|
+| `400` | Missing or malformed parameter |
+| `403` | Target rejected by the SSRF guard |
+| `429` | Rate limit exceeded |
+| `502` | Upstream unreachable or returned an error |
+
+A partial result is preferred over a failure: `certs`, for example, returns
+`{"certificates":[],"error":"crt.sh unavailable"}` with status `200` when the
+transparency log is down, so a caller rendering several lookups side by side is
+not blocked by one slow source.
+
+## Known limitations
+
+- **Bitcoin lookups depend on `mempool.space`**, which is unreachable from some
+  networks. The Ethereum path (Blockscout) is independent and unaffected.
+- **`osint/phone` is not available.** It requires `google-libphonenumber`, which
+  this project does not depend on.
+- **Sanctions data is a mirror**, refreshed on a 24-hour cache. For a compliance
+  decision, verify against the primary OFAC source rather than this endpoint.
