@@ -1779,6 +1779,19 @@ export default defineConfig(({ mode }) => {
           target: 'https://opensky-network.org/api',
           changeOrigin: true,
           secure: true,
+          // OpenSky refuses connections from some networks entirely — DNS
+          // resolves but the TCP handshake never completes. Without these the
+          // socket stays open until the client gives up, so a dev request hangs
+          // for 30s+ instead of failing. `timeout` bounds an idle upstream;
+          // `proxyTimeout` bounds one that never answers at all.
+          //
+          // Vite closes the socket on timeout without emitting `error` or
+          // `econnreset`, so the caller sees a dropped connection rather than a
+          // status code. Callers must therefore treat a network-level failure
+          // as retryable — see fetchMilitaryFlights in
+          // src/services/military-flights.ts.
+          timeout: 15000,
+          proxyTimeout: 15000,
           rewrite: (path) => path.replace(/^\/api\/opensky/, '/states/all'),
           configure: (proxy) => {
             proxy.on('error', (err) => {

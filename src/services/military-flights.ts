@@ -334,21 +334,43 @@ function parseOpenSkyResponse(data: OpenSkyResponse): MilitaryFlight[] {
 
 interface RegionResult { name: string; flights: MilitaryFlight[]; ok: boolean }
 
+/**
+ * Return the first URL that answers with a usable body, or null once the list
+ * is exhausted.
+ *
+ * The try/catch must sit INSIDE the loop. A network-level failure on the first
+ * URL — the dev proxy dropping the socket when OpenSky is unreachable (see the
+ * `/api/opensky` timeout in vite.config.ts), a DNS failure, an abort — rejects
+ * the fetch rather than returning `!ok`. With one try wrapped around the whole
+ * loop, that rejection skipped every remaining URL, so the direct-OpenSky
+ * fallback never ran in exactly the case it exists for.
+ *
+ * Exported for tests/military-flights-url-fallback.test.mts, which drives this
+ * function directly rather than restating the loop.
+ */
+export async function fetchFirstUsableJson<T>(
+  urls: readonly string[],
+  fetchImpl: typeof fetch = fetch,
+): Promise<T | null> {
+  for (const url of urls) {
+    try {
+      const response = await fetchImpl(url, { headers: { Accept: 'application/json' } });
+      if (!response.ok) continue;
+      return await response.json() as T;
+    } catch {
+      // Try the next URL; only an exhausted list is a failure.
+    }
+  }
+  return null;
+}
+
 async function fetchQueryRegion(region: QueryRegion): Promise<RegionResult> {
   const query = `lamin=${region.lamin}&lamax=${region.lamax}&lomin=${region.lomin}&lomax=${region.lomax}`;
   const urls = [`${OPENSKY_PROXY_URL}?${query}`];
   if (isLocalhostRuntime && DIRECT_OPENSKY_BASE_URL) urls.push(`${DIRECT_OPENSKY_BASE_URL}?${query}`);
-  try {
-    for (const url of urls) {
-      const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
-      if (!response.ok) continue;
-      const data: OpenSkyResponse = await response.json();
-      return { name: region.name, flights: parseOpenSkyResponse(data), ok: true };
-    }
-    return { name: region.name, flights: [], ok: false };
-  } catch {
-    return { name: region.name, flights: [], ok: false };
-  }
+  const data = await fetchFirstUsableJson<OpenSkyResponse>(urls);
+  if (!data) return { name: region.name, flights: [], ok: false };
+  return { name: region.name, flights: parseOpenSkyResponse(data), ok: true };
 }
 
 const STALE_MAX_AGE_MS = 10 * 60 * 1000;
