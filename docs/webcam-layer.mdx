@@ -4,9 +4,25 @@ description: "World Monitor's global webcam coverage layer — timelapse playbac
 ---
 The Webcam layer provides global visual intelligence by overlaying webcam locations on the map, with interactive tooltips showing preview images and a pinned webcam panel for persistent monitoring of key locations.
 
-## Data Source: Windy Webcams API v3
+## Data sources
 
-The primary data source is the [Windy Webcams API](https://api.windy.com/webcams/api/v3/docs), which provides approximately 65,000 camera locations worldwide.
+Three catalogues are merged client-side. They are independent: a deployment
+missing credentials for one still shows the others.
+
+| Source | Cameras | Needs credentials? | Where |
+|--------|--------:|--------------------|-------|
+| Windy Webcams API v3 | ~65,000 | `WINDY_API_KEY` **and** seeded Upstash Redis | `webcam/v1.ListWebcams` |
+| Live traffic authorities | ~18,500 | No | `GET /api/cctv` |
+| Static bundled catalogue | 875 | No | compiled into the bundle |
+
+<Note>
+Only the Windy catalogue needs a key and a seeded Redis index. A self-hosted
+install with neither still gets substantial coverage from the other two.
+</Note>
+
+## Source 1: Windy Webcams API v3
+
+The largest catalogue is the [Windy Webcams API](https://api.windy.com/webcams/api/v3/docs), which provides approximately 65,000 camera locations worldwide.
 
 | Attribute | Value |
 |-----------|-------|
@@ -82,6 +98,71 @@ The webcam layer does not hydrate marker or preview data from the bootstrap payl
 |--------|-------|---------------|
 | `GET` | `/api/webcam/v1/list-webcams` | Map webcam markers and clusters for the current viewport; the handler reads seeded Redis geo/metadata keys and caches clustered viewport responses. |
 | `GET` | `/api/webcam/v1/get-webcam-image` | Tooltip preview images and Windy player URLs for a selected camera; the handler calls Windy on demand and caches each webcam image lookup for 5 minutes. |
+
+## Source 2: Live traffic authorities (`/api/cctv`)
+
+National and regional road authorities, queried at request time. No API key and
+no Redis is involved — a full sweep completes in roughly ten seconds and returns
+by far the largest keyless catalogue of the three. The authoritative source list
+is `api/cctv/sources/`, registered in `REGION_FETCHERS`.
+
+| Method | Route | What it feeds |
+|--------|-------|---------------|
+| `GET` | `/api/cctv` | Live camera catalogue. `?region=all` (default), `?region=uk,japan`, or `?lat=&lng=&radius=` to resolve regions from a viewport. |
+| `GET` | `/api/cctv/proxy?url=` | Re-fetches a camera frame server-side. Camera CDNs set hotlink protection and rarely send CORS headers, so a frame referenced straight from the page fails. |
+
+Largest contributors:
+
+| Authority | Cameras | Region |
+|-----------|--------:|--------|
+| THB Highway Bureau | 2,162 | Taiwan |
+| UDOT | 2,074 | US Utah |
+| Caltrans | 2,000 | US California |
+| DGT | 1,916 | Spain |
+| ASFINAG | 1,817 | Austria |
+| ODOT TripCheck | 1,131 | US Oregon |
+| DriveBC | 1,062 | Canada |
+| HK Transport Dept | 1,013 | Hong Kong |
+| TfL JamCams | 890 | UK / London |
+| Fintraffic | 812 | Finland |
+| MDOT MiDrive | 806 | US Michigan |
+
+Plus SkylineWebcams, Quebec 511, Ottawa, Toronto, NZTA, Live Traffic (AU),
+LTA Singapore, NDW (Netherlands), and about twenty smaller feeds.
+
+Responses are cached for 5 minutes (`s-maxage=300`). An implausibly short
+response is sent `no-store` instead: a thin result usually means upstreams are
+failing, and caching it would pin that failure in front of later requests. One
+dead source never fails the batch — regions are settled individually.
+
+<Warning>
+`/api/cctv/proxy` accepts a URL, so it is strictly allowlisted to the six CDNs
+the catalogue actually references. The allowlist is re-checked on every redirect
+hop, redirects are capped, responses are size-limited, and a non-image
+content-type is rejected rather than reflected to the browser.
+</Warning>
+
+### Local development
+
+`api/` has no file-based routing in `vite dev` — without a shim the dev server
+returns the handler's **source text** rather than running it. `osirisApiDevPlugin()`
+in `vite.config.ts` loads these handlers through Vite's SSR pipeline locally;
+Vercel serves them directly in production.
+
+## Source 3: Static bundled catalogue
+
+A curated catalogue compiled into `src/services/webcams/osiris-cctv.ts`.
+No network call at all, so the map is never empty. Sources include SkylineWebcams,
+YouTube Live, APRR/AREA (French motorways), MLIT river monitoring (Japan), and the
+Hong Kong Transport Department.
+
+## Merging
+
+`fetchWebcams()` in `src/services/webcams/index.ts` calls the Windy RPC, then adds
+any camera from the other two catalogues whose id is not already present. Live
+cameras are namespaced `live-` and bundled ones `osiris-`, so the three can never
+collide. The live sweep is warmed for the *next* call rather than awaited, so a
+~10 s global fetch never delays first paint.
 
 ### Server-side clustering
 
@@ -180,13 +261,13 @@ Free sources of actual live video webcam feeds with structured APIs do not curre
 
 ## Future Phases
 
-### Phase 2: US DOT 511 State APIs
+### Phase 2: traffic-authority APIs — shipped
 
-Tens of thousands of traffic cameras across 20+ US states. Free with developer key per state. These are also periodic still images (refresh every 30-60 seconds), not live video, but update more frequently than Windy cameras.
+Delivered as `/api/cctv` (see above). Utah, Oregon, Michigan, California and
+Washington are live, alongside authorities in Canada, Europe and Asia-Pacific.
+Each source has its own normalising adapter under `api/cctv/sources/`.
 
-Target states: NY (511ny.org), CA (511.org), GA (511ga.org), AZ (az511.com), UT.
-
-Challenge: Each state has a slightly different schema requiring normalizing adapters.
+Not yet covered: NY (511ny.org), Georgia (511ga.org), Arizona (az511.com).
 
 ### Phase 3: OpenWebcamDB
 

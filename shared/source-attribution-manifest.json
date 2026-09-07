@@ -650,6 +650,20 @@
       ]
     },
     {
+      "host": "api.data.gov.sg",
+      "provider": "api.data.gov.sg",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit api.data.gov.sg and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/index.ts"
+        }
+      ]
+    },
+    {
       "host": "api.datos.gob.mx",
       "provider": "api.datos.gob.mx",
       "kind": "structured",
@@ -891,6 +905,34 @@
       ]
     },
     {
+      "host": "api.maclookup.app",
+      "provider": "api.maclookup.app",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit api.maclookup.app and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/osint/mac.ts"
+        }
+      ]
+    },
+    {
+      "host": "api.mainnet-beta.solana.com",
+      "provider": "api.mainnet-beta.solana.com",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit api.mainnet-beta.solana.com and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/osint/lib/chainIntel.ts"
+        }
+      ]
+    },
+    {
       "host": "api.open511.gov.bc.ca",
       "provider": "BC Open511",
       "kind": "structured",
@@ -1120,6 +1162,20 @@
         },
         {
           "path": "scripts/seed-digest-notifications.mjs"
+        }
+      ]
+    },
+    {
+      "host": "api.tfl.gov.uk",
+      "provider": "api.tfl.gov.uk",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit api.tfl.gov.uk and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/index.ts"
         }
       ]
     },
@@ -2005,6 +2061,34 @@
       ]
     },
     {
+      "host": "caltrans-gis.dot.ca.gov",
+      "provider": "caltrans-gis.dot.ca.gov",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit caltrans-gis.dot.ca.gov and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/index.ts"
+        }
+      ]
+    },
+    {
+      "host": "cam.river.go.jp",
+      "provider": "cam.river.go.jp",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit cam.river.go.jp and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/japan.ts"
+        }
+      ]
+    },
+    {
       "host": "canadabuys.canada.ca",
       "provider": "canadabuys.canada.ca",
       "kind": "structured",
@@ -2144,6 +2228,20 @@
         },
         {
           "path": "server/_shared/brief-carousel-render.ts"
+        }
+      ]
+    },
+    {
+      "host": "cdn.skylinewebcams.com",
+      "provider": "cdn.skylinewebcams.com",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit cdn.skylinewebcams.com and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "src/services/webcams/osiris-cctv.ts"
         }
       ]
     },
@@ -2584,6 +2682,20 @@
       ]
     },
     {
+      "host": "crt.sh",
+      "provider": "crt.sh",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit crt.sh and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/osint/certs.ts"
+        }
+      ]
+    },
+    {
       "host": "cryptoslate.com",
       "provider": "cryptoslate.com",
       "kind": "feed",
@@ -2662,6 +2774,34 @@
       "references": [
         {
           "path": "src/services/billing.ts"
+        }
+      ]
+    },
+    {
+      "host": "cve.circl.lu",
+      "provider": "cve.circl.lu",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit cve.circl.lu and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/osint/cve.ts"
+        }
+      ]
+    },
+    {
+      "host": "cveawg.mitre.org",
+      "provider": "cveawg.mitre.org",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit cveawg.mitre.org and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/osint/cve.ts"
         }
       ]
     },
@@ -2765,6 +2905,20 @@
       ]
     },
     {
+      "host": "data.opensanctions.org",
+      "provider": "data.opensanctions.org",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit data.opensanctions.org and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/osint/lib/sanctions.ts"
+        }
+      ]
+    },
+    {
       "host": "data.sec.gov",
       "provider": "SEC EDGAR",
       "kind": "structured",
@@ -2834,6 +2988,20 @@
         },
         {
           "path": "scripts/seed-wb-external-debt.mjs"
+        }
+      ]
+    },
+    {
+      "host": "data.wsdot.wa.gov",
+      "provider": "data.wsdot.wa.gov",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit data.wsdot.wa.gov and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/index.ts"
         }
       ]
     },
@@ -3111,6 +3279,20 @@
         },
         {
           "path": "src/config/feeds.ts"
+        }
+      ]
+    },
+    {
+      "host": "dns.google",
+      "provider": "dns.google",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit dns.google and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/osint/dns.ts"
         }
       ]
     },
@@ -3652,6 +3834,20 @@
       "references": [
         {
           "path": "src/config/feeds.ts"
+        }
+      ]
+    },
+    {
+      "host": "eth.blockscout.com",
+      "provider": "eth.blockscout.com",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit eth.blockscout.com and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/osint/lib/chainIntel.ts"
         }
       ]
     },
@@ -4300,6 +4496,20 @@
       ]
     },
     {
+      "host": "free-webcambg.com",
+      "provider": "free-webcambg.com",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit free-webcambg.com and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/types.ts"
+        }
+      ]
+    },
+    {
       "host": "freeipapi.com",
       "provider": "freeipapi.com",
       "kind": "structured",
@@ -4341,6 +4551,20 @@
       "references": [
         {
           "path": "src/config/feeds.ts"
+        }
+      ]
+    },
+    {
+      "host": "gagnaveita.vegagerdin.is",
+      "provider": "gagnaveita.vegagerdin.is",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit gagnaveita.vegagerdin.is and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/iceland.ts"
         }
       ]
     },
@@ -5066,6 +5290,20 @@
       ]
     },
     {
+      "host": "internetdb.shodan.io",
+      "provider": "internetdb.shodan.io",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit internetdb.shodan.io and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/osint/shodan.ts"
+        }
+      ]
+    },
+    {
       "host": "investing.com",
       "provider": "investing.com",
       "kind": "feed",
@@ -5076,6 +5314,20 @@
       "references": [
         {
           "path": "src/config/feeds.ts"
+        }
+      ]
+    },
+    {
+      "host": "ip-api.com",
+      "provider": "ip-api.com",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit ip-api.com and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/osint/bgp.ts"
         }
       ]
     },
@@ -5881,6 +6133,20 @@
       ]
     },
     {
+      "host": "mdotjboss.state.mi.us",
+      "provider": "mdotjboss.state.mi.us",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit mdotjboss.state.mi.us and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/michigan.ts"
+        }
+      ]
+    },
+    {
       "host": "meduza.io",
       "provider": "meduza.io",
       "kind": "feed",
@@ -5920,6 +6186,9 @@
       "attribution": "mempool.space; link to the mining/hashrate API response.",
       "status": "terms-review",
       "references": [
+        {
+          "path": "api/osint/lib/chainIntel.ts"
+        },
         {
           "path": "scripts/seed-economy.mjs"
         }
@@ -6566,6 +6835,20 @@
       ]
     },
     {
+      "host": "odo.asfinag.at",
+      "provider": "odo.asfinag.at",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit odo.asfinag.at and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/asfinag.ts"
+        }
+      ]
+    },
+    {
       "host": "oecd.org",
       "provider": "oecd.org",
       "kind": "feed",
@@ -6684,6 +6967,20 @@
         },
         {
           "path": "src/components/MapPopup.ts"
+        }
+      ]
+    },
+    {
+      "host": "opendata.ndw.nu",
+      "provider": "opendata.ndw.nu",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit opendata.ndw.nu and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/index.ts"
         }
       ]
     },
@@ -7117,6 +7414,20 @@
       ]
     },
     {
+      "host": "prod-ut.ibi511.com",
+      "provider": "prod-ut.ibi511.com",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit prod-ut.ibi511.com and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/utah.ts"
+        }
+      ]
+    },
+    {
       "host": "production.dataviz.cnn.io",
       "provider": "production.dataviz.cnn.io",
       "kind": "structured",
@@ -7434,6 +7745,20 @@
         },
         {
           "path": "server/worldmonitor/cyber/v1/_shared.ts"
+        }
+      ]
+    },
+    {
+      "host": "rdap.org",
+      "provider": "rdap.org",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit rdap.org and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/osint/whois.ts"
         }
       ]
     },
@@ -8267,6 +8592,20 @@
       ]
     },
     {
+      "host": "stat.ripe.net",
+      "provider": "stat.ripe.net",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit stat.ripe.net and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/osint/bgp.ts"
+        }
+      ]
+    },
+    {
       "host": "state.gov",
       "provider": "state.gov",
       "kind": "feed",
@@ -8280,6 +8619,20 @@
         },
         {
           "path": "src/config/feeds.ts"
+        }
+      ]
+    },
+    {
+      "host": "static.data.gov.hk",
+      "provider": "static.data.gov.hk",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit static.data.gov.hk and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/hongkong.ts"
         }
       ]
     },
@@ -8888,6 +9241,20 @@
       ]
     },
     {
+      "host": "thbapp.thb.gov.tw",
+      "provider": "thbapp.thb.gov.tw",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit thbapp.thb.gov.tw and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/taiwan.ts"
+        }
+      ]
+    },
+    {
       "host": "thebetterindia.com",
       "provider": "thebetterindia.com",
       "kind": "feed",
@@ -9222,6 +9589,20 @@
       ]
     },
     {
+      "host": "tie.digitraffic.fi",
+      "provider": "tie.digitraffic.fi",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit tie.digitraffic.fi and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/finland.ts"
+        }
+      ]
+    },
+    {
       "host": "tiles.openfreemap.org",
       "provider": "tiles.openfreemap.org",
       "kind": "structured",
@@ -9284,6 +9665,34 @@
       ]
     },
     {
+      "host": "traffic.ottawa.ca",
+      "provider": "traffic.ottawa.ca",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit traffic.ottawa.ca and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/index.ts"
+        }
+      ]
+    },
+    {
+      "host": "trafficnz.info",
+      "provider": "trafficnz.info",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit trafficnz.info and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/newzealand.ts"
+        }
+      ]
+    },
+    {
       "host": "travel.state.gov",
       "provider": "travel.state.gov",
       "kind": "structured",
@@ -9311,6 +9720,20 @@
         },
         {
           "path": "src/config/feeds.ts"
+        }
+      ]
+    },
+    {
+      "host": "tripcheck.com",
+      "provider": "tripcheck.com",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit tripcheck.com and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/oregon.ts"
         }
       ]
     },
@@ -9680,6 +10103,20 @@
       ]
     },
     {
+      "host": "voyage.aprr.fr",
+      "provider": "voyage.aprr.fr",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit voyage.aprr.fr and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "src/services/webcams/osiris-cctv.ts"
+        }
+      ]
+    },
+    {
       "host": "vs-hls-push-uk.live.fastly.md.bbci.co.uk",
       "provider": "vs-hls-push-uk.live.fastly.md.bbci.co.uk",
       "kind": "feed",
@@ -9755,6 +10192,20 @@
         },
         {
           "path": "src/config/feeds.ts"
+        }
+      ]
+    },
+    {
+      "host": "weathercam.digitraffic.fi",
+      "provider": "weathercam.digitraffic.fi",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit weathercam.digitraffic.fi and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/finland.ts"
         }
       ]
     },
@@ -11080,6 +11531,20 @@
       ]
     },
     {
+      "host": "www.dgt.es",
+      "provider": "www.dgt.es",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit www.dgt.es and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/spain.ts"
+        }
+      ]
+    },
+    {
       "host": "www.digi24.ro",
       "provider": "www.digi24.ro",
       "kind": "feed",
@@ -12183,6 +12648,20 @@
       ]
     },
     {
+      "host": "www.livetraffic.com",
+      "provider": "www.livetraffic.com",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit www.livetraffic.com and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/australia.ts"
+        }
+      ]
+    },
+    {
       "host": "www.lrt.lt",
       "provider": "www.lrt.lt",
       "kind": "feed",
@@ -13180,6 +13659,35 @@
       ]
     },
     {
+      "host": "www.skylinewebcams.com",
+      "provider": "www.skylinewebcams.com",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit www.skylinewebcams.com and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/asia-skyline.generated.ts"
+        },
+        {
+          "path": "api/cctv/sources/france.ts"
+        },
+        {
+          "path": "api/cctv/sources/italy.ts"
+        },
+        {
+          "path": "api/cctv/sources/spain.ts"
+        },
+        {
+          "path": "api/cctv/sources/switzerland.ts"
+        },
+        {
+          "path": "api/cctv/sources/world-skyline.generated.ts"
+        }
+      ]
+    },
+    {
       "host": "www.smartraveller.gov.au",
       "provider": "www.smartraveller.gov.au",
       "kind": "structured",
@@ -13723,6 +14231,34 @@
       ]
     },
     {
+      "host": "www.travelmidwest.com",
+      "provider": "www.travelmidwest.com",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit www.travelmidwest.com and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/index.ts"
+        }
+      ]
+    },
+    {
+      "host": "www.tripcheck.com",
+      "provider": "www.tripcheck.com",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit www.tripcheck.com and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/oregon.ts"
+        }
+      ]
+    },
+    {
       "host": "www.tvanouvelles.ca",
       "provider": "www.tvanouvelles.ca",
       "kind": "feed",
@@ -13798,6 +14334,20 @@
         },
         {
           "path": "src/config/feeds.ts"
+        }
+      ]
+    },
+    {
+      "host": "www.vegagerdin.is",
+      "provider": "www.vegagerdin.is",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Credit www.vegagerdin.is and link to the original upstream API/dataset.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "api/cctv/sources/iceland.ts"
         }
       ]
     },
