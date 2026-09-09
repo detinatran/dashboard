@@ -1,101 +1,163 @@
 <p align="center">
-  <img src="public/favico/worldmonitor-icon-1024.png" width="104" alt="World Monitor logo">
+  <sub>DETINA TRAN / INDEPENDENT OPEN INTELLIGENCE</sub>
 </p>
 
-<h1 align="center">World Monitor</h1>
+<h1 align="center">OSIRIS</h1>
 
 <p align="center">
-  <strong>A real-time command center for global intelligence.</strong><br>
-  Turn live geopolitical, military, infrastructure, climate, aviation, maritime, and market signals into one coherent operational picture.
-</p>
-
-<p align="center">
-  <a href="https://www.worldmonitor.app"><img src="https://img.shields.io/badge/OPEN_LIVE_PLATFORM-22c55e?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Open live platform"></a>
-  <a href="SELF_HOSTING.md"><img src="https://img.shields.io/badge/SELF--HOST_WITH_DOCKER-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Self-host with Docker"></a>
-  <a href="https://www.worldmonitor.app/docs/documentation"><img src="https://img.shields.io/badge/READ_THE_DOCS-7c3aed?style=for-the-badge&logo=readthedocs&logoColor=white" alt="Read the documentation"></a>
+  <strong>A self-hosted global intelligence command center.</strong><br>
+  Connect geopolitical events, military movement, critical infrastructure,
+  climate risk, aviation, maritime traffic, supply chains, and markets in one
+  coherent operational picture.
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker">
-  <img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white" alt="Redis">
-  <img src="https://img.shields.io/badge/PWA-5A0FC8?style=flat-square&logo=pwa&logoColor=white" alt="Progressive Web App">
-  <a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/License-AGPL--3.0-2563eb?style=flat-square" alt="AGPL-3.0 license"></a>
-  <a href="https://discord.gg/re63kWKxaz"><img src="https://img.shields.io/badge/Discord-Join_the_community-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Join Discord"></a>
+  Maintained by <a href="https://github.com/detinatran"><strong>Detina Tran</strong></a>
 </p>
 
 <p align="center">
-  <a href="#interface-showcase"><strong>Showcase</strong></a> ·
-  <a href="#what-it-does"><strong>Capabilities</strong></a> ·
-  <a href="#quick-start"><strong>Quick start</strong></a> ·
-  <a href="#programmatic-access"><strong>API & SDKs</strong></a> ·
-  <a href="SELF_HOSTING.md"><strong>Self-hosting</strong></a><br>
-  <a href="README.zh-CN.md">简体中文</a> · <a href="README.ja-JP.md">日本語</a>
+  <a href="https://github.com/detinatran/dashboard/commits/main"><img src="https://img.shields.io/github/last-commit/detinatran/dashboard?style=flat-square&color=16a34a" alt="Last commit"></a>
+  <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript 5">
+  <img src="https://img.shields.io/badge/Self--host-Docker-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker self-hosting">
+  <img src="https://img.shields.io/badge/Cache-Redis-DC382D?style=flat-square&logo=redis&logoColor=white" alt="Redis cache">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0-64748B?style=flat-square" alt="AGPL-3.0 license"></a>
 </p>
 
-> [!TIP]
-> The complete local stack runs with Docker and Redis. Background collectors refresh the cache on a schedule, so opening the dashboard does not fan out to dozens of upstream services.
+<p align="center">
+  <a href="#the-mission"><strong>Overview</strong></a>
+  &nbsp;&bull;&nbsp;
+  <a href="#interface-showcase"><strong>Showcase</strong></a>
+  &nbsp;&bull;&nbsp;
+  <a href="#system-architecture"><strong>Architecture</strong></a>
+  &nbsp;&bull;&nbsp;
+  <a href="#run-it-locally"><strong>Run locally</strong></a>
+  &nbsp;&bull;&nbsp;
+  <a href="#make-it-yours"><strong>Make it yours</strong></a>
+</p>
+
+<p align="center">
+  <img src="docs/images/showcase/osiris-readme-hero.webp" width="100%" alt="Illustrative global intelligence network spanning aviation, maritime, satellite, and geopolitical signals.">
+</p>
+
+> [!NOTE]
+> OSIRIS is an independently maintained modified distribution based on
+> [World Monitor](https://github.com/koala73/worldmonitor), originally created
+> by Elie Habib. It is not affiliated with or endorsed by the upstream project.
+
+## The Mission
+
+Most monitoring tools expose one stream at a time. OSIRIS is designed around a
+harder question: **what changes when several independent signals begin to agree?**
+
+The dashboard places events, movement, infrastructure, environmental hazards,
+public alerts, and market context on the same surface. It helps an operator move
+from scattered feeds to a source-aware view of the event, its transmission path,
+and the evidence that still needs verification.
+
+### Three operating principles
+
+- **See the system, not one feed.** Correlate physical, geopolitical, economic,
+  and environmental signals without losing their original sources.
+- **Keep the local experience fast.** Serve expensive upstream data from Redis
+  and refresh it through bounded background collectors.
+- **Fail honestly.** Optional integrations stay dormant when credentials or
+  licensing are unavailable instead of producing noisy errors or fake data.
 
 ## Interface Showcase
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <img src="docs/images/showcase/world-command-center.webp" alt="World Monitor global command center">
-      <br><sub><strong>Global Command Center</strong> — a unified view of live events, conflict zones, critical infrastructure, news, and public cameras.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <img src="docs/images/showcase/technology-intelligence.webp" alt="World Monitor technology intelligence dashboard">
-      <br><sub><strong>Technology Intelligence</strong> — startup hubs, cloud regions, subsea cables, outages, and strategic technology signals.</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <img src="docs/images/showcase/global-supply-chain.webp" alt="World Monitor global supply chain map">
-      <br><sub><strong>Supply-Chain Visibility</strong> — maritime corridors, transport flows, chokepoints, and infrastructure exposure on one operational map.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <img src="docs/images/showcase/maritime-globe.webp" alt="World Monitor three-dimensional maritime globe">
-      <br><sub><strong>Immersive 3D Globe</strong> — global maritime and geospatial activity rendered in a focused, high-context view.</sub>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <a href="docs/images/showcase/world-command-center.webp">
+    <img src="docs/images/showcase/world-command-center.webp" width="100%" alt="Global command-center map with live events, conflict zones, infrastructure, news, and public-camera panels.">
+  </a>
+</p>
 
----
+<p align="center">
+  <strong>Global Command Center</strong><br>
+  <em>One working surface for live events, critical infrastructure, public alerts, and open-source reporting.</em>
+</p>
 
-## What It Does
+<details open>
+<summary><strong>Explore two additional operational views</strong></summary>
+<br>
 
-- **Curated news feeds** across global and regional categories, AI-synthesized into briefs
-- **Dual map engine** — 3D globe (globe.gl) and WebGL flat map (deck.gl) with a shared map-layer catalog
-- **Panel inventory** — concrete panel implementations across specialized variants
-- **Cross-stream correlation** — military, economic, disaster, and escalation signal convergence
-- **Country Instability Index (CII)** — server-authoritative CII v8 stress scoring for the Tier-1 registry
-- **Finance radar** — stock exchanges, commodities, crypto, and a market composite
-- **Local AI** — run everything with Ollama, no API keys required
-- **Site variants** from a single codebase (world, tech, finance, commodity, happy, energy)
-- **Native desktop app** (Tauri 2) for macOS, Windows, and Linux
-- **Multilingual UI** with native-language feeds and RTL support
+<p align="center">
+  <a href="docs/images/showcase/global-supply-chain.webp">
+    <img src="docs/images/showcase/global-supply-chain.webp" width="100%" alt="Supply-chain map showing maritime corridors, ports, chokepoints, and infrastructure exposure across Europe and Africa.">
+  </a>
+</p>
 
-For the full feature list, architecture, data sources, and algorithms, see the **[documentation](https://www.worldmonitor.app/docs/documentation)**.
+<p align="center">
+  <strong>Supply-Chain Visibility</strong><br>
+  <em>Follow maritime corridors, strategic chokepoints, transport flows, and infrastructure exposure.</em>
+</p>
 
----
+<p align="center">
+  <a href="docs/images/showcase/maritime-globe.webp">
+    <img src="docs/images/showcase/maritime-globe.webp" width="100%" alt="Three-dimensional globe showing maritime routes and tracked vessels across the Indian Ocean.">
+  </a>
+</p>
 
-## Support Status
+<p align="center">
+  <strong>Immersive Maritime Globe</strong><br>
+  <em>Move from a global overview to a focused geospatial investigation without leaving the dashboard.</em>
+</p>
 
-All site variants and desktop binaries are built from a single codebase and ship from the same release process. The table below clarifies maintenance status so you know which surfaces are safe to depend on.
+</details>
 
-| Surface | Status | Notes |
-|---------|--------|-------|
-| `worldmonitor.app`, `tech.`, `finance.`, `commodity.`, `happy.`, `energy.` | Stable | Public deployments built from this repo, actively maintained |
-| Desktop binaries (Windows / macOS Apple Silicon / macOS Intel / Linux AppImage) | Stable | One Tauri binary for every variant — install World Monitor and switch to tech, finance, commodity, energy, or happy in-app. There is deliberately no per-variant download |
+## Operational Coverage
 
-Issues filed against any of the above are triaged from the same backlog — see the [issues board](https://github.com/koala73/worldmonitor/issues) for currently-open work.
+| Intelligence plane | Representative signals | Local behavior |
+| --- | --- | --- |
+| Geopolitical | Conflicts, hotspots, sanctions, instability, regional reporting | Source-attributed and cache-aware |
+| Movement | Military aircraft, AIS vessels, ports, routes, chokepoints | ADSB.lol-first aviation and relay-backed maritime data |
+| Infrastructure | Subsea cables, pipelines, nuclear facilities, outages, data centers | Layered on the shared geospatial surface |
+| Environment | Weather, fires, earthquakes, GPS interference, provincial alerts | Keyless or public feeds where possible |
+| Economic | Markets, commodities, energy, trade, supply-chain pressure | Combined with physical transmission paths |
+| Analysis | Correlation, scenarios, briefs, and country intelligence | Premium RPCs run only with valid credentials |
 
----
+## What Makes This Edition Different
 
-## Quick Start
+- Complete Docker-first deployment with the frontend, API handlers, Redis,
+  Redis REST, AIS relay, and cache scheduler in one stack.
+- Sequential background collectors instead of dozens of browser-time requests.
+- A cache-first default profile for GPSJam, Canadian alerts, forecasts,
+  sanctions, PortWatch, Hormuz tracking, and military flights.
+- Weather and PizzINT refresh owned by the relay, avoiding duplicate jobs.
+- X, Telegram, and Pro AI disabled until their credentials are deliberately
+  configured.
+- ADSB.lol as the primary military source; automated OpenSky fallback remains
+  off unless the operator has confirmed the appropriate licence.
+- Repeatable production QA across real APIs and desktop/mobile interface flows.
 
-### Fast development mode
+## System Architecture
+
+```mermaid
+flowchart LR
+    S[Public and configured sources] --> C[Sequential collectors]
+    S --> R[Live AIS relay]
+    C --> D[(Redis cache)]
+    R --> D
+    D --> A[Local API layer]
+    R --> A
+    A --> U[OSIRIS dashboard]
+    U --> V[Map, panels, alerts, and analysis]
+```
+
+| Service | Responsibility |
+| --- | --- |
+| `worldmonitor` | Static application, local API handlers, and reverse proxy |
+| `redis` | Persistent last-good data cache |
+| `redis-rest` | Restricted Upstash-compatible Redis boundary |
+| `ais-relay` | Live maritime relay plus Weather and PizzINT refresh |
+| `local-seed-scheduler` | Sequential, bounded refresh of curated public data |
+
+The scheduler runs one child process at a time and defaults to a `0.50` CPU
+limit with `384 MB` of memory. Opening the dashboard reads warm local caches
+instead of launching a new crawler fan-out.
+
+## Run It Locally
+
+### Fast interface development
 
 ```bash
 git clone https://github.com/detinatran/dashboard.git
@@ -104,137 +166,149 @@ npm install
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000) (override the port with `DEV_PORT` in `.env.local`). The app runs with no environment variables.
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000). The core interface starts
+without provider keys; credential-backed features remain unavailable until they
+are configured.
 
-Feature-specific data sources may require credentials. See `.env.example` for the full list.
+### Complete local system
 
-### Complete self-hosted stack
-
-For the production-style setup used by this repository — frontend, API handlers, Redis cache, AIS relay, and scheduled data collectors — follow the [Docker self-hosting guide](SELF_HOSTING.md). It includes secure secret generation, cache seeding, health checks, and optional provider keys.
-
-For variant-specific development:
-
-```bash
-npm run dev:tech       # tech.worldmonitor.app
-npm run dev:finance    # finance.worldmonitor.app
-npm run dev:commodity  # commodity.worldmonitor.app
-npm run dev:happy      # happy.worldmonitor.app
-npm run dev:energy     # energy.worldmonitor.app
-```
-
-See the **[self-hosting guide](https://www.worldmonitor.app/docs/getting-started)** for deployment options (Vercel, Docker, static).
-
----
-
-## Tech Stack
-
-| Category | Technologies |
-|----------|-------------|
-| **Frontend** | Vanilla TypeScript, Vite, globe.gl + Three.js, deck.gl + MapLibre GL |
-| **Desktop** | Tauri 2 (Rust) with Node.js sidecar |
-| **AI/ML** | Ollama / Groq / OpenRouter, Transformers.js (browser-side) |
-| **API Contracts** | Protocol Buffers and sebuf HTTP annotations |
-| **Deployment** | Vercel Edge Functions, Railway relay, Tauri, PWA |
-| **Caching** | Redis (Upstash), 3-tier cache, CDN, service worker |
-
-Full stack details in the **[architecture docs](https://www.worldmonitor.app/docs/architecture)**.
-
----
-
-## Programmatic Access
-
-World Monitor is built for agents and scripts as well as browsers:
-
-- **MCP server** — `https://worldmonitor.app/mcp` (Streamable HTTP). Public `tools/list`; `tools/call` authenticates with a `X-WorldMonitor-Key` header or OAuth.
-  The server also publishes its Agent Skills through the draft `io.modelcontextprotocol/skills` extension (`skills/list`, `skills/get`, and `skill://…` resource reads).
-- **REST API** — base `https://api.worldmonitor.app`, described by the [OpenAPI spec](https://worldmonitor.app/openapi.yaml).
-- **CLI** — the official [`worldmonitor`](https://www.npmjs.com/package/worldmonitor) npm package (source in [`cli/`](cli/)):
-
-  ```sh
-  npx worldmonitor tools          # run ad-hoc — list every MCP tool (no key needed)
-  npm install -g worldmonitor     # or install the `worldmonitor` (alias `wm`) command
-  worldmonitor risk IR --api-key wm_xxx
-  ```
-
-- **SDKs** — official zero-dependency client libraries mirroring the CLI: Python [`worldmonitor-sdk`](https://pypi.org/project/worldmonitor-sdk/) (source in [`sdk/python/`](sdk/python/)), Ruby [`worldmonitor`](https://rubygems.org/gems/worldmonitor) ([`sdk/ruby/`](sdk/ruby/)), Go [`github.com/koala73/worldmonitor/sdk/go`](https://pkg.go.dev/github.com/koala73/worldmonitor/sdk/go) ([`sdk/go/`](sdk/go/)). Guide: [worldmonitor.app/docs/sdks](https://www.worldmonitor.app/docs/sdks).
-
-Agent discovery files: [`llms.txt`](https://worldmonitor.app/llms.txt) · [agent-skills manifest](https://worldmonitor.app/.well-known/agent-skills/index.json) · [api-catalog](https://worldmonitor.app/.well-known/api-catalog). Get an API key at [worldmonitor.app/pro](https://www.worldmonitor.app/pro).
-
----
-
-## Flight Data
-
-Flight data provided graciously by [Wingbits](https://wingbits.com?utm_source=worldmonitor&utm_medium=referral&utm_campaign=worldmonitor), the most advanced ADS-B flight data solution.
-
----
-
-## Data Sources
-
-WorldMonitor aggregates attributed upstream sources across geopolitics, finance, energy, climate, aviation, cyber, military, infrastructure, and news intelligence. Curated feeds and freshness-tracked source groups are published in the full [data sources catalog](https://www.worldmonitor.app/docs/data-sources), with provider, feed-tier, license-posture, and collection-method details.
-
----
-
-## Contributing
-
-Contributions welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+1. Copy `.env.example` to `.env`.
+2. Generate `RELAY_SHARED_SECRET`, `REDIS_PASSWORD`, `REDIS_TOKEN`, and
+   `WM_SESSION_SECRET` as independent random secrets.
+3. Start the production-style stack.
 
 ```bash
-npm run typecheck        # Type checking
-npm run build:full       # Production build
+docker compose up -d --build
+docker compose ps
 ```
 
----
+The complete setup, secret-generation commands, health checks, backup notes,
+and provider options are documented in [SELF_HOSTING.md](SELF_HOSTING.md).
 
-## License
+### Default provider policy
 
-**AGPL-3.0-only** for the source code. Commercial use is permitted under the AGPL when you comply with its copyleft and source-availability terms.
+| Profile | Integrations |
+| --- | --- |
+| Ready in the curated local stack | GPSJam, Weather, Canadian alerts, Sanctions, Forecasts, Military Flights, PortWatch, Hormuz tracker, PizzINT |
+| Optional after configuration | X intelligence, Telegram intelligence, Pro AI, provider-specific enrichments |
+| Disabled by default | Automated OpenSky fallback, non-commercial ADS-B gap fill, browser-time bulk crawling |
 
-| Use Case | Allowed? |
-|----------|----------|
-| Personal / research / educational | Yes, under AGPL-3.0-only |
-| Self-hosted instance | Yes, under AGPL-3.0-only |
-| Fork and modify | Yes, share source under AGPL-3.0-only when required |
-| Commercial use / SaaS | Yes, under AGPL-3.0-only when you comply with AGPL obligations |
-| Private-source proprietary use or official branding rights | Separate commercial or trademark permission needed |
+## Verified Quality
 
-See [LICENSE](LICENSE) for the full code license and [docs/license.mdx](docs/license.mdx) for a plain-language summary. Commercial licensing is available as an alternative option for teams that need non-AGPL terms.
+Application baseline verified on commit
+[`e6fba9f9c`](https://github.com/detinatran/dashboard/commit/e6fba9f9cfb115f0bc58efcad6b636c45755d335)
+against the production-style local Docker stack:
 
-Copyright (C) 2024-2026 Elie Habib. All rights reserved.
+| Verification gate | Result |
+| --- | ---: |
+| Production API checks | 9 / 9 passed |
+| Desktop and mobile acceptance flows | 30 / 30 passed |
+| DOM tests | 547 / 547 passed |
+| Sidecar tests | 401 / 401 passed |
+| Page errors | 0 |
+| Console errors | 0 |
+| Same-origin HTTP and request failures | 0 |
 
----
+The test profile is reproducible with the repository QA runner and does not
+include local screenshots, reports, secrets, or generated test artifacts in Git.
 
-## Author
+## Make It Yours
 
-**Elie Habib** — [GitHub](https://github.com/koala73)
+The README now uses a distinct repository identity, but a complete product
+rebrand should be deliberate. Use this checklist when changing **OSIRIS** to
+your final project name.
 
-## Contributors
+| Surface | Update here |
+| --- | --- |
+| Repository title, story, badges, and screenshots | `README.md` and `docs/images/showcase/` |
+| Browser title, SEO, Open Graph, and structured metadata | `index.html` |
+| Dashboard wordmark and footer | `src/app/panel-layout.ts` and locale files under `src/locales/` |
+| Web favicon and social artwork | `public/favico/` |
+| Desktop product name, identifier, descriptions, and icons | `src-tauri/tauri.conf.json` and `src-tauri/icons/` |
+| Visual palette and variant theme | `src/styles/` and `src/bootstrap/variant-theme.ts` |
+| Deployment domains and provider configuration | `.env`, `docker-compose.yml`, and deployment settings |
 
-<a href="https://github.com/koala73/worldmonitor/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=koala73/worldmonitor" />
-</a>
+Find every remaining product-name reference before shipping a full rebrand:
 
-## Security Acknowledgments
+```bash
+rg -n "World Monitor|worldmonitor" index.html src src-tauri public
+```
 
-We thank the following researchers for responsibly disclosing security issues:
+### Rename the GitHub repository
 
-- **Cody Richard** — Disclosed three security findings covering IPC command exposure, renderer-to-sidecar trust boundary analysis, and fetch patch credential injection architecture (2026)
+1. Open **Repository Settings > General > Repository name** on GitHub.
+2. Set your own description, website, and topics in the repository **About** box.
+3. Upload the prepared
+   [OSIRIS social preview](docs/images/brand/osiris-social-preview.jpg) under
+   **Settings > General > Social preview**.
+4. Update the local remote after renaming:
 
-See our [Security Policy](./SECURITY.md) for responsible disclosure guidelines.
+```bash
+git remote set-url origin https://github.com/detinatran/YOUR-NEW-NAME.git
+git remote -v
+```
 
----
+Do not replace upstream domains with your own until the corresponding API,
+documentation, and authentication endpoints actually exist. Keep the upstream
+credit and licence notices when publishing a modified distribution.
+
+## Project Structure
+
+```text
+src/                         Browser application and intelligence UI
+server/ and api/             API handlers and service boundaries
+scripts/                     Collectors, seeders, QA, and build tooling
+shared/                      Shared contracts and source metadata
+src-tauri/                   Native desktop shell and local sidecar
+docs/                        Architecture, operations, and attribution
+docker-compose.yml           Complete local service topology
+SELF_HOSTING.md              Production-style self-hosting guide
+```
+
+## Development
+
+```bash
+npm run typecheck:all
+npm run lint
+npm run lint:boundaries
+npm run test:dom
+npm run test:sidecar
+```
+
+Contributions and focused improvements are welcome. Read
+[CONTRIBUTING.md](CONTRIBUTING.md), open an issue in
+[detinatran/dashboard](https://github.com/detinatran/dashboard/issues), and keep
+new data sources explicit about provenance, cadence, and licensing.
+
+## Security and Responsible Use
+
+OSIRIS is an open-source situational-awareness interface, not a classified
+intelligence system, trading venue, or substitute for professional judgement.
+Correlation is not proof of causation. Verify consequential decisions against
+the cited primary sources and current operating conditions.
+
+Report vulnerabilities according to [SECURITY.md](SECURITY.md). Never commit
+provider keys, local `.env` files, session secrets, Redis credentials, or raw QA
+captures.
+
+## Attribution and License
+
+OSIRIS is an independently maintained modified distribution based on
+[World Monitor](https://github.com/koala73/worldmonitor), originally created by
+[Elie Habib](https://github.com/koala73).
+
+- Original work: Copyright (C) 2024-2026 Elie Habib.
+- Repository maintenance and modifications: Detina Tran and contributors.
+- Source code licence: [AGPL-3.0-only](LICENSE).
+- Third-party notices: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+- Trademark guidance: [docs/trademark-policy.mdx](docs/trademark-policy.mdx).
+- Source catalogue: [docs/source-attribution.mdx](docs/source-attribution.mdx).
+
+This repository is not affiliated with or endorsed by the upstream project.
+Names, logos, data, and third-party services remain the property of their
+respective owners.
 
 <p align="center">
-  <a href="https://www.worldmonitor.app">worldmonitor.app</a> &nbsp;·&nbsp;
-  <a href="https://www.worldmonitor.app/docs/documentation">docs.worldmonitor.app</a> &nbsp;·&nbsp;
-  <a href="https://finance.worldmonitor.app">finance.worldmonitor.app</a> &nbsp;·&nbsp;
-  <a href="https://commodity.worldmonitor.app">commodity.worldmonitor.app</a>
+  <strong>OSIRIS</strong><br>
+  <sub>Observe globally. Verify locally. Decide with context.</sub>
 </p>
-
-## Star History
-
-<a href="https://star-history.dera.page/#koala73/worldmonitor&type=Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=koala73/worldmonitor&type=Date&theme=dark" />
-   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=koala73/worldmonitor&type=Date" />
- </picture>
-</a>
