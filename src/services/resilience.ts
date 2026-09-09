@@ -31,18 +31,47 @@ function normalizeCountryCode(countryCode: string): string {
 }
 
 export async function getResilienceScore(countryCode: string): Promise<ResilienceScoreResponse> {
+  const normalized = normalizeCountryCode(countryCode);
+  const { hasPremiumApiAccess } = await import('@/services/panel-gating');
+  if (!hasPremiumApiAccess()) {
+    return {
+      countryCode: normalized,
+      overallScore: 0,
+      level: 'unavailable',
+      domains: [],
+      trend: '',
+      change30d: 0,
+      lowConfidence: true,
+      imputationShare: 1,
+      baselineScore: 0,
+      stressScore: 0,
+      stressFactor: 0,
+      dataVersion: '',
+      pillars: [],
+      schemaVersion: '',
+      headlineEligible: false,
+    };
+  }
   return getClient().getResilienceScore({
-    countryCode: normalizeCountryCode(countryCode),
+    countryCode: normalized,
   });
 }
 
 export async function getResilienceRanking(): Promise<ResilienceRankingResponse> {
+  const { hasPremiumApiAccess } = await import('@/services/panel-gating');
+  if (!hasPremiumApiAccess()) {
+    return { items: [], greyedOut: [], fetchedAt: '', scored: 0, total: 0, coverage: 0, partial: true };
+  }
   return getClient().getResilienceRanking({});
 }
 
 export async function getFoodStocks(
   opts: { countryCode?: string; commodity?: string; signal?: AbortSignal } = {},
 ): Promise<FoodStocksResponse> {
+  const { hasPremiumApiAccess } = await import('@/services/panel-gating');
+  if (!hasPremiumApiAccess()) {
+    return { records: [], fetchedAt: '', unavailable: true, calorieWeightedStocksToUse: 0 };
+  }
   return getClient().getFoodStocks(
     {
       countryCode: opts.countryCode ? normalizeCountryCode(opts.countryCode) || opts.countryCode.trim().toUpperCase() : '',
@@ -58,6 +87,15 @@ export async function getDemographicsCapability(
   opts: { countryCode: string; signal?: AbortSignal },
 ): Promise<DemographicsCapabilityResponse> {
   const normalized = normalizeCountryCode(opts.countryCode);
+  const { hasPremiumApiAccess } = await import('@/services/panel-gating');
+  if (!hasPremiumApiAccess()) {
+    return {
+      countryCode: normalized || opts.countryCode.trim().toUpperCase(),
+      available: false,
+      fetchedAt: '',
+      stages: [],
+    };
+  }
   return getClient().getDemographicsCapability(
     { countryCode: normalized || opts.countryCode.trim().toUpperCase() },
     opts.signal ? { signal: opts.signal } : undefined,

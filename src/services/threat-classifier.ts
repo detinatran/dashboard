@@ -382,7 +382,7 @@ import {
   configureClassifyGate,
   suppressAiClassification,
 } from '@/services/classify-gate';
-import { hasPremiumAccess } from '@/services/panel-gating';
+import { hasPremiumApiAccess } from '@/services/panel-gating';
 
 const classifyClient = new IntelligenceServiceClient(getRpcBaseUrl(), { fetch: premiumFetch });
 
@@ -390,9 +390,9 @@ const classifyClient = new IntelligenceServiceClient(getRpcBaseUrl(), { fetch: p
 // enqueue on the client-side entitlement signal so anon/free principals fall
 // back to keyword classification with ZERO network attempts — before this
 // gate, every incoming headline fired an RPC that 401/403'd (~570k wasted
-// requests/day). panel-gating's hasPremiumAccess is the dual-signal source
-// of truth (API key, tester keys, Clerk role, Convex entitlement).
-configureClassifyGate(() => hasPremiumAccess());
+// requests/day). Only dispatch when a real premium credential is available
+// (API key, tester keys, Clerk role, or Convex entitlement).
+configureClassifyGate(() => hasPremiumApiAccess());
 
 const classifyBreaker = createCircuitBreaker<ThreatClassification | null>({
   name: 'AIClassify',

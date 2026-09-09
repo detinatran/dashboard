@@ -157,12 +157,15 @@ const ALLOW_VERCEL_PREVIEW_ORIGINS = process.env.ALLOW_VERCEL_PREVIEW_ORIGINS ==
 // OpenSky proxy — routes through residential proxy to avoid Railway IP blocks
 const OPENSKY_PROXY_AUTH = process.env.OPENSKY_PROXY_AUTH || process.env.PROXY_URL || '';
 const OPENSKY_PROXY_ENABLED = !!OPENSKY_PROXY_AUTH;
+// Background OpenSky use is opt-in because an operator must first confirm an
+// eligible licence. This does not remove the authenticated manual proxy route.
+const OPENSKY_AUTOMATED_FALLBACK_ENABLED = process.env.WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK === '1';
 
 const PROXY_URL = process.env.PROXY_URL || ''; // generic residential proxy (US exit) — http://user:pass@host:port or host:port:user:pass (Decodo)
 
 // Tzeva Adom (primary) + OREF (fallback) siren alerts
 const TZEVA_ADOM_URL = 'https://api.tzevaadom.co.il/notifications';
-const OREF_PROXY_AUTH = process.env.OREF_PROXY_AUTH || ''; // format: user:pass@host:port
+const OREF_PROXY_AUTH = (process.env.OREF_PROXY_AUTH || '').trim(); // format: user:pass@host:port
 const OREF_ALERTS_URL = 'https://www.oref.org.il/WarningMessages/alert/alerts.json';
 const OREF_HISTORY_URL = 'https://www.oref.org.il/WarningMessages/alert/History/AlertsHistory.json';
 const OREF_POLL_INTERVAL_MS = Math.max(30_000, Number(process.env.OREF_POLL_INTERVAL_MS || 300_000));
@@ -1881,6 +1884,18 @@ async function orefBootstrapHistoryWithRetry() {
     }
   } catch (err) {
     console.warn('[Relay] OREF Redis bootstrap failed:', err?.message || err);
+  }
+
+  // OREF history is geofenced and the direct curl path requires an Israeli
+  // proxy. An empty optional OREF_PROXY_AUTH must not be turned into `-x
+  // http://`, which curl rejects as a malformed proxy argument. Keep any
+  // history restored from local storage/Redis above; live alerts can still use
+  // the proxy-free Tzeva Adom source. A non-empty but invalid proxy remains a
+  // real configuration error and proceeds to the retry/logging path below.
+  if (!OREF_PROXY_AVAILABLE) {
+    orefState.bootstrapSource = null;
+    console.log('[Relay] OREF upstream history bootstrap skipped (OREF_PROXY_AUTH not configured)');
+    return;
   }
 
   // Phase 2: upstream with retry + exponential backoff
@@ -4893,8 +4908,7 @@ const theaterPostureSourceCounts = { opensky: 0, adsbLol: 0, wingbits: 0, vessel
 let theaterPostureEmptyRejections = 0;
 let theaterPostureLastRun = null;
 
-async function seedTheaterPosture() {
-  const t0 = Date.now();
+async function fetchTheaterPostureFlights() {
   let flights = [];
   let flightSource = 'vessel-only';
   const adsbLol = await fetchTheaterFlightsFromAdsbLol();
@@ -4909,7 +4923,7 @@ async function seedTheaterPosture() {
     if (wb && wb.length > 0) {
       flights = wb;
       flightSource = 'wingbits';
-    } else {
+    } else if (OPENSKY_AUTOMATED_FALLBACK_ENABLED) {
       try {
         flights = await fetchTheaterFlightsFromOpenSky();
         if (flights.length > 0) flightSource = 'opensky';
@@ -4918,8 +4932,17 @@ async function seedTheaterPosture() {
       }
     }
   }
+  return { flights, flightSource };
+}
+
+async function seedTheaterPosture() {
+  const t0 = Date.now();
+  const { flights, flightSource } = await fetchTheaterPostureFlights();
   if (flights.length === 0) {
-    console.warn('[TheaterPosture] No military flights from adsb.lol, OpenSky, or Wingbits — continuing with vessel-only posture');
+    const fallbackSources = OPENSKY_AUTOMATED_FALLBACK_ENABLED
+      ? 'adsb.lol, Wingbits, or OpenSky'
+      : 'adsb.lol or Wingbits';
+    console.warn(`[TheaterPosture] No military flights from ${fallbackSources} — continuing with vessel-only posture`);
   }
   const theaters = calculateTheaterPostures(flights);
   const totalVessels = theaters.reduce((sum, t) => sum + t.trackedVessels, 0);
@@ -4996,7 +5019,7 @@ function startTheaterPostureSeedLoop() {
     return;
   }
   console.log(`[TheaterPosture] Seed loop starting (interval ${THEATER_POSTURE_SEED_INTERVAL_MS / 1000 / 60}min)`);
-  // Delay initial seed 30s to let the relay's OpenSky proxy start up
+  // Delay initial seed 30s to let relay dependencies settle.
   setTimeout(() => {
     startBootSeedLoop('TheaterPosture', 'seed-meta:theater-posture', THEATER_POSTURE_SEED_INTERVAL_MS, seedTheaterPosture, (e) => console.warn('[TheaterPosture] Initial seed error:', e?.message || e), (e) => console.warn('[TheaterPosture] Seed error:', e?.message || e));
   }, 30_000);

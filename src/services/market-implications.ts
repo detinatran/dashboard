@@ -84,6 +84,9 @@ export async function fetchMarketImplications(frameworkId = ''): Promise<MarketI
     }
   }
 
+  const { hasPremiumApiAccess } = await import('@/services/panel-gating');
+  if (!hasPremiumApiAccess()) return cached?.data ?? null;
+
   try {
     const url = new URL(toApiUrl('/api/intelligence/v1/list-market-implications'));
     if (frameworkId) url.searchParams.set('frameworkId', frameworkId);

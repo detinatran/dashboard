@@ -48,6 +48,7 @@ services:
       CLOUDFLARE_API_TOKEN: "${CLOUDFLARE_API_TOKEN:-}"
       AVIATIONSTACK_API: "${AVIATIONSTACK_API:-}"
       TRAVELPAYOUTS_API_TOKEN: "${TRAVELPAYOUTS_API_TOKEN:-}"
+      WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK: "${WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK:-0}"
     # Docker secrets (recommended for API keys — keeps them out of docker inspect).
     # Create secrets/ dir with one file per key, then uncomment below.
     # See SELF_HOSTING.md or docker-compose.override.yml for details.
@@ -80,10 +81,35 @@ services:
       UPSTASH_REDIS_REST_TOKEN: "${REDIS_TOKEN:?REDIS_TOKEN required — generate with: openssl rand -hex 32}"
       UPSTASH_ALLOW_INSECURE_HTTP: "true"
       UCDP_ACCESS_TOKEN: "${UCDP_ACCESS_TOKEN:-}"
+      WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK: "${WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK:-0}"
       PORT: "3004"
     depends_on:
       redis-rest:
         condition: service_started
+    restart: unless-stopped
+
+  local-seed-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: seed-scheduler
+    image: worldmonitor-local-seed-scheduler:latest
+    container_name: worldmonitor-local-seed-scheduler
+    init: true
+    environment:
+      UPSTASH_REDIS_REST_URL: "http://redis-rest:80"
+      REDIS_TOKEN: "${REDIS_TOKEN:?REDIS_TOKEN required - generate with: openssl rand -hex 32}"
+      UPSTASH_ALLOW_INSECURE_HTTP: "true"
+      LOCAL_SEED_EARTHQUAKES_ENABLED: "${LOCAL_SEED_EARTHQUAKES_ENABLED:-false}"
+      LOCAL_SEED_STARTUP_DELAY_MS: "${LOCAL_SEED_STARTUP_DELAY_MS:-10000}"
+      LOCAL_SEED_BETWEEN_JOBS_MS: "${LOCAL_SEED_BETWEEN_JOBS_MS:-2000}"
+    depends_on:
+      redis-rest:
+        condition: service_started
+    # Only one child seeder runs at once. These bounds keep the background
+    # cache refresh from competing with the dashboard on a laptop.
+    mem_limit: "${LOCAL_SEED_MEMORY_LIMIT:-384m}"
+    cpus: "${LOCAL_SEED_CPUS:-0.50}"
     restart: unless-stopped
 
   redis:

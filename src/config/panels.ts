@@ -9,6 +9,15 @@ import { isEntitled } from '@/services/entitlements';
 
 const _desktop = isDesktopRuntime();
 
+// Optional integrations that should not create UI or network work until an
+// operator deliberately configures and enables them. Forecast is intentionally
+// excluded: its Redis-backed, keyless path remains part of the default demo.
+export const DEFAULT_OFF_OPTIONAL_PANELS = [
+  'chat-analyst',
+  'telegram-intel',
+  'x-intel',
+] as const;
+
 // Iran-events domain sunset (war ended 2026-07). Default OFF: iranAttacks is
 // disabled in every variant default so DEFAULT_MAP_LAYERS agrees with the gated
 // layer registry (getAllowedLayerKeys strips it). Guarded so node:test — where
@@ -57,7 +66,7 @@ const FULL_PANELS: Record<string, PanelConfig> = {
   'stock-analysis': { name: 'Stock Analysis', enabled: true, priority: 1, premium: 'locked' as const },
   'stock-backtest': { name: 'Backtesting', enabled: true, priority: 1, premium: 'locked' as const },
   'daily-market-brief': { name: 'Daily Market Brief', enabled: true, priority: 1, premium: 'locked' as const },
-  'chat-analyst': { name: 'WM Analyst', enabled: true, priority: 1, premium: 'locked' as const },
+  'chat-analyst': { name: 'WM Analyst', enabled: false, priority: 1, premium: 'locked' as const },
   economic: { name: 'Macro Stress', enabled: true, priority: 1 },
   'global-procurement': { name: 'Global Procurement', enabled: true, priority: 1, premium: 'locked' as const },
   'trade-policy': { name: 'Trade Policy', enabled: true, priority: 1, premium: 'locked' as const },
@@ -122,8 +131,8 @@ const FULL_PANELS: Record<string, PanelConfig> = {
   'radiation-watch': { name: 'Radiation Watch', enabled: true, priority: 2 },
   'thermal-escalation': { name: 'Thermal Escalation', enabled: true, priority: 2 },
   'oref-sirens': { name: 'Israel Sirens', enabled: true, priority: 2, ...(_desktop && { premium: 'locked' as const }) },
-  'telegram-intel': { name: 'Telegram Intel', enabled: true, priority: 2, ...(_desktop && { premium: 'locked' as const }) },
-  'x-intel': { name: 'X News Accounts', enabled: true, priority: 2, ...(_desktop && { premium: 'locked' as const }) },
+  'telegram-intel': { name: 'Telegram Intel', enabled: false, priority: 2, ...(_desktop && { premium: 'locked' as const }) },
+  'x-intel': { name: 'X News Accounts', enabled: false, priority: 2, ...(_desktop && { premium: 'locked' as const }) },
   'airline-intel': { name: 'Airline Intelligence', enabled: true, priority: 2 },
   'tech-readiness': { name: 'Tech Readiness Index', enabled: true, priority: 2 },
   'world-clock': { name: 'World Clock', enabled: true, priority: 2 },
@@ -1376,6 +1385,26 @@ export function enforceFreePanelLimit(
 export function userSetPanelEnabled(config: PanelConfig, enabled: boolean): void {
   config.enabled = enabled;
   delete config.proGated;
+}
+
+/**
+ * Apply the one-time default-off migration for optional keyed integrations.
+ *
+ * Mutates the supplied live settings map so App can persist it with its other
+ * startup migrations. Clearing `proGated` matters: otherwise a later
+ * entitlement reconciliation could resurrect a panel this migration disabled.
+ */
+export function disableDefaultOffOptionalPanels(
+  panelSettings: Record<string, PanelConfig>,
+): boolean {
+  let changed = false;
+  for (const key of DEFAULT_OFF_OPTIONAL_PANELS) {
+    const config = panelSettings[key];
+    if (!config || (!config.enabled && !config.proGated)) continue;
+    userSetPanelEnabled(config, false);
+    changed = true;
+  }
+  return changed;
 }
 
 /**

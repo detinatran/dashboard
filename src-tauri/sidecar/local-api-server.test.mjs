@@ -995,6 +995,70 @@ test('allows only Docker mode to fetch configured private Redis REST origin', as
   }
 });
 
+test('allows only Docker mode to fetch the configured private WS relay origin', async () => {
+  const originalRelayUrl = process.env.WS_RELAY_URL;
+  let upstreamHits = 0;
+
+  const upstream = createServer((_req, res) => {
+    upstreamHits += 1;
+    res.writeHead(200, { 'content-type': 'application/json' });
+    res.end(JSON.stringify({ relay: 'ok' }));
+  });
+  const upstreamPort = await listen(upstream);
+  process.env.WS_RELAY_URL = `ws://127.0.0.1:${upstreamPort}`;
+
+  const localApi = await setupApiDir({
+    'relay-probe.js': `
+      export default async function handler() {
+        const relayUrl = process.env.WS_RELAY_URL
+          .replace('wss://', 'https://')
+          .replace('ws://', 'http://');
+        const upstream = await fetch(relayUrl + '/health');
+        return new Response(await upstream.text(), {
+          status: upstream.status,
+          headers: { 'content-type': 'application/json' },
+        });
+      }
+    `,
+  });
+
+  async function runProbe(mode) {
+    const app = await createLocalApiServer({
+      port: 0,
+      apiDir: localApi.apiDir,
+      mode,
+      logger: { log() { }, warn() { }, error() { } },
+    });
+    const { port } = await app.start();
+    try {
+      return await authFetch(`http://127.0.0.1:${port}/api/relay-probe`);
+    } finally {
+      await app.close();
+    }
+  }
+
+  try {
+    const dockerResponse = await runProbe('docker');
+    assert.equal(dockerResponse.status, 200);
+    assert.deepEqual(await dockerResponse.json(), { relay: 'ok' });
+    assert.equal(upstreamHits, 1);
+
+    const desktopResponse = await runProbe('desktop-sidecar');
+    assert.equal(desktopResponse.status, 502);
+    const desktopBody = await desktopResponse.json();
+    assert.equal(desktopBody.error, 'Local handler error');
+    assert.match(desktopBody.reason, /SSRF blocked/);
+    assert.equal(upstreamHits, 1);
+  } finally {
+    if (originalRelayUrl === undefined) delete process.env.WS_RELAY_URL;
+    else process.env.WS_RELAY_URL = originalRelayUrl;
+    await localApi.cleanup();
+    await new Promise((resolve, reject) => {
+      upstream.close((error) => (error ? reject(error) : resolve()));
+    });
+  }
+});
+
 test('allows only Docker mode to fetch configured private LLM origins', async () => {
   const envSnapshot = {
     LLM_API_URL: process.env.LLM_API_URL,

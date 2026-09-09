@@ -8,7 +8,7 @@ import DOMPurify from 'dompurify';
 import type { NewsItem, DeductContextDetail } from '@/types';
 import { buildNewsContext } from '@/utils/news-context';
 import { getActiveFrameworkForPanel } from '@/services/analysis-framework-store';
-import { hasPremiumAccess } from '@/services/panel-gating';
+import { hasPremiumAccess, hasPremiumApiAccess } from '@/services/panel-gating';
 import { FrameworkSelector } from './FrameworkSelector';
 import { extractDeductionProbability } from './deduction-probability';
 import { IntelligenceServiceClient } from '@/services/generated-rpc-clients';
@@ -226,6 +226,12 @@ export class DeductionPanel extends Panel {
 
         const query = this.inputEl.value.trim();
         if (!query) return;
+
+        if (!hasPremiumApiAccess()) {
+            this.resultContainer.className = 'deduction-result';
+            this.resultContainer.textContent = 'Connect a World Monitor Pro account or license key to run AI analysis.';
+            return;
+        }
 
         let geoContext = this.geoInputEl.value.trim();
 

@@ -2,7 +2,7 @@ import { Panel } from './Panel';
 import { createLazyClient, getRpcBaseUrl } from '@/services/rpc-client';
 import { premiumFetch } from '@/services/premium-fetch';
 import { IS_EMBEDDED_PREVIEW } from '@/utils/embedded-preview';
-import { hasPremiumAccess } from '@/services/panel-gating';
+import { hasPremiumApiAccess } from '@/services/panel-gating';
 import { subscribeAuthState } from '@/services/auth-state';
 import { onEntitlementChange } from '@/services/entitlements';
 
@@ -103,7 +103,7 @@ export class RegionalIntelligenceBoard extends Panel {
     replaceChildren(this.content, h('div', { className: 'rib-shell' }, controls, this.body));
 
     this.renderLoading();
-    this.lastHadPremium = hasPremiumAccess();
+    this.lastHadPremium = hasPremiumApiAccess();
     void this.loadCurrent();
 
     // Re-fire loadCurrent on false→true entitlement transitions (user signs
@@ -137,7 +137,7 @@ export class RegionalIntelligenceBoard extends Panel {
   }
 
   private handlePremiumAccessChange(): void {
-    const hasPremium = hasPremiumAccess();
+    const hasPremium = hasPremiumApiAccess();
     if (hasPremium && !this.lastHadPremium) {
       this.lastHadPremium = true;
       void this.loadCurrent();
@@ -174,7 +174,7 @@ export class RegionalIntelligenceBoard extends Panel {
     // config + apiKeyPanels entry already keeps it visually hidden until
     // the user is PRO — this just stops the RPC from firing during the
     // constructor's `void this.loadCurrent()` before Clerk auth resolves.
-    if (!hasPremiumAccess()) {
+    if (!hasPremiumApiAccess()) {
       this.renderEmpty();
       return;
     }

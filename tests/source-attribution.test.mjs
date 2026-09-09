@@ -83,6 +83,16 @@ test('source inventory has complete metadata and matches the generated catalog',
   const generated = renderAttributionSection(inventory, manifest);
   const actual = matchGeneratedAttributionSection(docs);
   assert.equal(actual, generated, 'docs/source-attribution.mdx must contain exactly the generated attribution section');
+  assert.equal(
+    matchGeneratedAttributionSection(generated.replaceAll('\n', '\r\n')),
+    generated,
+    'generated attribution markers must remain readable after a Windows CRLF checkout',
+  );
+  assert.equal(
+    docs.match(/\{\/\* BEGIN GENERATED SOURCE ATTRIBUTION \*\/\}/g)?.length,
+    1,
+    'docs/source-attribution.mdx must not contain duplicate generated inventories',
+  );
   assert.match(generated, /\| Provider \| Observed surface \|/);
   for (const forbidden of [
     /\blicen[cs]\w*/i,

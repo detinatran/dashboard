@@ -24,6 +24,7 @@ import {
   restoreFreeMapPanelAccess,
   restoreProGatedPanels,
   userSetPanelEnabled,
+  disableDefaultOffOptionalPanels,
   shouldDeferFreeTierEnforcement,
   FREE_MAX_PANELS,
   FREE_MAX_SOURCES,
@@ -712,10 +713,10 @@ export class App {
       const panel = this.state.panels['energy-crisis'] as EnergyCrisisPanel | undefined;
       if (panel) primeTask('energy-crisis', () => panel.fetchData());
     }
-    if (shouldPrime('telegram-intel')) {
+    if (this.state.panelSettings['telegram-intel']?.enabled && shouldPrime('telegram-intel')) {
       primeTask('telegram-intel', () => this.dataLoader.loadTelegramIntel());
     }
-    if (shouldPrime('x-intel')) {
+    if (this.state.panelSettings['x-intel']?.enabled && shouldPrime('x-intel')) {
       primeTask('x-intel', () => this.dataLoader.loadXIntel());
     }
     if (shouldPrime('gulf-economies')) {
@@ -1154,6 +1155,18 @@ export class App {
     }
 
     if (storageAvailable) {
+      // Existing profiles may still carry the old default-on values. Disable
+      // these keyed integrations once, while leaving later explicit user
+      // opt-ins alone. The helper also clears stale proGated ownership so an
+      // entitlement refresh cannot immediately restore them.
+      const OPTIONAL_API_PANELS_DEFAULT_OFF_MIGRATION_KEY = 'worldmonitor-optional-api-panels-default-off-v1';
+      if (!localStorage.getItem(OPTIONAL_API_PANELS_DEFAULT_OFF_MIGRATION_KEY)) {
+        if (disableDefaultOffOptionalPanels(panelSettings)) {
+          saveToStorage(STORAGE_KEYS.panels, panelSettings);
+        }
+        localStorage.setItem(OPTIONAL_API_PANELS_DEFAULT_OFF_MIGRATION_KEY, 'done');
+      }
+
       // One-time migration: prune removed panel keys from stored settings and order
       const PANEL_PRUNE_KEY = 'worldmonitor-panel-prune-v1';
       if (!localStorage.getItem(PANEL_PRUNE_KEY)) {
@@ -3499,14 +3512,16 @@ export class App {
       'telegram-intel',
       () => this.dataLoader.loadTelegramIntel(),
       REFRESH_INTERVALS.telegramIntel,
-      () => this.isPanelNearViewport('telegram-intel')
+      () => !!this.state.panelSettings['telegram-intel']?.enabled
+        && this.isPanelNearViewport('telegram-intel')
     );
 
     this.refreshScheduler.scheduleRefresh(
       'x-intel',
       () => this.dataLoader.loadXIntel(),
       REFRESH_INTERVALS.xIntel,
-      () => this.isPanelNearViewport('x-intel')
+      () => !!this.state.panelSettings['x-intel']?.enabled
+        && this.isPanelNearViewport('x-intel')
     );
 
     this.refreshScheduler.scheduleRefresh(

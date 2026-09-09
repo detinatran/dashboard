@@ -7,7 +7,8 @@
  * gate gets its own pair there, not another `readX`/`evaluateX` in this file.
  *
  * What stays here is what every gate shares: the access predicate
- * (`hasPremiumAccess`), the reason enum and its billing-aware refinement, and
+ * (`hasPremiumAccess` / `hasPremiumApiAccess`), the reason enum and its
+ * billing-aware refinement, and
  * the CTA action resolver. Gate modules import from this file; it imports from
  * none of them, so the dependency runs one way.
  */
@@ -53,7 +54,7 @@ export function isLocalSelfHostedAccess(): boolean {
 }
 
 /**
- * Single source of truth for premium access.
+ * Single source of truth for credential-backed premium API access.
  * Covers all access paths: desktop API key, tester keys (wm-pro-key / wm-widget-key),
  * Clerk Pro role, and Convex Dodo entitlement (the latter two via isProUser).
  *
@@ -67,15 +68,23 @@ export function isLocalSelfHostedAccess(): boolean {
  *
  * isEntitled() is folded into isProUser() (see widget-store.ts) so every
  * call site that checks isProUser — widgets, search, event handlers —
- * agrees with panel gating. That keeps this function a thin union of
+ * agrees with panel gating. That keeps this predicate a thin union of
  * signals that aren't already covered by isProUser.
  */
-export function hasPremiumAccess(authState?: AuthSession): boolean {
-  if (isLocalSelfHostedAccess()) return true;
+export function hasPremiumApiAccess(authState?: AuthSession): boolean {
   if (getSecretState('WORLDMONITOR_API_KEY').present) return true;
   if (isProUser()) return true;
   if (authState?.user?.role === 'pro') return true;
   return false;
+}
+
+/**
+ * Product/UI access predicate. Loopback self-hosts show the complete dashboard
+ * as a demo, while hasPremiumApiAccess() still prevents unauthenticated Pro RPCs.
+ */
+export function hasPremiumAccess(authState?: AuthSession): boolean {
+  if (isLocalSelfHostedAccess()) return true;
+  return hasPremiumApiAccess(authState);
 }
 
 /**

@@ -2994,6 +2994,7 @@ describe('military flights bbox behavior', { concurrency: 1 }, () => {
       UPSTASH_REDIS_REST_TOKEN: 'token',
       LOCAL_API_MODE: undefined,
       WS_RELAY_URL: 'wss://relay.test',
+      WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK: '1',
       VERCEL_ENV: undefined,
       VERCEL_GIT_COMMIT_SHA: undefined,
     });
@@ -3469,6 +3470,7 @@ describe('military flights bbox behavior', { concurrency: 1 }, () => {
         UPSTASH_REDIS_REST_TOKEN: 'token',
         LOCAL_API_MODE: undefined,
         WS_RELAY_URL: 'wss://relay.test',
+        WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK: '1',
         VERCEL_ENV: undefined,
         VERCEL_GIT_COMMIT_SHA: undefined,
       });
@@ -3521,13 +3523,14 @@ describe('military flights bbox behavior', { concurrency: 1 }, () => {
     }
   });
 
-  it('still uses request-specific recovery when the seed snapshot is missing', async () => {
+  it('uses request-specific recovery after an explicit operator opt-in', async () => {
     const { module, cleanup } = await importListMilitaryFlights();
     const restoreEnv = withEnv({
       UPSTASH_REDIS_REST_URL: 'https://redis.test',
       UPSTASH_REDIS_REST_TOKEN: 'token',
       LOCAL_API_MODE: undefined,
       WS_RELAY_URL: 'wss://relay.test',
+      WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK: '1',
       VERCEL_ENV: undefined,
       VERCEL_GIT_COMMIT_SHA: undefined,
     });
@@ -3563,6 +3566,46 @@ describe('military flights bbox behavior', { concurrency: 1 }, () => {
       assert.equal(liveSeedReads, 1, 'the global snapshot must be consulted before provider recovery');
       assert.equal(openskyCalls, 1, 'a snapshot miss must still reach request-specific recovery');
       assert.deepEqual(result.flights.map((flight) => flight.id), ['OUTSIDE-REGION']);
+    } finally {
+      cleanup();
+      globalThis.fetch = originalFetch;
+      restoreEnv();
+    }
+  });
+
+  it('keeps automated OpenSky recovery disabled by default when the seed is missing', async () => {
+    const { module, cleanup } = await importListMilitaryFlights();
+    module._resetStaleNegativeCacheForTests();
+    const restoreEnv = withEnv({
+      UPSTASH_REDIS_REST_URL: 'https://redis.test',
+      UPSTASH_REDIS_REST_TOKEN: 'token',
+      LOCAL_API_MODE: undefined,
+      WS_RELAY_URL: 'wss://relay.test',
+      WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK: undefined,
+      VERCEL_ENV: undefined,
+      VERCEL_GIT_COMMIT_SHA: undefined,
+    });
+    const originalFetch = globalThis.fetch;
+    let openskyCalls = 0;
+
+    globalThis.fetch = async (url, init) => {
+      const raw = String(url);
+      if (raw.includes('/get/')) return jsonResponse({ result: null });
+      if (isSetRequest(url, init)) return jsonResponse({ result: 'OK' });
+      if (raw.includes('/opensky')) {
+        openskyCalls += 1;
+        return jsonResponse({ states: [] });
+      }
+      throw new Error(`Unexpected fetch URL: ${raw}`);
+    };
+
+    try {
+      const result = await module.listMilitaryFlights(
+        { request: new Request('https://wm.test/api/military/v1/list-military-flights') },
+        request,
+      );
+      assert.equal(openskyCalls, 0, 'a cold cache must not silently opt the operator into OpenSky');
+      assert.deepEqual(result, { flights: [], clusters: [], pagination: { nextCursor: '', totalCount: 0 } });
     } finally {
       cleanup();
       globalThis.fetch = originalFetch;
@@ -3614,6 +3657,7 @@ describe('military flights bbox behavior', { concurrency: 1 }, () => {
     const restoreEnv = withEnv({
       LOCAL_API_MODE: 'sidecar',
       WS_RELAY_URL: undefined,
+      WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK: '1',
       UPSTASH_REDIS_REST_URL: undefined,
       UPSTASH_REDIS_REST_TOKEN: undefined,
     });
@@ -3665,6 +3709,7 @@ describe('military flights bbox behavior', { concurrency: 1 }, () => {
     const restoreEnv = withEnv({
       LOCAL_API_MODE: 'sidecar',
       WS_RELAY_URL: undefined,
+      WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK: '1',
       UPSTASH_REDIS_REST_URL: undefined,
       UPSTASH_REDIS_REST_TOKEN: undefined,
     });
@@ -3764,6 +3809,7 @@ describe('military flights bbox behavior', { concurrency: 1 }, () => {
       UPSTASH_REDIS_REST_TOKEN: 'token',
       LOCAL_API_MODE: 'sidecar',
       WS_RELAY_URL: undefined,
+      WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK: '1',
       VERCEL_ENV: undefined,
       VERCEL_GIT_COMMIT_SHA: undefined,
     });

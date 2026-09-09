@@ -28,6 +28,8 @@ export async function runScenario(
   req: RunScenarioRequest,
   options?: { signal?: AbortSignal },
 ): Promise<RunScenarioResponse> {
+  const { hasPremiumApiAccess } = await import('@/services/panel-gating');
+  if (!hasPremiumApiAccess()) return { jobId: '', status: 'unavailable', statusUrl: '' };
   return client.runScenario(req, { signal: options?.signal });
 }
 
@@ -39,6 +41,8 @@ export async function getScenarioStatus(
   jobId: string,
   options?: { signal?: AbortSignal },
 ): Promise<GetScenarioStatusResponse> {
+  const { hasPremiumApiAccess } = await import('@/services/panel-gating');
+  if (!hasPremiumApiAccess()) return { status: 'failed', error: 'Premium API credentials are required.' };
   return client.getScenarioStatus({ jobId }, { signal: options?.signal });
 }
 

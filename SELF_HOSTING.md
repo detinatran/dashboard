@@ -26,8 +26,9 @@ echo "WM_SESSION_SECRET=$(openssl rand -hex 32)"   >> .env
 # 3. Start the stack
 docker compose up -d        # or: uvx podman-compose up -d
 
-# 4. Seed data into Redis
-./scripts/run-seeders.sh
+# 4. The local-seed-scheduler container warms the curated Redis caches.
+#    Ctrl+C stops log following, not the scheduler service.
+docker compose logs -f local-seed-scheduler
 
 # 5. Open the dashboard
 open http://localhost:3000
@@ -123,21 +124,62 @@ services:
 
 ## 🌱 Seeding Data
 
-The seed scripts fetch upstream data and write it to Redis. They run **on the host** (not inside the container) and need the Redis REST proxy to be running.
+The Compose stack includes `local-seed-scheduler`, a laptop-friendly cache
+refresher. It runs only one child process at a time, waits after a job finishes
+before scheduling its next interval, and preserves each seeder's last-good
+Redis value when an upstream is unavailable.
+
+| Data | Cadence | Notes |
+| --- | --- | --- |
+| Military flights | 5 minutes | ADSB.lol primary; automated OpenSky fallback is not part of this seeder |
+| Alberta, B.C., and Saskatchewan alerts | 15 minutes | Three public provincial feeds, executed sequentially |
+| Forecasts | 1 hour | Runs independently; the military seed cannot trigger a duplicate forecast |
+| Sanctions | 6 hours | Public sanctions sources |
+| PortWatch | 6 hours | Port disruptions, port calls, and chokepoint reference data |
+| GPSJam | 24 hours | Daily upstream; writes its local artifact to `/tmp` and publishes to Redis |
+| Hormuz tracker | 24 hours | WTO trade-tracker snapshot cached for the supply-chain view |
+| Earthquakes | 5 minutes | Optional; set `LOCAL_SEED_EARTHQUAKES_ENABLED=true` |
+
+ADSB.lol is the default military-flight source. Automated OpenSky fallback is
+off unless `WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK=1`; enable it only after
+confirming that your OpenSky account and licence cover the intended use.
+
+Weather and PizzINT are intentionally absent from this list because
+`ais-relay` already refreshes their Redis caches. The scheduler maps the local
+`REDIS_TOKEN` to the Upstash-compatible variable expected by seed scripts;
+neither the scheduler nor GPSJam prints that token.
+
+The defaults cap the scheduler at half a CPU and 384 MB. Override them in
+`.env` only if a slower machine needs a tighter limit or forecast processing
+needs more memory:
+
+```dotenv
+LOCAL_SEED_MEMORY_LIMIT=384m
+LOCAL_SEED_CPUS=0.50
+LOCAL_SEED_STARTUP_DELAY_MS=10000
+LOCAL_SEED_BETWEEN_JOBS_MS=2000
+LOCAL_SEED_EARTHQUAKES_ENABLED=false
+```
+
+Inspect the loop without entering a container:
 
 ```bash
-# Run all seeders (auto-sources API keys from docker-compose.override.yml)
+docker compose logs -f local-seed-scheduler
+```
+
+The seed scripts can also run **on the host** for one-off maintenance and need
+the Redis REST proxy to be running.
+
+```bash
+# Optional, high-load maintenance run of every seeder. This is not recommended
+# for the normal laptop workflow; Compose already runs the curated set above.
 ./scripts/run-seeders.sh
 ```
 
 **⚠️ Important:** Redis data persists across container restarts via the `redis-data` volume, but is lost on `docker compose down -v`. Re-run the seeders if you remove volumes or see stale data.
 
-To automate, add a cron job:
-
-```bash
-# Re-seed every 30 minutes
-*/30 * * * * cd /path/to/worldmonitor && ./scripts/run-seeders.sh >> /tmp/wm-seeders.log 2>&1
-```
+No host cron job is needed for the Compose workflow. Docker restarts the
+scheduler with the rest of the stack.
 
 **Per-seeder timeout (`SEED_TIMEOUT`):** standalone seeders are each wrapped in a
 wall-clock cap so one hung upstream can't starve the rest of the run. It defaults
@@ -189,7 +231,8 @@ node scripts/seed-military-flights.mjs
 | `worldmonitor` | nginx + Node.js API (supervisord) | 3000 → 8080 |
 | `worldmonitor-redis` | Data store | 6379 (internal) |
 | `worldmonitor-redis-rest` | Upstash-compatible REST proxy | 8079 |
-| `worldmonitor-ais-relay` | Live vessel tracking WebSocket | 3004 (internal) |
+| `worldmonitor-ais-relay` | Live vessel tracking WebSocket plus Weather/PizzINT refresh | 3004 (internal) |
+| `worldmonitor-local-seed-scheduler` | Sequential curated Redis cache refresh | none |
 
 > **`redis-rest` command allowlist**: the bundled proxy (`docker/redis-rest-proxy.mjs`) only
 > forwards a fixed allowlist of Redis commands. It permits one byte-pinned `EVAL` script for
@@ -294,8 +337,7 @@ npm run build:pro && npx vite build
 docker build -t worldmonitor:latest -f Dockerfile .
 
 # Rebuild and restart
-docker compose down && docker compose up -d
-./scripts/run-seeders.sh
+docker compose down && docker compose up -d --build
 ```
 
 ### ⚠️ Build Notes

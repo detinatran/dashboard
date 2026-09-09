@@ -22,6 +22,8 @@ vi.mock('@/services/panel-gating', async (importOriginal) => ({
   hasPremiumAccess: () => true,
 }));
 
+const { DataLoaderManager } = await import('@/app/data-loader');
+
 function deferred<T>() {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>((onResolve) => { resolve = onResolve; });
@@ -35,7 +37,11 @@ const feed = (count: number): XFeedResponse => ({
 describe('X feed DataLoader lifecycle', () => {
   it('hydrates immediately and ignores a late live result after teardown', async () => {
     const panel = { setData: vi.fn() };
-    const ctx = { panels: { 'x-intel': panel }, isDestroyed: false } as unknown as AppContext;
+    const ctx = {
+      panels: { 'x-intel': panel },
+      panelSettings: { 'x-intel': { enabled: true } },
+      isDestroyed: false,
+    } as unknown as AppContext;
     const live = deferred<XFeedResponse>();
     mocks.getHydratedData.mockReset();
     mocks.getHydratedData.mockReturnValue(feed(1));
@@ -44,7 +50,6 @@ describe('X feed DataLoader lifecycle', () => {
       signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), { once: true });
       live.promise.then(resolve, reject);
     }));
-    const { DataLoaderManager } = await import('@/app/data-loader');
     const loader = new DataLoaderManager(ctx, {
       renderCriticalBanner: () => undefined,
       refreshOpenCountryBrief: () => undefined,
@@ -63,12 +68,15 @@ describe('X feed DataLoader lifecycle', () => {
 
   it('keeps hydrated X panel data when the live fetch fails', async () => {
     const panel = { setData: vi.fn() };
-    const ctx = { panels: { 'x-intel': panel }, isDestroyed: false } as unknown as AppContext;
+    const ctx = {
+      panels: { 'x-intel': panel },
+      panelSettings: { 'x-intel': { enabled: true } },
+      isDestroyed: false,
+    } as unknown as AppContext;
     mocks.getHydratedData.mockReset();
     mocks.getHydratedData.mockReturnValue(feed(3));
     mocks.fetchXFeed.mockReset();
     mocks.fetchXFeed.mockRejectedValueOnce(new Error('network down'));
-    const { DataLoaderManager } = await import('@/app/data-loader');
     const loader = new DataLoaderManager(ctx, {
       renderCriticalBanner: () => undefined,
       refreshOpenCountryBrief: () => undefined,
@@ -82,7 +90,11 @@ describe('X feed DataLoader lifecycle', () => {
 
   it('does not render expired hydrated post bodies after a live failure', async () => {
     const panel = { setData: vi.fn(), showError: vi.fn() };
-    const ctx = { panels: { 'x-intel': panel }, isDestroyed: false } as unknown as AppContext;
+    const ctx = {
+      panels: { 'x-intel': panel },
+      panelSettings: { 'x-intel': { enabled: true } },
+      isDestroyed: false,
+    } as unknown as AppContext;
     mocks.getHydratedData.mockReset();
     mocks.getHydratedData.mockReturnValue({
       ...feed(1),
@@ -91,7 +103,6 @@ describe('X feed DataLoader lifecycle', () => {
     });
     mocks.fetchXFeed.mockReset();
     mocks.fetchXFeed.mockRejectedValueOnce(new Error('network down'));
-    const { DataLoaderManager } = await import('@/app/data-loader');
     const loader = new DataLoaderManager(ctx, {
       renderCriticalBanner: () => undefined,
       refreshOpenCountryBrief: () => undefined,
@@ -111,12 +122,15 @@ describe('X feed DataLoader lifecycle', () => {
 
   it('keeps a good live render when a later fetch fails, instead of blanking it', async () => {
     const panel = { setData: vi.fn(), showError: vi.fn() };
-    const ctx = { panels: { 'x-intel': panel }, isDestroyed: false } as unknown as AppContext;
+    const ctx = {
+      panels: { 'x-intel': panel },
+      panelSettings: { 'x-intel': { enabled: true } },
+      isDestroyed: false,
+    } as unknown as AppContext;
     mocks.getHydratedData.mockReset();
     mocks.getHydratedData.mockReturnValue(undefined);
     mocks.fetchXFeed.mockReset();
     mocks.fetchXFeed.mockResolvedValueOnce(feed(4));
-    const { DataLoaderManager } = await import('@/app/data-loader');
     const loader = new DataLoaderManager(ctx, {
       renderCriticalBanner: () => undefined,
       refreshOpenCountryBrief: () => undefined,

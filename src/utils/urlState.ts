@@ -167,12 +167,14 @@ export function buildMapUrl(
   }
   const params = new URLSearchParams();
 
-  if (state.center) {
+  if (state.center && Number.isFinite(state.center.lat) && Number.isFinite(state.center.lon)) {
     params.set('lat', state.center.lat.toFixed(4));
     params.set('lon', state.center.lon.toFixed(4));
   }
 
-  params.set('zoom', state.zoom.toFixed(2));
+  if (Number.isFinite(state.zoom)) {
+    params.set('zoom', clamp(state.zoom, 1, 10).toFixed(2));
+  }
   params.set('view', state.view);
   params.set('timeRange', state.timeRange);
 

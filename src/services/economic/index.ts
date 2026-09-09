@@ -18,7 +18,7 @@ import { ensureHydrated, getHydratedData } from '@/services/bootstrap';
 import { mergeCbrPolicyRate } from './cbr-policy-rate';
 import { degradedSources, toEurSpotRows, toFxStressRows, toRubQuoteRows, toUsdSpotRows, type FxPanelRows } from './fx-rates';
 import { toApiUrl } from '@/services/runtime';
-import { hasPremiumAccess } from '@/services/panel-gating';
+import { hasPremiumApiAccess } from '@/services/panel-gating';
 import { EconomicServiceClient } from '@/services/generated-rpc-clients';
 
 // ---- Client + Circuit Breakers ----
@@ -740,7 +740,7 @@ async function _fetchNationalDebt(): Promise<GetNationalDebtResponse> {
   // call deterministically 401s for an anonymous client and the breaker
   // returns emptyNationalDebtFallback anyway — same outcome as us, minus
   // the Sentry/console noise on every page load.
-  if (!hasPremiumAccess()) {
+  if (!hasPremiumApiAccess()) {
     return emptyNationalDebtFallback;
   }
 

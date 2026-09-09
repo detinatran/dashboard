@@ -77,8 +77,26 @@ export function initDeferredDashboardFonts(): void {
   scheduleAfterFirstPaint(loadDeferredDashboardFonts, 3000);
 }
 
+/**
+ * Vercel Web Analytics serves its browser script from a deployment-owned
+ * `/_vercel/insights/` route. A production bundle can also run behind a local
+ * or self-hosted origin, where that path falls through to the SPA and returns
+ * HTML with the wrong MIME type. Only schedule the loader on hosts we deploy
+ * through Vercel.
+ */
+export function isVercelAnalyticsHost(hostname: string): boolean {
+  const normalized = hostname.trim().toLowerCase().replace(/\.$/, '');
+  return normalized === 'worldmonitor.app'
+    || normalized.endsWith('.worldmonitor.app')
+    || normalized.endsWith('.vercel.app');
+}
+
 export function initVercelAnalytics(): void {
-  if (vercelAnalyticsScheduled || typeof window === 'undefined') return;
+  if (
+    vercelAnalyticsScheduled
+    || typeof window === 'undefined'
+    || !isVercelAnalyticsHost(window.location.hostname)
+  ) return;
   vercelAnalyticsScheduled = true;
   scheduleAfterFirstPaint(() => {
     void import('@vercel/analytics')

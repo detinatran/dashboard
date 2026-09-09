@@ -4,7 +4,10 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { dashboardFontFamilies } from '../src/bootstrap/secondary-startup.ts';
+import {
+  dashboardFontFamilies,
+  isVercelAnalyticsHost,
+} from '../src/bootstrap/secondary-startup.ts';
 import { scheduleAfterFirstPaint } from '../src/utils/after-paint.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -79,6 +82,15 @@ describe('secondary dashboard startup', () => {
 
   it('combines Nunito + Tajawal for the Arabic happy dashboard', () => {
     assert.deepEqual(dashboardFontFamilies({ variant: 'happy', lang: 'ar', dir: 'rtl' }), ['nunito', 'tajawal']);
+  });
+
+  it('loads Vercel Analytics only on Vercel-backed dashboard hosts', () => {
+    assert.equal(isVercelAnalyticsHost('worldmonitor.app'), true);
+    assert.equal(isVercelAnalyticsHost('tech.worldmonitor.app'), true);
+    assert.equal(isVercelAnalyticsHost('worldmonitor-preview.vercel.app'), true);
+    assert.equal(isVercelAnalyticsHost('127.0.0.1'), false);
+    assert.equal(isVercelAnalyticsHost('localhost'), false);
+    assert.equal(isVercelAnalyticsHost('self-hosted.example'), false);
   });
 });
 

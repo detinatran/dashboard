@@ -79,7 +79,10 @@ before(async () => {
         export function createMapContainerHarness() {
           const map = Object.create(MapContainer.prototype);
           const internals = {
-            container: { removeEventListener() {} },
+            container: {
+              dispatchEvent() { return true; },
+              removeEventListener() {},
+            },
             rendererReady: false,
             rendererReadyWaiters: new Set(),
             rendererDemandRequested: false,
