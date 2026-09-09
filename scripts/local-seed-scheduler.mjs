@@ -55,6 +55,14 @@ export const LOCAL_SEED_JOBS = Object.freeze([
     timeoutMs: 2 * MINUTE,
   }),
   Object.freeze({
+    id: 'chokepoint-baselines',
+    script: 'seed-chokepoint-baselines.mjs',
+    // PortWatch flow estimates need the static EIA reference before they run.
+    // Refresh weekly, well inside the reference cache's 400-day TTL.
+    intervalMs: 7 * DAY,
+    timeoutMs: MINUTE,
+  }),
+  Object.freeze({
     id: 'portwatch',
     script: 'seed-bundle-portwatch.mjs',
     intervalMs: 6 * HOUR,

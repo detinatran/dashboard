@@ -67,6 +67,10 @@ describe('docs-stats api endpoint inventory', () => {
         false,
         'the stats sandbox must exclude local QA captures',
       );
+      for (const excluded of ['.env', '.env.local', 'blog-site/node_modules', 'pro-test/node_modules']) {
+        assert.equal(existsSync(resolve(sandbox, excluded)), false, `${excluded} must not enter the stats sandbox`);
+      }
+      assert.equal(existsSync(resolve(sandbox, '.env.example')), true, 'retain the tracked env template');
       const leftover = resolve(sandbox, 'api', probeName);
       const baseline = computeStats().apiEndpointEntries;
       mkdirSync(resolve(leftover, 'v1'), { recursive: true });

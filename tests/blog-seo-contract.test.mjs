@@ -12,7 +12,7 @@ const blogDir = resolve(root, 'blog-site/src/content/blog');
 const postFiles = readdirSync(blogDir).filter((name) => name.endsWith('.md')).sort();
 
 function parsePost(file) {
-  const source = readFileSync(join(blogDir, file), 'utf8');
+  const source = readFileSync(join(blogDir, file), 'utf8').replace(/\r\n/g, '\n');
   const frontmatter = source.match(/^---\n([\s\S]*?)\n---\n/);
   assert.ok(frontmatter, `${file}: missing frontmatter`);
   const field = (name) => {
@@ -93,6 +93,11 @@ describe('blog SEO and GEO corpus contract', () => {
     const explainer = posts.find((post) => post.file === 'what-is-worldmonitor-real-time-global-intelligence.md');
     assert.ok(explainer, 'missing first-party World Monitor category explainer');
     assert.deepEqual(validateCategoryExplainerCopy(computeStats()), []);
+  });
+
+  it('accepts the category explainer with Windows line endings', () => {
+    const readCrLf = (file) => readFileSync(resolve(root, file), 'utf8').replace(/\r?\n/g, '\r\n');
+    assert.deepEqual(validateCategoryExplainerCopy(computeStats(), readCrLf), []);
   });
 
   it('keeps crawl, entity, and citation signals in the shared templates', () => {

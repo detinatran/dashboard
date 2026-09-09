@@ -16,7 +16,7 @@
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import { buildSourceAttributionStats } from './source-attribution.mjs';
 import { extractAssignedObjectBlock } from './lib/js-source-structure.mjs';
 
@@ -942,7 +942,7 @@ export async function withStatsRoot(fn) {
     // Full tree minus the heavy/vendor directories: computeStats reads a
     // wide surface (api/, docs/, src/, shared/, data/...), and a missing
     // file throws rather than counting as zero.
-    const ignoredRootEntries = new Set([
+    const ignoredTreeEntries = new Set([
       '.cache',
       '.context',
       '.git',
@@ -955,13 +955,23 @@ export async function withStatsRoot(fn) {
       'target',
       'test-results',
     ]);
+    // Apply at EVERY depth: subprojects have their own vendor trees and
+    // credentials. Environment templates are source; local env files are not.
+    const shouldCopy = (source) => {
+      const name = basename(source);
+      if (ignoredTreeEntries.has(name) || name.startsWith('.tmp-')) return false;
+      return !/^\.env(?:\.|$)/.test(name) || /^\.env(?:\.[\w-]+)*\.(?:example|sample|template)$/.test(name);
+    };
     const entries = readdirSync(ROOT, { withFileTypes: true });
     for (const entry of entries) {
-      if (ignoredRootEntries.has(entry.name) || entry.name.startsWith('.tmp-')) {
+      if (!shouldCopy(join(ROOT, entry.name))) {
         continue;
       }
       try {
-        cpSync(join(ROOT, entry.name), join(sandbox, entry.name), { recursive: true });
+        cpSync(join(ROOT, entry.name), join(sandbox, entry.name), {
+          recursive: true,
+          filter: shouldCopy,
+        });
       } catch {
         // A path that cannot be copied (platform link, transient state): the
         // stat reports zero for whatever lived there, same as a repo
@@ -1880,7 +1890,7 @@ export function validateCategoryExplainerCopy(stats, readFile = read) {
     return [`${file}: file not found`];
   }
 
-  const frontmatter = text.match(/^---\n[\s\S]*?\n---\n/);
+  const frontmatter = text.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n/);
   if (!frontmatter) return [`${file}: missing frontmatter`];
   const body = text.slice(frontmatter[0].length);
   const failures = [];
