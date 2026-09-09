@@ -28,6 +28,10 @@ describe('low-load local seed scheduler', () => {
     assert.equal(jobs.sanctions.intervalMs, 6 * HOUR);
     assert.equal(jobs.forecasts.intervalMs, HOUR);
     assert.equal(jobs.gpsjam.intervalMs, DAY);
+    assert.equal(jobs['chokepoint-baselines'].script, 'seed-chokepoint-baselines.mjs');
+    assert.equal(jobs['chokepoint-baselines'].intervalMs, 7 * DAY);
+    assert.ok(LOCAL_SEED_JOBS.findIndex((job) => job.id === 'chokepoint-baselines')
+      < LOCAL_SEED_JOBS.findIndex((job) => job.id === 'portwatch'));
     assert.equal(jobs.portwatch.script, 'seed-bundle-portwatch.mjs');
     assert.equal(jobs.portwatch.intervalMs, 6 * HOUR);
     assert.equal(jobs.portwatch.timeoutMs, 10 * MINUTE);

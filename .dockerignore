@@ -4,6 +4,7 @@ dist
 **/dist
 public/pro
 .git
+.worktrees
 .github/*
 !.github/workflows/
 .github/workflows/*

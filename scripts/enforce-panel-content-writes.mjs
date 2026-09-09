@@ -267,7 +267,7 @@ export function scanRepo(root = REPO_ROOT) {
 
   const subclassFiles = allFiles.filter(
     (abs) =>
-      !GUARD_EXEMPT_FILES.has(path.relative(root, abs)) &&
+      !GUARD_EXEMPT_FILES.has(path.relative(root, abs).split(path.sep).join('/')) &&
       [...collectClassBases(codeByFile.get(abs) ?? '').keys()].some((name) =>
         derivesFromPanel(name, baseOf),
       ),
@@ -276,7 +276,7 @@ export function scanRepo(root = REPO_ROOT) {
   const observed = subclassFiles
     .flatMap((abs) =>
       directWritesIn(codeByFile.get(abs) ?? '').map(
-        (label) => `${path.relative(root, abs)} :: ${label}`,
+        (label) => `${path.relative(root, abs).split(path.sep).join('/')} :: ${label}`,
       ),
     )
     .sort();

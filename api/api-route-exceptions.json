@@ -3,6 +3,349 @@
   "schema_version": 1,
   "exceptions": [
     {
+      "path": "api/cctv/index.ts",
+      "category": "deferred",
+      "reason": "Existing keyless CCTV catalog with a Node runtime for XML/HTML adapters; retain the current client URL while its JSON contract is migrated to the webcam service.",
+      "owner": "@detinatran",
+      "removal_issue": "TBD"
+    },
+    {
+      "path": "api/cctv/lib/sourceCache.ts",
+      "category": "internal-helper",
+      "reason": "In-memory cache and in-flight request sharing for the CCTV source adapters; exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/lib/stealthFetch.ts",
+      "category": "internal-helper",
+      "reason": "Shared HTTP transport for the Node CCTV source adapters; exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/proxy.ts",
+      "category": "non-json",
+      "reason": "Allowlisted Node camera-frame proxy returns binary image responses and preserves image content types; it cannot use a JSON RPC response.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/asfinag.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (asfinag) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/asia-live.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (asia-live) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/asia-skyline.generated.ts",
+      "category": "internal-helper",
+      "reason": "Generated camera catalog imported by the CCTV regional adapters (asia-skyline.generated); contains data, not an HTTP endpoint.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/australia.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (australia) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/bulgaria-fwcbg.generated.ts",
+      "category": "internal-helper",
+      "reason": "Generated camera catalog imported by the CCTV regional adapters (bulgaria-fwcbg.generated); contains data, not an HTTP endpoint.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/bulgaria.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (bulgaria) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/czechia.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (czechia) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/finland.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (finland) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/france.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (france) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/germany.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (germany) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/greece.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (greece) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/hongkong.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (hongkong) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/iceland.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (iceland) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/index.ts",
+      "category": "internal-helper",
+      "reason": "Regional camera adapter registry and viewport selection used by the CCTV catalog; exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/italy.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (italy) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/japan.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (japan) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/macedonia.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (macedonia) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/michigan.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (michigan) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/newzealand.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (newzealand) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/oregon.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (oregon) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/poland.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (poland) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/romania.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (romania) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/serbia.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (serbia) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/slovakia.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (slovakia) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/spain.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (spain) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/switzerland.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (switzerland) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/taiwan.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (taiwan) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/thailand.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (thailand) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/turkey.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (turkey) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/types.ts",
+      "category": "internal-helper",
+      "reason": "Camera and source data types for the CCTV adapters; exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/utah.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (utah) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/world-live.ts",
+      "category": "internal-helper",
+      "reason": "CCTV source adapter (world-live) imported by the regional catalog; fetches or declares camera records and exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/cctv/sources/world-skyline.generated.ts",
+      "category": "internal-helper",
+      "reason": "Generated camera catalog imported by the CCTV regional adapters (world-skyline.generated); contains data, not an HTTP endpoint.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/osint/bgp.ts",
+      "category": "deferred",
+      "reason": "Existing BGP/ASN lookup aggregates RIPE and IP metadata; retain the current OSINT client contract pending proto migration.",
+      "owner": "@detinatran",
+      "removal_issue": "TBD"
+    },
+    {
+      "path": "api/osint/certs.ts",
+      "category": "deferred",
+      "reason": "Existing certificate-transparency lookup normalizes certificates and subdomains; retain the current OSINT client contract pending proto migration.",
+      "owner": "@detinatran",
+      "removal_issue": "TBD"
+    },
+    {
+      "path": "api/osint/crypto.ts",
+      "category": "deferred",
+      "reason": "Existing wallet analysis JSON endpoint composes chain and sanctions evidence; retain its current client contract pending proto migration.",
+      "owner": "@detinatran",
+      "removal_issue": "TBD"
+    },
+    {
+      "path": "api/osint/cve.ts",
+      "category": "deferred",
+      "reason": "Existing CVE lookup normalizes vulnerability records; retain the current OSINT client contract pending proto migration.",
+      "owner": "@detinatran",
+      "removal_issue": "TBD"
+    },
+    {
+      "path": "api/osint/dns.ts",
+      "category": "deferred",
+      "reason": "Existing DNS lookup aggregates record types and a summary; retain the current OSINT client contract pending proto migration.",
+      "owner": "@detinatran",
+      "removal_issue": "TBD"
+    },
+    {
+      "path": "api/osint/lib/chainIntel.ts",
+      "category": "internal-helper",
+      "reason": "Chain detection and wallet analysis library used by the crypto lookup route; exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/osint/lib/sanctions.ts",
+      "category": "internal-helper",
+      "reason": "Sanctions index loading and name matching library used by OSINT lookups; exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/osint/lib/ssrf-guard.ts",
+      "category": "internal-helper",
+      "reason": "Request validation and local rate-limit helpers for OSINT lookups; exports no HTTP handler.",
+      "owner": "@detinatran",
+      "removal_issue": null
+    },
+    {
+      "path": "api/osint/mac.ts",
+      "category": "deferred",
+      "reason": "Existing MAC-vendor lookup normalizes provider responses; retain the current OSINT client contract pending proto migration.",
+      "owner": "@detinatran",
+      "removal_issue": "TBD"
+    },
+    {
+      "path": "api/osint/sanctions.ts",
+      "category": "deferred",
+      "reason": "Existing sanctions search uses the local public-list index; retain the current OSINT client contract pending proto migration.",
+      "owner": "@detinatran",
+      "removal_issue": "TBD"
+    },
+    {
+      "path": "api/osint/shodan.ts",
+      "category": "deferred",
+      "reason": "Existing InternetDB lookup handles absent hosts and returns provider metadata; retain the current OSINT client contract pending proto migration.",
+      "owner": "@detinatran",
+      "removal_issue": "TBD"
+    },
+    {
+      "path": "api/osint/whois.ts",
+      "category": "deferred",
+      "reason": "Existing WHOIS/RDAP lookup assembles registration metadata; retain the current OSINT client contract pending proto migration.",
+      "owner": "@detinatran",
+      "removal_issue": "TBD"
+    },
+    {
       "path": "api/ask.ts",
       "category": "external-protocol",
       "reason": "NLWeb /ask endpoint (Microsoft NLWeb protocol) — request/response envelope (_meta {response_type, version}, SSE start/result/complete event stream) dictated by the NLWeb spec, not something we can redefine as proto. Anonymous discovery answers over the public MCP tool catalog only; per-IP limit registered in ENDPOINT_RATE_POLICIES and enforced in-handler.",

@@ -136,6 +136,7 @@ Redis value when an upstream is unavailable.
 | Forecasts | 1 hour | Runs independently; the military seed cannot trigger a duplicate forecast |
 | Sanctions | 6 hours | Public sanctions sources |
 | PortWatch | 6 hours | Port disruptions, port calls, and chokepoint reference data |
+| Chokepoint baselines | 7 days | Static EIA reference seeded before PortWatch; required for flow estimates |
 | GPSJam | 24 hours | Daily upstream; writes its local artifact to `/tmp` and publishes to Redis |
 | Hormuz tracker | 24 hours | WTO trade-tracker snapshot cached for the supply-chain view |
 | Earthquakes | 5 minutes | Optional; set `LOCAL_SEED_EARTHQUAKES_ENABLED=true` |
