@@ -158,6 +158,33 @@ const HOST_ORIGINS = Object.freeze({
   'api.adsb.lol': 'NL',
   'aerotime.aero': 'LT',
   'agentskills.io': 'US',
+  // Passive OSINT and CCTV providers used by the bundled source set.
+  // Generic/vanity TLDs cannot be inferred safely, so keep each origin
+  // decision explicit. `null` denotes a genuinely international network or
+  // service rather than an unknown country.
+  'api.maclookup.app': null,
+  'api.mainnet-beta.solana.com': null,
+  'cdn.skylinewebcams.com': 'IT',
+  'crt.sh': null,
+  'cveawg.mitre.org': 'US',
+  'data.opensanctions.org': 'DE',
+  'dns.google': 'US',
+  'eth.blockscout.com': null,
+  'free-webcambg.com': 'BG',
+  'gagnaveita.vegagerdin.is': 'IS',
+  'internetdb.shodan.io': 'US',
+  'ip-api.com': 'DE',
+  'opendata.ndw.nu': 'NL',
+  'prod-ut.ibi511.com': 'US',
+  'rdap.org': null,
+  'stat.ripe.net': 'NL',
+  'trafficnz.info': 'NZ',
+  'tripcheck.com': 'US',
+  'www.livetraffic.com': 'AU',
+  'www.skylinewebcams.com': 'IT',
+  'www.travelmidwest.com': 'US',
+  'www.tripcheck.com': 'US',
+  'www.vegagerdin.is': 'IS',
   // Validated crisis-desk direct publishers (#6813-#6830).
   'airinfoagadez.com': 'NE',
   'amu.tv': 'AF',

@@ -1,5 +1,8 @@
 node_modules
+**/node_modules
 dist
+**/dist
+public/pro
 .git
 .github/*
 !.github/workflows/
@@ -13,6 +16,8 @@ dist
 .factory
 .planning
 e2e
+test-results
+qa-artifacts
 src-tauri/target
 src-tauri/sidecar/node
 *.log

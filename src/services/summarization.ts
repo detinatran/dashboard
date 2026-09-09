@@ -27,7 +27,7 @@ import {
   suppressServerSummarization,
   suppressServerSummarizationFor,
 } from '@/services/summarize-gate';
-import { hasPremiumAccess } from '@/services/panel-gating';
+import { hasPremiumApiAccess } from '@/services/panel-gating';
 import {
   createSummarizationAttemptState,
   logChainOutcome,
@@ -86,10 +86,10 @@ const premiumNewsClient = new NewsServiceClient(getRpcBaseUrl(), {
 // anon/free principals fall straight to the browser-T5 provider with ZERO
 // network attempts — before this gate, every summarize attempt fanned out up
 // to 3 doomed RPCs (ollama→openrouter→groq through the same gated endpoint).
-// panel-gating's hasPremiumAccess is the dual-signal source of truth.
+// Only dispatch when a real credential can authenticate the premium API.
 // translateText is deliberately NOT gated: it uses mode='translate' via the
 // plain newsClient, which the server allows for non-premium callers.
-configureSummarizeGate(() => hasPremiumAccess());
+configureSummarizeGate(() => hasPremiumApiAccess());
 const summaryBreaker = createCircuitBreaker<SummarizeArticleResponse>({ name: 'News Summarization', cacheTtlMs: 0 });
 
 const summaryResultBreaker = createCircuitBreaker<SummarizationResult | null>({

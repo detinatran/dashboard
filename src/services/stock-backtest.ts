@@ -20,6 +20,8 @@ export async function fetchStockBacktestsForTargets(
   targets: Array<{ symbol: string; name: string }>,
   evalWindowDays = DEFAULT_EVAL_WINDOW_DAYS,
 ): Promise<StockBacktestResult[]> {
+  const { hasPremiumApiAccess } = await import('@/services/panel-gating');
+  if (!hasPremiumApiAccess()) return [];
   return runThrottledTargetRequests(targets, async (target) => {
     return client.backtestStock({
       symbol: target.symbol,
@@ -40,6 +42,8 @@ export async function fetchStoredStockBacktests(
   limitOverride?: number,
   evalWindowDays = DEFAULT_EVAL_WINDOW_DAYS,
 ): Promise<StockBacktestResult[]> {
+  const { hasPremiumApiAccess } = await import('@/services/panel-gating');
+  if (!hasPremiumApiAccess()) return [];
   const targets = await getTargets(limitOverride);
   const symbols = targets.map((target) => target.symbol);
   const response = await client.listStoredStockBacktests({

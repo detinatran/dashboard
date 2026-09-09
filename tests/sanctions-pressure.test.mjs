@@ -391,7 +391,7 @@ async function loadSanctionsService(state) {
       }
     `],
     ['panel-gating-stub', `
-      export function hasPremiumAccess() { return globalThis.${FRONTEND_STATE_KEY}.premium; }
+      export function hasPremiumApiAccess() { return globalThis.${FRONTEND_STATE_KEY}.premium; }
     `],
     ['runtime-stub', `export function toApiUrl(path) { return 'https://worldmonitor.test' + path; }`],
     ['generated-clients-stub', `

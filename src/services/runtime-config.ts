@@ -96,7 +96,7 @@ const defaultToggles: Record<RuntimeFeatureId, boolean> = {
   abuseIpdbThreatIntel: true,
   wingbitsEnrichment: true,
   aisRelay: true,
-  openskyRelay: true,
+  openskyRelay: false,
   militaryFlights: true,
   finnhubMarkets: true,
   nasaFirms: true,

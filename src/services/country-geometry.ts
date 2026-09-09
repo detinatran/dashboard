@@ -19,8 +19,13 @@ const COUNTRY_GEOJSON_URL = '/data/countries.geojson';
  * static-asset load but well below "stuck for the session". */
 const COUNTRY_GEOJSON_TIMEOUT_MS = 15_000;
 
-/** Optional higher-resolution boundary overrides sourced from Natural Earth (served from R2 CDN). */
-const COUNTRY_OVERRIDES_URL = 'https://maps.worldmonitor.app/country-boundary-overrides.geojson';
+/**
+ * Optional higher-resolution boundary overrides sourced from Natural Earth.
+ * Keep this same-origin: the asset ships with every dashboard build, while a
+ * direct CDN fetch is both unnecessary and subject to cross-origin policy on
+ * local/self-hosted deployments.
+ */
+const COUNTRY_OVERRIDES_URL = '/data/country-boundary-overrides.geojson';
 const COUNTRY_OVERRIDE_TIMEOUT_MS = 3_000;
 
 const POLITICAL_OVERRIDES: Record<string, string> = { 'CN-TW': 'TW' };

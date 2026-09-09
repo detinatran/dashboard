@@ -37,7 +37,7 @@ import { collectStoryData } from '@/services/story-data';
 // remaining StoryModal eager edge. The modal opens on user interaction
 // (post-paint), so the import() latency is hidden.
 
-import { hasPremiumAccess } from '@/services/panel-gating';
+import { hasPremiumAccess, hasPremiumApiAccess } from '@/services/panel-gating';
 import { getAuthState, subscribeAuthState } from '@/services/auth-state';
 import { showMapContextMenu } from '@/components/MapContextMenu';
 import { BETA_MODE } from '@/config/beta';
@@ -952,7 +952,15 @@ export class CountryIntelManager implements AppModule {
     // /pro live-preview iframe can't carry a Clerk session, so every pro
     // section call would 401. Skip the RPCs entirely so the embedded
     // preview doesn't spam the parent /pro console with expected failures.
-    if (IS_EMBEDDED_PREVIEW) return;
+    if (IS_EMBEDDED_PREVIEW || !hasPremiumApiAccess(getAuthState())) {
+      this.ctx.countryBriefPage?.updateNationalDebt?.(null);
+      this.ctx.countryBriefPage?.updateSanctionsPressure?.(null);
+      this.ctx.countryBriefPage?.updateComtradeFlows?.(null);
+      this.ctx.countryBriefPage?.updateTariffTrends?.(null);
+      this.ctx.countryBriefPage?.updateProductImports?.(null);
+      if (!IS_EMBEDDED_PREVIEW) this.fetchHousingCycle(code);
+      return;
+    }
 
     const rpcBase = getRpcBaseUrl();
     // Pro-section endpoints (national-debt, regional briefs, comtrade flows)
@@ -991,7 +999,7 @@ export class CountryIntelManager implements AppModule {
     // 401 for anonymous/free users. Mirror the hasPremiumAccess() guard
     // already used above for the other premium country-brief cards so we
     // don't spray the console with 401s on every country click.
-    const hasPremium = hasPremiumAccess(getAuthState());
+    const hasPremium = hasPremiumApiAccess(getAuthState());
     if (unCode && hasPremium) {
       tradeClient.listComtradeFlows({ reporterCode: unCode, cmdCode: '', anomaliesOnly: false }).then(resp => {
         if (this.ctx.countryBriefPage?.getCode() !== code) return;

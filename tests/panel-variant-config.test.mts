@@ -8,6 +8,8 @@ import {
   FREE_MAX_PANELS,
   VARIANT_DEFAULTS,
   countFreePanelCapUsage,
+  DEFAULT_OFF_OPTIONAL_PANELS,
+  disableDefaultOffOptionalPanels,
   enforceFreePanelLimit,
   getEffectivePanelConfig,
   isFreePanelCapCounted,
@@ -25,6 +27,57 @@ function src(relPath: string): string {
 }
 
 describe('variant panel config resolution', () => {
+  it('keeps keyed optional integrations off by default without hiding Forecast', () => {
+    assert.deepEqual(
+      [...DEFAULT_OFF_OPTIONAL_PANELS],
+      ['chat-analyst', 'telegram-intel', 'x-intel'],
+    );
+    for (const key of DEFAULT_OFF_OPTIONAL_PANELS) {
+      assert.equal(getEffectivePanelConfig(key, 'full').enabled, false, `${key} defaults off`);
+    }
+    assert.equal(getEffectivePanelConfig('forecast', 'full').enabled, true);
+  });
+
+  it('migrates stale default-on integration prefs once and clears gate ownership', () => {
+    const settings = {
+      'chat-analyst': { name: 'WM Analyst', enabled: true, priority: 1, proGated: true },
+      'telegram-intel': { name: 'Telegram Intel', enabled: true, priority: 2 },
+      'x-intel': { name: 'X News Accounts', enabled: false, priority: 2, proGated: true },
+      forecast: { name: 'AI Forecasts', enabled: true, priority: 1 },
+    };
+
+    assert.equal(disableDefaultOffOptionalPanels(settings), true);
+    for (const key of DEFAULT_OFF_OPTIONAL_PANELS) {
+      assert.equal(settings[key].enabled, false, `${key} is disabled`);
+      assert.equal('proGated' in settings[key], false, `${key} no longer belongs to the entitlement gate`);
+    }
+    assert.equal(settings.forecast.enabled, true, 'Forecast remains enabled');
+    assert.equal(disableDefaultOffOptionalPanels(settings), false, 'the migration is idempotent');
+  });
+
+  it('gates optional integration startup and recurring loads on the live panel preference', () => {
+    const app = src('src/App.ts');
+    const loader = src('src/app/data-loader.ts');
+    const runtimeConfig = src('src/services/runtime-config.ts');
+
+    assert.match(app, /worldmonitor-optional-api-panels-default-off-v1/);
+    assert.match(app, /disableDefaultOffOptionalPanels\(panelSettings\)/);
+    for (const key of ['telegram-intel', 'x-intel']) {
+      const escaped = key.replace('-', '\\-');
+      assert.match(
+        app,
+        new RegExp(`this\\.state\\.panelSettings\\['${escaped}'\\]\\?\\.enabled`),
+        `${key} App prime/refresh wiring checks the preference`,
+      );
+      assert.match(
+        loader,
+        new RegExp(`this\\.ctx\\.panelSettings\\['${escaped}'\\]\\?\\.enabled`),
+        `${key} loader checks the preference before fetching`,
+      );
+    }
+    assert.match(runtimeConfig, /openskyRelay:\s*false/);
+  });
+
   it('prefers the happy variant config over a duplicate full panel key', () => {
     const giving = getEffectivePanelConfig('giving', 'happy');
 

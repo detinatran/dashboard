@@ -26,6 +26,13 @@ const makeRoot = () => createTempDir('wm-agent-preflight-');
 const currentMajor = process.versions.node.split('.')[0];
 const headOid = 'a'.repeat(40);
 
+function isNpmCommand(file, args, subcommand) {
+  if (process.platform === 'win32') {
+    return file === process.execPath && args[0]?.endsWith('npm-cli.js') && args[1] === subcommand;
+  }
+  return file === 'npm' && args[0] === subcommand;
+}
+
 describe('agent preflight', () => {
   it('requires explicit opt-ins for dirty, detached, and stale-main states', () => {
     const options = parseArgs([
@@ -115,14 +122,14 @@ describe('agent preflight', () => {
     let statusCalls = 0;
 
     const runner = (file, args) => {
-      if (file === 'npm' && args[0] === 'ci') {
+      if (isNpmCommand(file, args, 'ci')) {
         bootstrapCalls += 1;
         mkdirSync(join(root, 'node_modules'), { recursive: true });
         writeFileSync(join(root, 'node_modules', '.package-lock.json'), '{}');
         bootstrapComplete = true;
         return { status: 0, stderr: '', stdout: '' };
       }
-      if (file === 'npm') return { status: 0, stderr: '', stdout: '{}' };
+      if (isNpmCommand(file, args, 'ls')) return { status: 0, stderr: '', stdout: '{}' };
       if (file === 'git') {
         const command = args.join(' ');
         if (command.startsWith('status ')) {
@@ -187,7 +194,7 @@ describe('agent preflight', () => {
 
     const runner = (file, args) => {
       const command = args.join(' ');
-      if (file === 'npm') return { status: 0, stderr: '', stdout: '{}' };
+      if (isNpmCommand(file, args, 'ls')) return { status: 0, stderr: '', stdout: '{}' };
       if (file === 'git') {
         if (command.startsWith('status ')) return { status: 0, stderr: '', stdout: '' };
         if (command === 'branch --show-current') {
@@ -376,8 +383,8 @@ describe('agent preflight', () => {
   it('bounds a safe bootstrap and disables lifecycle scripts', () => {
     let receivedOptions;
     const runner = (file, args, options) => {
-      assert.equal(file, 'npm');
-      assert.deepEqual(args, ['ci', '--cache', '/tmp/cache', '--ignore-scripts']);
+      assert.equal(isNpmCommand(file, args, 'ci'), true);
+      assert.deepEqual(args.slice(-4), ['ci', '--cache', '/tmp/cache', '--ignore-scripts']);
       receivedOptions = options;
       return { error: { code: 'ETIMEDOUT' }, status: null, stderr: '', stdout: '' };
     };

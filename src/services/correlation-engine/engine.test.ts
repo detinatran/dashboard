@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/services/panel-gating', () => ({
-  hasPremiumAccess: () => false,
+  hasPremiumApiAccess: () => false,
 }));
 vi.mock('@/services/premium-fetch', () => ({
   premiumFetch: vi.fn(),

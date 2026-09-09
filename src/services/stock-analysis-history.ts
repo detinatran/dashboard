@@ -125,6 +125,8 @@ export async function fetchStockAnalysisHistory(
   limitOverride?: number,
   limitPerSymbol = DEFAULT_LIMIT_PER_SYMBOL,
 ): Promise<StockAnalysisHistory> {
+  const { hasPremiumApiAccess } = await import('@/services/panel-gating');
+  if (!hasPremiumApiAccess()) return {};
   const symbols = await getTargetSymbols(limitOverride);
   const response = await client.getStockAnalysisHistory({
     symbols,

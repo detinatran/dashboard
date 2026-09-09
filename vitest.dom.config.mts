@@ -38,6 +38,11 @@ export default defineConfig({
   },
   test: {
     environment: 'happy-dom',
+    environmentOptions: {
+      // Exercise hosted-product gating by default. Individual self-host tests
+      // explicitly stub a loopback location when they verify demo access.
+      happyDOM: { url: 'https://worldmonitor.app/' },
+    },
     // Local pre-push exports this cap so several worktrees cannot each fan out
     // to every core. CI leaves it unset and retains Vitest's full-width default.
     ...(prepushMaxWorkers === undefined ? {} : { maxWorkers: prepushMaxWorkers }),

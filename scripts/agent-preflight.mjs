@@ -31,6 +31,19 @@ const DEFAULT_SNAPSHOT_CACHE = join(
   `worldmonitor-agent-cache-${process.getuid?.() ?? 'user'}`,
 );
 
+function npmInvocation(args) {
+  if (process.platform !== 'win32') return { args, file: 'npm' };
+
+  // Windows cannot spawn npm's .cmd shim directly with shell:false
+  // (Node returns EINVAL), while the extensionless `npm` lookup returns
+  // ENOENT. Execute npm's JavaScript entry point with the current Node binary
+  // so dependency checks remain shell-free and paths cannot be reinterpreted
+  // by cmd.exe.
+  const cli = process.env.npm_execpath
+    || resolve(dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js');
+  return { args: [cli, ...args], file: process.execPath };
+}
+
 export function parseArgs(argv = []) {
   const options = {
     allowDetached: false,
@@ -248,8 +261,9 @@ export function probeDependencies(rootDir = process.cwd(), runner = spawnSync) {
     const installMarker = existsSync(
       resolve(dependencyRoot.path, 'node_modules', '.package-lock.json'),
     );
+    const npmList = npmInvocation(['ls', '--depth=0', '--json']);
     const npmTreeOk = installMarker && treeMissing.length === 0 && treeBroken.length === 0
-      ? runCommand(runner, 'npm', ['ls', '--depth=0', '--json'], {
+      ? runCommand(runner, npmList.file, npmList.args, {
           cwd: dependencyRoot.path,
         }).status === 0
       : false;
@@ -567,7 +581,8 @@ export function bootstrapOnce(rootDir, npmCacheDir, runner, timeoutMs) {
         timeoutMs,
       };
     }
-    const result = runner('npm', ['ci', '--cache', npmCacheDir, '--ignore-scripts'], {
+    const npmCi = npmInvocation(['ci', '--cache', npmCacheDir, '--ignore-scripts']);
+    const result = runner(npmCi.file, npmCi.args, {
       cwd: target.path,
       encoding: 'utf8',
       env: {

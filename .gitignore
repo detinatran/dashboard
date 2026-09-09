@@ -74,6 +74,9 @@ internal/
 !api/internal/*.js
 !api/internal/*.mjs
 test-results/
+# Local browser acceptance reports and raw captures. Curated README images live
+# under docs/images/showcase/ and remain tracked separately.
+qa-artifacts/
 src-tauri/sidecar/node/*
 !src-tauri/sidecar/node/.gitkeep
 

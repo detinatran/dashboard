@@ -942,9 +942,22 @@ export async function withStatsRoot(fn) {
     // Full tree minus the heavy/vendor directories: computeStats reads a
     // wide surface (api/, docs/, src/, shared/, data/...), and a missing
     // file throws rather than counting as zero.
+    const ignoredRootEntries = new Set([
+      '.cache',
+      '.context',
+      '.git',
+      '.planning',
+      '.worktrees',
+      'coverage',
+      'dist',
+      'node_modules',
+      'qa-artifacts',
+      'target',
+      'test-results',
+    ]);
     const entries = readdirSync(ROOT, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'target') {
+      if (ignoredRootEntries.has(entry.name) || entry.name.startsWith('.tmp-')) {
         continue;
       }
       try {

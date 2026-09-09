@@ -104,6 +104,28 @@ describe('buildMapUrl expanded param', () => {
     const params = new URL(url).searchParams;
     assert.equal(params.get('chokepoint'), 'hormuz_strait');
   });
+
+  it('never serializes non-finite viewport values', () => {
+    const url = buildMapUrl(base, {
+      ...baseState,
+      center: { lat: Number.NaN, lon: Number.POSITIVE_INFINITY },
+      zoom: Number.NaN,
+    });
+    const params = new URL(url).searchParams;
+    assert.equal(params.has('lat'), false);
+    assert.equal(params.has('lon'), false);
+    assert.equal(params.has('zoom'), false);
+    assert.equal(url.includes('NaN'), false);
+    assert.equal(url.includes('Infinity'), false);
+  });
+
+  it('preserves zero coordinates and clamps finite zoom values', () => {
+    const url = buildMapUrl(base, { ...baseState, center: { lat: 0, lon: 0 }, zoom: 99 });
+    const params = new URL(url).searchParams;
+    assert.equal(params.get('lat'), '0.0000');
+    assert.equal(params.get('lon'), '0.0000');
+    assert.equal(params.get('zoom'), '10.00');
+  });
 });
 
 describe('expanded param round-trip', () => {

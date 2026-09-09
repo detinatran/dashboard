@@ -62,6 +62,11 @@ describe('docs-stats api endpoint inventory', () => {
     // docs-stats-plan-layer-entitlement, which scans that tree end to end.
     const probeName = '[__docs_stats_probe__]';
     await withStatsRoot(async (sandbox) => {
+      assert.equal(
+        existsSync(resolve(sandbox, 'qa-artifacts')),
+        false,
+        'the stats sandbox must exclude local QA captures',
+      );
       const leftover = resolve(sandbox, 'api', probeName);
       const baseline = computeStats().apiEndpointEntries;
       mkdirSync(resolve(leftover, 'v1'), { recursive: true });

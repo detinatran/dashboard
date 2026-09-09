@@ -1924,11 +1924,13 @@ export async function createLocalApiServer(options = {}) {
       context.port = boundPort;
       const extraAllowedPrivateOrigins = [];
       if (context.mode === 'docker') {
-        const addConfiguredPrivateOrigin = (envKey, blockedService) => {
+        const addConfiguredPrivateOrigin = (envKey, blockedService, normalizeUrl = (url) => url) => {
           const rawUrl = process.env[envKey];
           if (!rawUrl) return;
           try {
-            extraAllowedPrivateOrigins.push(new URL(rawUrl).origin);
+            const normalizedUrl = normalizeUrl(rawUrl);
+            if (!normalizedUrl) throw new Error('Invalid URL');
+            extraAllowedPrivateOrigins.push(new URL(normalizedUrl).origin);
           } catch (err) {
             context.logger.warn(
               `[local-api] ${envKey} is not a valid URL; not added to the private-fetch allowlist (${blockedService}): ${err.message}`,
@@ -1943,6 +1945,17 @@ export async function createLocalApiServer(options = {}) {
         // UPSTASH_REDIS_REST_URL is a public Upstash https origin that already
         // passes the SSRF check, so this path is docker-only.
         addConfiguredPrivateOrigin('UPSTASH_REDIS_REST_URL', 'Redis calls will be SSRF-blocked');
+
+        // The Docker stack points WS_RELAY_URL at the compose-network relay
+        // (for example http://ais-relay:3004). API handlers convert ws(s) URLs
+        // to http(s) before fetching, so trust only that normalized, explicitly
+        // configured origin. Desktop relay URLs still pass the ordinary SSRF
+        // checks and do not gain private-network access.
+        addConfiguredPrivateOrigin(
+          'WS_RELAY_URL',
+          'relay calls will be SSRF-blocked',
+          relayToHttpUrl,
+        );
 
         // SELF_HOSTING.md documents LLM_API_URL for compose-network or LAN
         // endpoints; OLLAMA_API_URL is the supported desktop runtime setting.

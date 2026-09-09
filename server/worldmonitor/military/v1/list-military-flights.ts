@@ -23,6 +23,12 @@ const REDIS_STALE_KEY = 'military:flights:stale:v1';
 const STABLE_STALE_CACHE_KEY = 'military:flights:stable-stale:v1';
 const STALE_SNAPSHOT_CACHE_TTL = 120; // Bind a bounded cursor traversal to one snapshot.
 const STALE_SNAPSHOT_NEG_TTL = 30;
+// OpenSky's terms are not suitable as an implicit automated fallback for every
+// self-host. A separately licensed operator can opt in explicitly; otherwise
+// the handler stays on ADSB.lol/Wingbits seed and stale-cache paths only.
+function isOpenSkyAutomatedFallbackEnabled(): boolean {
+  return process.env.WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK === '1';
+}
 
 /** Snap a coordinate to a grid step so nearby bbox values share cache entries. */
 const quantize = (v: number, step: number) => Math.round(v / step) * step;
@@ -497,7 +503,7 @@ export async function listMilitaryFlights(
         // request-specific recovery rather than returning a falsely
         // authoritative empty.
 
-        if (redistributableOnly) return null;
+        if (redistributableOnly || !isOpenSkyAutomatedFallbackEnabled()) return null;
 
         const isSidecar = (process.env.LOCAL_API_MODE || '').includes('sidecar');
         const relayBase = isSidecar ? null : getRelayBaseUrl();

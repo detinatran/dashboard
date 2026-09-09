@@ -592,6 +592,7 @@ test('theater-posture OpenSky success is attributed to opensky, and /metrics sta
   const { child, ready } = spawnRelay({
     RELAY_SHARED_SECRET: 'test-relay-secret',
     I_UNDERSTAND_THIS_DISABLES_AUTH: '',
+    WM_ENABLE_OPENSKY_AUTOMATED_FALLBACK: '1',
     // One 200 is all a cycle should need — the seed issues a single global query.
     RELAY_TEST_OPENSKY_STATUS_SEQUENCE: '200',
     ...upstash.env,

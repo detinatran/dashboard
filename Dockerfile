@@ -2,12 +2,31 @@
 # World Monitor — Docker Image
 # =============================================================================
 # Multi-stage build:
-#   builder       — installs deps, compiles TS handlers, builds Vite frontend
-#   runtime-deps  — installs only packages needed by unbundled raw JS handlers
-#   final         — nginx (static) + node (API) under supervisord
+#   seed-scheduler — lightweight public-data crawler image
+#   builder        — installs deps, compiles TS handlers, builds Vite frontend
+#   runtime-deps   — installs only packages needed by unbundled raw JS handlers
+#   final          — nginx (static) + node (API) under supervisord
 # =============================================================================
 
-# ── Stage 1: Builder ─────────────────────────────────────────────────────────
+# Seed scheduler target
+FROM node:24-alpine@sha256:d32cdf619f63fe0471182d08996dd516c6275bb5fd31ae06e55a570bd9e1ad43 AS seed-scheduler
+
+WORKDIR /app
+
+# The local scheduler is a standalone target. Install the scripts workspace
+# dependency graph instead of the much larger frontend graph, then copy only
+# the seeder surface so this target never compiles the Vite application.
+COPY scripts/package.json scripts/package-lock.json ./scripts/
+RUN npm ci --prefix scripts --omit=dev --omit=optional --ignore-scripts
+COPY --chown=node:node scripts ./scripts
+COPY --chown=node:node shared ./shared
+COPY --chown=node:node data ./data
+
+ENV NODE_ENV=production
+USER node
+CMD ["node", "scripts/local-seed-scheduler.mjs"]
+
+# Stage 1: Builder
 FROM node:24-alpine@sha256:d32cdf619f63fe0471182d08996dd516c6275bb5fd31ae06e55a570bd9e1ad43 AS builder
 
 WORKDIR /app
@@ -23,8 +42,13 @@ COPY . .
 # the clean image context before handlers import or bundle them.
 RUN node scripts/generate-inventory-facts.mjs
 
-# Compile TypeScript API handlers → self-contained ESM bundles
-# Output is api/**/*.js alongside the source .ts files
+# Validate and build the crawlable corpus before generating any compiled API or
+# Pro artifacts. Both outputs contain copied third-party URLs and must not be
+# treated as fresh source input by the attribution scanner.
+RUN npm run build:crawlable-corpus && npm run build:sitemap
+
+# Compile TypeScript API handlers → self-contained ESM bundles. Output is
+# api/**/*.js alongside the source .ts files, after source attribution is done.
 RUN node docker/build-handlers.mjs
 
 # public/pro/ is a build product, not committed bytes (#6898), so this image has
@@ -36,9 +60,9 @@ RUN node docker/build-handlers.mjs
 # build:pro installs pro-test's own lockfile.
 RUN npm run build:pro
 
-# Build the crawlable static corpus and Vite frontend (outputs to dist/)
-# Skip blog build — blog-site has its own deps not installed here
-RUN npm run build:crawlable-corpus && npm run build:sitemap && npx tsc && npx vite build
+# Typecheck and build the Vite frontend after Pro so public/pro is copied into
+# dist/. Skip the blog build — blog-site has its own dependencies.
+RUN npx tsc && npx vite build
 # Assert the /pro pages survived the public/ -> dist/ copy (#6898). build:pro
 # succeeding proves public/pro/ exists; it does NOT prove Vite copied it, and
 # docker/nginx.conf's SPA fallback would serve the dashboard shell at 200 for a
@@ -95,7 +119,9 @@ COPY docker/supervisord.conf /etc/supervisor/conf.d/worldmonitor.conf
 COPY docker/entrypoint.sh /app/entrypoint.sh
 COPY docker/render-nginx-realip.mjs /app/render-nginx-realip.mjs
 COPY docker/validate-session-secret.mjs /app/validate-session-secret.mjs
-RUN chmod +x /app/entrypoint.sh
+# Windows checkouts may present this shell script with CRLF even though the
+# image runs on Linux. Normalize it here so the kernel can resolve /bin/sh.
+RUN sed -i 's/\r$//' /app/entrypoint.sh && chmod +x /app/entrypoint.sh
 
 # Ensure writable dirs for non-root
 RUN chown -R appuser:appgroup /app /tmp/nginx-client-body /tmp/nginx-proxy \

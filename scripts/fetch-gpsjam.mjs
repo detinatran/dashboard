@@ -39,11 +39,6 @@ const minAircraftRaw = parseInt(getArg('min-aircraft', '3'), 10);
 const minAircraft = Number.isFinite(minAircraftRaw) && minAircraftRaw > 0 ? minAircraftRaw : 3;
 const outputPath = getArg('output', null);
 
-function maskToken(token) {
-  if (!token || token.length < 8) return '***';
-  return token.slice(0, 4) + '***' + token.slice(-4);
-}
-
 async function fetchText(url) {
   const resp = await fetch(url, {
     headers: { 'User-Agent': UA, 'Accept-Encoding': 'gzip, deflate' },
@@ -74,7 +69,7 @@ async function seedRedis(output) {
 
   console.error(`[gpsjam] Seeding Redis keys "${REDIS_KEY_V2}" and "${REDIS_KEY_V1}"...`);
   console.error(`[gpsjam]   URL:   ${redisUrl}`);
-  console.error(`[gpsjam]   Token: ${maskToken(redisToken)}`);
+  console.error('[gpsjam]   Token: configured');
 
   const payload = JSON.stringify(output);
 

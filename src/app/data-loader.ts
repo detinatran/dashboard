@@ -3350,11 +3350,11 @@ export class DataLoaderManager implements AppModule {
     tasks.push(this.loadSecurityAdvisories());
 
     // Telegram Intel (premium-locked on desktop without API key)
-    if (!_desktopLocked) {
+    if (!_desktopLocked && this.ctx.panelSettings['telegram-intel']?.enabled) {
       tasks.push(this.loadTelegramIntel());
     }
 
-    if (!_desktopLocked) {
+    if (!_desktopLocked && this.ctx.panelSettings['x-intel']?.enabled) {
       tasks.push(this.loadXIntel());
     }
 
@@ -4714,6 +4714,7 @@ export class DataLoaderManager implements AppModule {
   }
 
   async loadTelegramIntel(): Promise<void> {
+    if (!this.ctx.panelSettings['telegram-intel']?.enabled) return;
     if (isDesktopRuntime() && !hasPremiumAccess()) return;
     try {
       const result = await fetchTelegramFeed();
@@ -4727,6 +4728,7 @@ export class DataLoaderManager implements AppModule {
   }
 
   async loadXIntel(): Promise<void> {
+    if (!this.ctx.panelSettings['x-intel']?.enabled) return;
     if (isDesktopRuntime() && !hasPremiumAccess()) return;
     // `xFeed` is intentionally NOT a bootstrap tier key (R4, #6654): its items
     // carry post bodies, and every tier is served unauthenticated at

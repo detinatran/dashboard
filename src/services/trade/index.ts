@@ -6,7 +6,7 @@
 import { getRpcBaseUrl } from '@/services/rpc-client';
 import { premiumFetch } from '@/services/premium-fetch';
 import { getCurrentClerkUser } from '@/services/clerk';
-import { hasPremiumAccess } from '@/services/panel-gating';
+import { hasPremiumApiAccess } from '@/services/panel-gating';
 import { onEntitlementChange } from '@/services/entitlements';
 import { IS_EMBEDDED_PREVIEW } from '@/utils/embedded-preview';
 import type { GetTradeRestrictionsResponse, GetTariffTrendsResponse, GetTradeFlowsResponse, GetTradeBarriersResponse, GetCustomsRevenueResponse, ListComtradeFlowsResponse, ComtradeFlowRecord, TradeRestriction, TariffDataPoint, EffectiveTariffRate, TradeFlowRecord, TradeBarrier, CustomsRevenueMonth } from '@/generated/client/worldmonitor/trade/v1/service_client';
@@ -63,14 +63,14 @@ const comtradeBreaker = createCircuitBreaker<ListComtradeFlowsResponse>({ name: 
 // response. persistCache:false already closes the cross-browser-reload
 // path; this closes the in-tab SPA transition path.
 //
-// ENTITLEMENT SIGNAL: hasPremiumAccess() is the repo's single source of
-// truth (src/services/panel-gating.ts). It unions API key, tester key,
+// ENTITLEMENT SIGNAL: hasPremiumApiAccess() is the source of truth here
+// (src/services/panel-gating.ts). It unions API key, tester key,
 // Clerk pro role, and Convex Dodo entitlement via isProUser/isEntitled.
 // The earlier version of this fingerprint used Clerk publicMetadata.plan,
 // which is NOT written by the webhook pipeline — a paying user with a
 // valid Dodo entitlement would still fingerprint as 'free', and a user
 // whose Dodo subscription lapsed would still fingerprint as 'pro' until
-// the next Clerk session refresh. Swap to hasPremiumAccess() so the
+// the next Clerk session refresh. Use hasPremiumApiAccess() so the
 // fingerprint tracks authoritative entitlement state directly.
 //
 // Shape: `${userId}:${entitled ? 'pro' : 'free'}` | `anon:<state>` | undefined-not-yet-observed
@@ -83,7 +83,7 @@ function currentPremiumFingerprint(): string {
   } catch { /* Clerk not loaded yet */ }
   let entitled = false;
   try {
-    entitled = hasPremiumAccess();
+    entitled = hasPremiumApiAccess();
   } catch { /* entitlement/panel-gating not ready */ }
   return `${userId}:${entitled ? 'pro' : 'free'}`;
 }
@@ -145,7 +145,7 @@ export async function fetchTariffTrends(reportingCountry: string, partnerCountry
   // /pro live-preview iframe: no Clerk session → guaranteed 401 → breaker
   // would fall through to emptyTariffs anyway. Short-circuit to silence the
   // console noise this path causes on the embedding /pro page.
-  if (IS_EMBEDDED_PREVIEW) return emptyTariffs;
+  if (IS_EMBEDDED_PREVIEW || !hasPremiumApiAccess()) return emptyTariffs;
   invalidatePremiumBreakersIfIdentityChanged();
   try {
     return await tariffsBreaker.execute(async () => {
@@ -196,7 +196,7 @@ export async function fetchCustomsRevenue(): Promise<GetCustomsRevenueResponse> 
 
 export async function fetchComtradeFlows(): Promise<ListComtradeFlowsResponse> {
   // /pro live-preview iframe: see fetchTariffTrends comment above.
-  if (IS_EMBEDDED_PREVIEW) return emptyComtrade;
+  if (IS_EMBEDDED_PREVIEW || !hasPremiumApiAccess()) return emptyComtrade;
   invalidatePremiumBreakersIfIdentityChanged();
   try {
     return await comtradeBreaker.execute(async () => {

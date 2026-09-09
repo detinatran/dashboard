@@ -1619,26 +1619,33 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function inventoryMarkerPattern(leadingNewline) {
+function inventoryMarkerPattern(leadingNewline, flags = '') {
   return new RegExp(
-    `${leadingNewline ? '\\n' : ''}## (?:Audited|Observed) (?:Upstream|Source) Inventory\\n+` +
+    `${leadingNewline ? '\\r?\\n' : ''}## (?:Audited|Observed) (?:Upstream|Source) Inventory(?:\\r?\\n)+` +
       `${escapeRegExp(BEGIN_MARKER)}[\\s\\S]*?${escapeRegExp(END_MARKER)}`,
+    flags,
   );
 }
 
 /** Single source of truth for locating the generated block, shared with the test. */
 export function matchGeneratedAttributionSection(docs) {
-  return docs.match(inventoryMarkerPattern(false))?.[0];
+  return docs.match(inventoryMarkerPattern(false))?.[0].replaceAll('\r\n', '\n');
 }
 
 function updateDocs(rootDir, section) {
   const path = join(rootDir, DOCS_PATH);
   const current = readFileSync(path, 'utf8');
-  const markerPattern = inventoryMarkerPattern(true);
-  const updated = markerPattern.test(current)
-    // Function replacement: `section` is generated from manifest text that can
-    // contain `$&`/`$'`, which String.replace would otherwise expand.
-    ? current.replace(markerPattern, () => `\n${section}`)
+  const markerPattern = inventoryMarkerPattern(true, 'g');
+  let matchedSections = 0;
+  // Replace the first generated section and remove any duplicate sections left
+  // by older Windows runs whose CRLF markers were not recognized. A function
+  // replacement also keeps `$&`/`$'` in generated provider text literal.
+  const replaced = current.replace(markerPattern, () => {
+    matchedSections += 1;
+    return matchedSections === 1 ? `\n${section}` : '';
+  });
+  const updated = matchedSections > 0
+    ? `${replaced.trimEnd()}\n`
     : `${current.trimEnd()}\n\n${section}\n`;
   writeFileSync(path, updated);
 }
@@ -1778,6 +1785,8 @@ export function runSourceAttribution({
   return 0;
 }
 
-if (process.argv[1] && process.argv[1].endsWith('scripts/source-attribution.mjs')) {
+// Normalize Windows separators: without this, the documented CLI silently did
+// nothing on Windows while the same command ran correctly in Linux/CI.
+if (process.argv[1]?.replaceAll('\\', '/').endsWith('scripts/source-attribution.mjs')) {
   process.exitCode = runSourceAttribution({ args: process.argv.slice(2) });
 }

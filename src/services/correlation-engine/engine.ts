@@ -10,7 +10,7 @@ import type {
 import { haversineKm } from '@/utils/distance';
 
 import { premiumFetch } from '@/services/premium-fetch';
-import { hasPremiumAccess } from '@/services/panel-gating';
+import { hasPremiumApiAccess } from '@/services/panel-gating';
 import { IntelligenceServiceClient } from '@/services/generated-rpc-clients';
 import type { CorrelationRuntimeMode } from '@/services/correlation-runtime-mode';
 
@@ -412,7 +412,7 @@ export class CorrelationEngine {
   // ── LLM Assessment ─────────────────────────────────────────
 
   private queueLlmAssessments(cards: ConvergenceCard[], adapter: DomainAdapter): void {
-    if (!hasPremiumAccess()) return;
+    if (!hasPremiumApiAccess()) return;
     const pending: Array<{ card: ConvergenceCard; cacheKey: string }> = [];
     for (const card of cards) {
       if (card.score < LLM_SCORE_THRESHOLD) continue;

@@ -16,7 +16,7 @@ import { escapeHtml, unsafeRawHtml } from '@/utils/sanitize';
 import { isFeatureAvailable } from '@/services/runtime-config';
 import { isDesktopRuntime } from '@/services/runtime';
 import { getAuthState, subscribeAuthState } from '@/services/auth-state';
-import { hasPremiumAccess } from '@/services/panel-gating';
+import { hasPremiumAccess, hasPremiumApiAccess } from '@/services/panel-gating';
 import { trackGateHit } from '@/services/analytics';
 import { runScenario, getScenarioStatus } from '@/services/scenario';
 import { setTrustedHtml, trustedHtml } from '@/utils/dom-utils';
@@ -917,6 +917,16 @@ export class SupplyChainPanel extends Panel {
   private async runScenario(trigger: HTMLElement, btn: HTMLButtonElement): Promise<void> {
     if (btn.dataset.gated === '1') {
       trackGateHit('scenario-engine');
+      return;
+    }
+    if (!hasPremiumApiAccess(getAuthState())) {
+      btn.disabled = true;
+      btn.textContent = 'Pro key required';
+      setTimeout(() => {
+        if (!btn.isConnected) return;
+        btn.textContent = 'Simulate Closure';
+        btn.disabled = false;
+      }, 2_500);
       return;
     }
     this.scenarioPollController?.abort();

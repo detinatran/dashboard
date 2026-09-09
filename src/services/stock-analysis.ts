@@ -54,6 +54,8 @@ export function getStockAnalysisTargets(limitOverride?: number): StockAnalysisTa
 }
 
 export async function fetchStockAnalysesForTargets(targets: StockAnalysisTarget[]): Promise<StockAnalysisResult[]> {
+  const { hasPremiumApiAccess } = await import('@/services/panel-gating');
+  if (!hasPremiumApiAccess()) return [];
   return runThrottledTargetRequests(targets, async (target) => {
     return client.analyzeStock({
       symbol: target.symbol,

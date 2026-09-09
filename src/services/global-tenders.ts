@@ -22,6 +22,8 @@ export async function fetchGlobalTenders(
   filters: GlobalTenderFilters = {},
   signal?: AbortSignal,
 ): Promise<ListGlobalTendersResponse> {
+  const { hasPremiumApiAccess } = await import('@/services/panel-gating');
+  if (!hasPremiumApiAccess()) return { ...EMPTY_TENDERS };
   const request: ListGlobalTendersRequest = {
     country: '', countries: [], region: '', source: '', status: '', deadlineFrom: '', deadlineTo: '', minValue: 0, maxValue: 0,
     currency: '', category: '', query: '', pageSize: 25, cursor: '', sort: 'closing_soon', buyer: '', publishedFrom: '', publishedTo: '', minAutomationScore: 0, ...filters,

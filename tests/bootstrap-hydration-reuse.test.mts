@@ -171,7 +171,7 @@ before(async () => {
       b.onResolve({ filter: /services\/i18n/ }, () => ({ path: 'stub:i18n', namespace: 'stub-seam' }));
       b.onLoad({ filter: /.*/, namespace: 'stub-seam' }, (args) => ({
         contents: args.path === 'stub:panel-gating'
-          ? 'export function hasPremiumAccess() { return false; }'
+          ? 'export function hasPremiumAccess() { return false; } export function hasPremiumApiAccess() { return false; }'
           : args.path === 'stub:premium-fetch'
             ? 'export async function premiumFetch(...args) { return globalThis.fetch(...args); }'
             : "export function t(key) { return key; } export function getCurrentLanguageTag() { return 'en'; }",
