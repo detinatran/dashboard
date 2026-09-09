@@ -220,6 +220,8 @@ describe('map renderer deferral boundary', () => {
   });
 
   it('keeps optional deck.gl specialty packages out of the base WebGL renderer chunk', () => {
+    const { dependencies } = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf-8'));
+    assert.ok(!dependencies['deck.gl'], 'Use targeted deck packages, not the unused all-layers umbrella');
     const imports = staticValueImportGraph('src/components/DeckGLMap.ts');
     const forbidden = [
       '@deck.gl/aggregation-layers',

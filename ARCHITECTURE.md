@@ -101,6 +101,10 @@ All panels extend the `Panel` base class (109 classes across `src/components`). 
 
 Layer definitions live in `src/config/map-layer-definitions.ts`, each specifying renderer support (flat/globe), premium status, variant filtering, and i18n keys.
 
+MapLibre 6's module worker is bundled explicitly via Vite's `?worker&url` import. Until deck.gl supports its camera layout natively, `src/utils/maplibre-deck-compat.ts` provides a live read-only `transform` alias for the interleaved renderer. Map upgrade checks must cover worker HTTP responses, camera movement, layer rendering and unhandled browser errors; a successful TypeScript check alone is insufficient.
+
+The tested MapLibre/deck versions are pinned together. Only the targeted `@deck.gl/core`, `@deck.gl/layers` and `@deck.gl/mapbox` packages are installed; the unused all-layers `deck.gl` umbrella is deliberately excluded. Pulse animation is gated by enabled layers so cached, hidden datasets cannot keep triggering WebGL rebuilds.
+
 ### State Management
 
 No external state library. `AppContext` is a central mutable object holding: map references, panel instances, panel/layer settings, all cached data (news, markets, predictions, clusters, intelligence caches), in-flight request tracking, and UI component references. URL state syncs bidirectionally via `src/utils/urlState.ts` (debounced 250ms).

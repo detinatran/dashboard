@@ -244,7 +244,12 @@ test.describe('DeckGL map harness', () => {
   }) => {
     const pageErrors: string[] = [];
     const deckAssertionErrors: string[] = [];
+    const workerResponses: number[] = [];
     const ignorablePageErrorPatterns = [/could not compile fragment shader/i];
+
+    page.on('response', (response) => {
+      if (response.url().includes('maplibre-gl-worker')) workerResponses.push(response.status());
+    });
 
     page.on('pageerror', (error) => {
       pageErrors.push(error.message);
@@ -268,6 +273,28 @@ test.describe('DeckGL map harness', () => {
 
     expect(unexpectedPageErrors).toEqual([]);
     expect(deckAssertionErrors).toEqual([]);
+    expect(workerResponses.length, 'MapLibre must load its bundled worker').toBeGreaterThan(0);
+    expect(workerResponses.every((status) => status === 200), 'MapLibre worker requests must succeed').toBe(true);
+  });
+
+  test('keeps the interleaved renderer healthy across camera moves and resize', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await waitForHarnessReady(page);
+    for (const camera of [
+      { lon: 105, lat: 21, zoom: 5 },
+      { lon: -74, lat: 40, zoom: 3 },
+    ]) {
+      await page.evaluate((nextCamera) => {
+        const harness = (window as HarnessWindow).__mapHarness!;
+        harness.seedAllDynamicData();
+        harness.setCamera(nextCamera);
+      }, camera);
+      await page.waitForTimeout(1000);
+    }
+    await page.setViewportSize({ width: 1100, height: 800 });
+    await page.waitForTimeout(1000);
+    expect(errors).toEqual([]);
   });
 
   test('renders non-empty visual data for every renderable layer in current variant', async ({
@@ -454,6 +481,8 @@ test.describe('DeckGL map harness', () => {
     await page.evaluate(() => {
       const w = window as HarnessWindow;
       w.__mapHarness?.seedAllDynamicData();
+      // Keep unrelated seeded positive/kindness events cached but hidden.
+      w.__mapHarness?.setLayersForSnapshot(['protests']);
       w.__mapHarness?.setHotspotActivityScenario('none');
       w.__mapHarness?.setPulseProtestsScenario('none');
       w.__mapHarness?.setNewsPulseScenario('none');

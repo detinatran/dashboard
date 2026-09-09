@@ -6,8 +6,10 @@
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import type { Layer, LayersList, PickingInfo } from '@deck.gl/core';
 import { GeoJsonLayer, ScatterplotLayer, PathLayer, IconLayer, TextLayer, PolygonLayer } from '@deck.gl/layers';
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import type { StyleSpecification } from 'maplibre-gl';
+import { ensureDeckMapTransform } from '@/utils/maplibre-deck-compat';
 import { FALLBACK_DARK_STYLE, FALLBACK_LIGHT_STYLE, getMapProvider, getMapTheme, isLightMapTheme } from '@/config/basemap';
 import { getStyleForProvider } from '@/config/basemap-styles';
 import Supercluster from 'supercluster';
@@ -198,6 +200,9 @@ import {
   type CountryClickGestureTracker,
 } from './map-interaction-guard';
 
+// MapLibre 6 ships a separate module worker. Let Vite bundle its imports and
+// provide the hashed URL instead of resolving beside the optimized main chunk.
+maplibregl.setWorkerUrl(maplibreWorkerUrl);
 
 export type TimeRange = '1h' | '6h' | '24h' | '48h' | '7d' | 'all';
 export type DeckMapView = 'global' | 'america' | 'mena' | 'eu' | 'asia' | 'latam' | 'africa' | 'oceania';
@@ -1203,7 +1208,7 @@ export class DeckGLMap {
     let tileLoadOk = false;
     let tileErrorCount = 0;
 
-    this.maplibreMap.on('error', (e: { error?: Error; message?: string }) => {
+    this.maplibreMap.on('error', (e: { error?: { message: string }; message?: string }) => {
       const msg = e.error?.message ?? e.message ?? '';
       console.warn('[DeckGLMap] map error:', msg);
       if (msg.includes('Failed to fetch') || msg.includes('AJAXError') || msg.includes('CORS') || msg.includes('NetworkError') || msg.includes('403') || msg.includes('Forbidden')) {
@@ -1269,6 +1274,7 @@ export class DeckGLMap {
   private initDeck(): void {
     if (!this.maplibreMap) return;
 
+    ensureDeckMapTransform(this.maplibreMap);
     installDeckInterleavedRaceFilter();
 
     this.deckOverlay = new MapboxOverlay({
@@ -4587,11 +4593,13 @@ export class DeckGLMap {
   }
 
   private needsPulseAnimation(now = Date.now()): boolean {
+    const { layers } = this.state;
+    // Hidden datasets must not keep rebuilding the WebGL layer stack.
     return this.hasRecentNews(now)
-      || this.hasRecentRiot(now)
-      || this.hotspots.some(h => h.hasBreaking)
-      || this.positiveEvents.some(e => e.count > 10)
-      || this.kindnessPoints.some(p => p.type === 'real');
+      || (layers.protests && this.hasRecentRiot(now))
+      || (layers.hotspots && this.hotspots.some(h => h.hasBreaking))
+      || (layers.positiveEvents && this.positiveEvents.some(e => e.count > 10))
+      || (layers.kindness && this.kindnessPoints.some(p => p.type === 'real'));
   }
 
   private syncPulseAnimation(now = Date.now()): void {
@@ -8202,7 +8210,7 @@ export class DeckGLMap {
       if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
     };
 
-    const onError = (e: { error?: Error; message?: string }) => {
+    const onError = (e: { error?: { message: string }; message?: string }) => {
       if (gen !== this.tileMonitorGeneration) { cleanup(); return; }
       const msg = e.error?.message ?? e.message ?? '';
       if (msg.includes('Failed to fetch') || msg.includes('AJAXError') || msg.includes('CORS') || msg.includes('NetworkError') || msg.includes('403') || msg.includes('Forbidden')) {
