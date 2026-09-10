@@ -109,6 +109,31 @@ describe('insights-loader', () => {
       originalFetch = globalThis.fetch;
     });
 
+    it('coalesces concurrent panel requests without dropping their data', async () => {
+      let finish;
+      let calls = 0;
+      const data = makeValidInsights();
+      globalThis.fetch = () => {
+        calls++;
+        return new Promise((resolve) => { finish = resolve; });
+      };
+      const requests = [fetchServerInsights(), fetchServerInsights(), fetchServerInsights()];
+      assert.equal(calls, 1);
+      finish(new Response(JSON.stringify({ data: { insights: data } }), { status: 200 }));
+      for (const result of await Promise.all(requests)) assert.deepEqual(result, data);
+    });
+
+    it('releases a failed shared request so the next attempt can recover', async () => {
+      let calls = 0;
+      globalThis.fetch = async () => { calls++; throw new Error('offline'); };
+      assert.deepEqual(await Promise.all([fetchServerInsights(), fetchServerInsights()]), [null, null]);
+      assert.equal(calls, 1);
+      const data = makeValidInsights();
+      globalThis.fetch = async () => { calls++; return new Response(JSON.stringify({ data: { insights: data } })); };
+      assert.deepEqual(await fetchServerInsights(), data);
+      assert.equal(calls, 2);
+    });
+
     afterEach(() => {
       globalThis.fetch = originalFetch;
     });

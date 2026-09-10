@@ -226,6 +226,10 @@ The market backup bundle also persists 14 days of timestamped hourly Yahoo close
 
 `startSmartPollLoop()` supports: exponential backoff (max 4x), viewport-conditional refresh (only if panel is near viewport), tab-pause (suspend when hidden), and staggered flush on tab visibility (150ms delays).
 
+`MapContainer` combines document visibility, viewport intersection (150px prewarm margin), and explicit modal pauses before notifying either WebGL renderer. A visibility change cannot release a modal pause. Globe animation and cosmetic animation loops stop while paused; pending marker updates are flushed on resume. Observer/listener cleanup follows the map lifecycle.
+
+Concurrent `fetchServerInsights()` calls share one in-flight request (including its initiating caller's timeout). Successful snapshots retain the existing freshness checks; a failed request releases the shared promise so a later attempt can recover.
+
 ### Health Monitoring
 
 `api/health.js` checks every bootstrap and standalone key. For each key it reads `seed-meta:<key>` and compares `fetchedAt` against `maxStaleMin`. Cascade groups handle fallback chains (e.g., theater-posture: live, stale, backup). Returns per-key status: OK, STALE, WARN, EMPTY.
