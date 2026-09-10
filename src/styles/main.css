@@ -4,118 +4,116 @@
 
 /* ============================================================
    Theme Colors — overridden by [data-theme="light"] below
+
+   WAR ROOM — CRT / radar heritage. Near-black substrate with a green cast;
+   two phosphors (green = nominal, amber = attention) and red reserved
+   EXCLUSIVELY for critical. Chroma is information: nothing here is colored
+   for decoration.
+
+   Measured WCAG contrast (text on --surface #0b100d):
+     --text            #c8d6cd  12.8:1  AAA
+     --text-secondary  #7f9689   6.1:1  AA
+     --text-dim        #7f9689   6.1:1  AA   (same rank as secondary — see below)
+     --text-ghost      #54635a   3.0:1  labels ≥11px letterspaced only, never body
+     --green           #7df9c0  14.8:1  AAA
+     --yellow/amber    #ffb000  10.5:1  AAA
+     --red             #ff4b3e   5.8:1  AA
+     info/low          #6f8f82   5.4:1  AA
+   On --bg #050706: --text 13.4:1, --text-secondary 6.4:1, --green 15.6:1.
+
+   Semantic ladder mapping (the app has six severity steps, the spec three):
+     critical                    → red      (the only red on the surface)
+     high, elevated              → amber
+     normal, positive, live      → green
+     low, info                   → #6f8f82 desaturated green-grey — informational
+                                   must not read as an alert
    ============================================================ */
 :root {
-  /* Backgrounds */
-  --bg: #0a0a0a;
-  --bg-secondary: #111;
-  --surface: #141414;
-  --surface-hover: #1e1e1e;
-  --surface-active: #1a1a2e;
+  /* Backgrounds — substrate, module fill, hover/active as luminance steps */
+  --bg: #050706;
+  --bg-secondary: #080c0a;
+  --surface: #0b100d;
+  --surface-hover: #101713;
+  --surface-active: #131c17;
 
-  /* Borders */
-  --border: #2a2a2a;
-  --border-strong: #444;
-  --border-subtle: #1a1a1a;
+  /* Rules — depth comes from luminance and rules, never shadow or glow */
+  --border: #16211a;
+  --border-strong: #24352b;
+  --border-subtle: #101813;
 
-  /* Text */
-  --text: #e8e8e8;
-  --text-secondary: #ccc;
-  --text-dim: #888;
-  --text-muted: #838383; /* was #666 (3.2:1 on --surface); AA 4.9:1 */
-  --text-faint: #7f7f7f; /* was #555 (2.5:1); AA 4.6:1 */
-  --text-ghost: #666; /* was #444 (1.9:1); 3.2:1 — decorative/large text only, never body copy */
-  --accent: #fff;
+  /* Text — three ranks. --text-dim/muted/faint collapse to rank 2 so nothing
+     that used to be "muted body" falls below AA on the new ground. */
+  --text: #c8d6cd;
+  --text-secondary: #7f9689;
+  --text-dim: #7f9689;
+  --text-muted: #7f9689;
+  --text-faint: #7f9689;
+  --text-ghost: #54635a; /* decorative/large/letterspaced labels only — must clear the 3:1 floor tests/contrast.test.mts enforces */
+  --accent: #7df9c0;
 
-  /* Overlays & shadows */
-  --overlay-subtle: rgba(255, 255, 255, 0.03);
-  --overlay-light: rgba(255, 255, 255, 0.05);
-  --overlay-medium: rgba(255, 255, 255, 0.1);
-  --overlay-heavy: rgba(255, 255, 255, 0.2);
-  --shadow-color: rgba(0, 0, 0, 0.5);
+  /* Overlays keep their green cast so a hover never reads as grey plastic */
+  --overlay-subtle: rgba(125, 249, 192, 0.03);
+  --overlay-light: rgba(125, 249, 192, 0.05);
+  --overlay-medium: rgba(125, 249, 192, 0.09);
+  --overlay-heavy: rgba(125, 249, 192, 0.16);
+  --shadow-color: rgba(0, 0, 0, 0);          /* no shadows on this surface */
   --darken-light: rgba(0, 0, 0, 0.15);
   --darken-medium: rgba(0, 0, 0, 0.2);
   --darken-heavy: rgba(0, 0, 0, 0.3);
+  --scrollbar-thumb: #16211a;
+  --scrollbar-thumb-hover: #24352b;
+  --input-bg: #080c0a;
+  --panel-bg: #0b100d;
+  --panel-border: #16211a;
 
-  /* Scrollbar */
-  --scrollbar-thumb: #333;
-  --scrollbar-thumb-hover: #555;
+  /* Map ground — the scope. Same substrate; grid and strokes are rules. */
+  --map-bg: #050706;
+  --map-grid: #101813;
+  --map-country: #0b100d;
+  --map-stroke: #24352b;
 
-  /* Input */
-  --input-bg: #1a1a1a;
-
-  /* Panels */
-  --panel-bg: #141414;
-  --panel-border: #2a2a2a;
-
-  /* Map */
-  --map-bg: #020a08;
-  --map-grid: #0a2a20;
-  --map-country: #0a2018;
-  --map-stroke: #0f5040;
-
-  /* Font stack */
   --font-mono: 'SF Mono', 'Monaco', 'Cascadia Code', 'Fira Code', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
-  /* Base body font, controlled by font preference (mono vs system) */
   --font-body-base: var(--font-mono);
-  /* Effective body font used throughout the app */
   --font-body: var(--font-body-base);
-}
-
-/* System font selection via data-font attribute (avoids inline style specificity issues with RTL) */
-[data-font="system"] {
   --font-body-base: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
-
-[dir="rtl"] {
   --font-body: 'Tajawal', 'Geeza Pro', 'SF Arabic', 'Tahoma', var(--font-body-base);
-}
-
-:lang(zh-CN),
-:lang(zh) {
   --font-body: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', var(--font-body-base);
-}
 
-/* ============================================================
-   Semantic Colors — dark-mode defaults, light overrides below
-   ============================================================ */
-:root {
-  /* Severity levels */
-  --semantic-critical: #ff4444;
-  --semantic-high: #ff8800;
-  --semantic-elevated: #ffaa00;
-  --semantic-normal: #44aa44;
-  --semantic-low: #3388ff;
-  --semantic-info: #3b82f6;
-  --semantic-positive: #44ff88;
+  /* Semantic — see ladder mapping above */
+  --semantic-critical: #ff4b3e;
+  --semantic-high: #ffb000;
+  --semantic-elevated: #ffb000;
+  --semantic-normal: #7df9c0;
+  --semantic-low: #6f8f82;
+  --semantic-info: #6f8f82;
+  --semantic-positive: #7df9c0;
+  --threat-critical: #ff4b3e;
+  --threat-high: #ffb000;
+  --threat-medium: #ffb000;
+  --threat-low: #7df9c0;
+  --threat-info: #6f8f82;
+  --defcon-1: #ff4b3e;
+  --defcon-2: #ff4b3e;
+  --defcon-3: #ffb000;
+  --defcon-4: #6f8f82;
+  --defcon-5: #7df9c0;
+  --status-live: #7df9c0;
+  --status-cached: #ffb000;
+  --status-unavailable: #ff4b3e;
+  --red: #ff4b3e;
+  --red-strong: #d93a30;
+  --green: #7df9c0;
+  --yellow: #ffb000;
 
-  /* Threat levels */
-  --threat-critical: #ef4444;
-  --threat-high: #f97316;
-  --threat-medium: #eab308;
-  --threat-low: #22c55e;
-  --threat-info: #3b82f6;
-
-  /* DEFCON levels */
-  --defcon-1: #ff0040;
-  --defcon-2: #ff4400;
-  --defcon-3: #ffaa00;
-  --defcon-4: #00aaff;
-  --defcon-5: #2d8a6e;
-
-  /* Status indicators */
-  --status-live: #44ff88;
-  --status-cached: #ffaa00;
-  --status-unavailable: #ff4444;
-
-  /* Legacy color aliases (used by existing var() references) */
-  --red: #ff4444;
-  /* Darker red for white-text "active/live" pills: #fff on --red is only
-     3.4:1, on --red-strong it clears WCAG AA (≈5:1). Theme-independent (the
-     pill is red in both themes). */
-  --red-strong: #d62b2b;
-  --green: #44ff88;
-  --yellow: #ffaa00;
+  /* Component-facing aliases. Several panels reference these by name; until
+     now none were defined, so `var(--danger)` without a fallback resolved to
+     invalid and `var(--danger, #ef4444)` fired a Tailwind hex. Map them to
+     the ladder so every consumer agrees. */
+  --danger: var(--semantic-critical);
+  --warning: var(--semantic-high);
+  --color-success: var(--semantic-normal);
+  --color-danger: var(--semantic-critical);
+  --color-warning: var(--semantic-high);
 }
 
 /* ============================================================
@@ -123,6 +121,24 @@
    Bright/neon dark-mode colors need darker variants for light backgrounds
    ============================================================ */
 [data-theme="light"] {
+  /* Pinned: these were inherited from :root before the war-room palette.
+     The phosphor red/green fail AA on a light ground, so light keeps its
+     prior values explicitly rather than silently picking up the new ones. */
+  --semantic-critical: #ff4444;
+  --semantic-low: #3388ff;
+  --semantic-info: #3b82f6;
+  --threat-critical: #ef4444;
+  --threat-info: #3b82f6;
+  --defcon-1: #ff0040;
+  --defcon-2: #ff4400;
+  --defcon-5: #2d8a6e;
+  --red: #ff4444;
+  --red-strong: #d62b2b;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
   /* Semantic color overrides — darker variants for light backgrounds */
   --semantic-high: #ea580c;
   /* Tailwind orange-600 (was #ff8800, 2.27:1) */
@@ -131,7 +147,7 @@
   --semantic-normal: #15803d;
   /* Tailwind green-700 (was #44aa44, 2.81:1) */
   --semantic-positive: #16a34a;
-  /* Tailwind green-600 (was #44ff88, too bright for light bg) */
+  /* Tailwind green-600 (was var(--green), too bright for light bg) */
   --threat-high: #c2410c;
   /* Tailwind orange-700 (was #f97316, 2.66:1) */
   --threat-medium: #ca8a04;
@@ -143,13 +159,13 @@
   --defcon-4: #0284c7;
   /* Tailwind sky-600 (was #00aaff, 2.43:1) */
   --status-live: #16a34a;
-  /* Tailwind green-600 (was #44ff88, 1.25:1) */
+  /* Tailwind green-600 (was var(--green), 1.25:1) */
   --status-cached: #d97706;
   /* Tailwind amber-600 (was #ffaa00, 1.81:1) */
   --status-unavailable: #dc2626;
   /* Tailwind red-600 (was #ff4444, better contrast on light bg) */
   --green: #16a34a;
-  /* Tailwind green-600 (was #44ff88) */
+  /* Tailwind green-600 (was var(--green)) */
   --yellow: #d97706;
   /* Tailwind amber-600 (was #ffaa00) */
 
@@ -417,7 +433,7 @@ canvas,
 
 .variant-option.active {
   color: var(--green);
-  background: rgba(68, 255, 136, 0.1);
+  background: rgba(125, 249, 192, 0.1);
   pointer-events: none;
 }
 
@@ -474,7 +490,7 @@ canvas,
 .mission-preset-button[aria-expanded="true"] {
   color: var(--text);
   border-color: var(--accent);
-  background: rgba(68, 255, 136, 0.08);
+  background: rgba(125, 249, 192, 0.08);
 }
 
 .mission-preset-button--active {
@@ -482,7 +498,7 @@ canvas,
 }
 
 .mission-preset-button--suggested {
-  border-color: rgba(68, 255, 136, 0.45);
+  border-color: rgba(125, 249, 192, 0.45);
 }
 
 .mission-preset-button__icon {
@@ -492,7 +508,7 @@ canvas,
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: rgba(68, 255, 136, 0.12);
+  background: rgba(125, 249, 192, 0.12);
   color: var(--green);
   font-size: calc(9px * var(--wm-panel-effective-scale, 1));
 }
@@ -607,7 +623,7 @@ canvas,
 .mission-preset-card:hover,
 .mission-preset-card.selected {
   border-color: var(--accent);
-  background: rgba(68, 255, 136, 0.06);
+  background: rgba(125, 249, 192, 0.06);
 }
 
 .mission-preset-card:hover {
@@ -621,7 +637,7 @@ canvas,
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: rgba(68, 255, 136, 0.12);
+  background: rgba(125, 249, 192, 0.12);
   color: var(--green);
   font-size: calc(11px * var(--wm-panel-effective-scale, 1));
   font-weight: 800;
@@ -692,9 +708,9 @@ canvas,
   gap: 12px;
   padding: 12px 14px;
   background: linear-gradient(135deg, #1a2332 0%, #0f1923 100%);
-  border: 1px solid rgba(68, 255, 136, 0.25);
+  border: 1px solid rgba(125, 249, 192, 0.25);
   border-radius: 10px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(68, 255, 136, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(125, 249, 192, 0.08);
   z-index: 10003;
   opacity: 0;
   transform: translateY(-20px);
@@ -717,7 +733,7 @@ canvas,
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: rgba(68, 255, 136, 0.12);
+  background: rgba(125, 249, 192, 0.12);
   color: var(--green);
 }
 
@@ -3629,8 +3645,8 @@ body.panel-resize-active iframe {
 }
 
 .live-news-manage-card.added {
-  border-color: rgba(68, 255, 136, 0.3);
-  background: rgba(68, 255, 136, 0.05);
+  border-color: rgba(125, 249, 192, 0.3);
+  background: rgba(125, 249, 192, 0.05);
   cursor: pointer;
 }
 
@@ -8935,7 +8951,7 @@ a.prediction-link:hover {
   height: 64px;
   margin-bottom: 16px;
   position: relative;
-  border: 2px solid rgba(68, 255, 136, 0.3);
+  border: 2px solid rgba(125, 249, 192, 0.3);
   border-radius: 50%;
   overflow: hidden;
 }
@@ -9650,8 +9666,8 @@ a.prediction-link:hover {
 }
 
 .panel-toggle-item.changed {
-  background: rgba(68, 255, 136, 0.06);
-  border-color: rgba(68, 255, 136, 0.35);
+  background: rgba(125, 249, 192, 0.06);
+  border-color: rgba(125, 249, 192, 0.35);
 }
 
 .panel-toggle-checkbox {
@@ -9828,11 +9844,11 @@ a.prediction-link:hover {
 
 .panels-save-layout {
   color: var(--green);
-  border-color: rgba(68, 255, 136, 0.35);
+  border-color: rgba(125, 249, 192, 0.35);
 }
 
 .panels-save-layout:hover:not(:disabled) {
-  background: rgba(68, 255, 136, 0.08);
+  background: rgba(125, 249, 192, 0.08);
   border-color: var(--green);
 }
 
@@ -9983,7 +9999,7 @@ a.prediction-link:hover {
 }
 
 .popup-header.hotspot {
-  background: rgba(68, 255, 136, 0.06);
+  background: rgba(125, 249, 192, 0.06);
 }
 
 .popup-header.earthquake {
@@ -11292,7 +11308,7 @@ a.prediction-link:hover {
 }
 
 .popup-header.spaceport.active {
-  background: rgba(68, 255, 136, 0.06);
+  background: rgba(125, 249, 192, 0.06);
 }
 
 .popup-header.spaceport.planned {
@@ -11319,7 +11335,7 @@ a.prediction-link:hover {
 }
 
 .mineral-marker.producing .mineral-icon {
-  filter: drop-shadow(0 0 6px var(--status-live)) drop-shadow(0 0 12px #44ff8860);
+  filter: drop-shadow(0 0 6px var(--status-live)) drop-shadow(0 0 12px var(--green)60);
 }
 
 .mineral-marker.developing .mineral-icon {
@@ -11366,7 +11382,7 @@ a.prediction-link:hover {
 }
 
 .popup-header.mineral.producing {
-  background: rgba(68, 255, 136, 0.06);
+  background: rgba(125, 249, 192, 0.06);
 }
 
 .popup-header.mineral.developing {
@@ -11653,7 +11669,7 @@ a.prediction-link:hover {
 }
 
 .popup-header.tech-hq.faang {
-  background: rgba(68, 255, 136, 0.06);
+  background: rgba(125, 249, 192, 0.06);
 }
 
 .popup-header.tech-hq.unicorn {
@@ -11855,7 +11871,7 @@ a.prediction-link:hover {
 }
 
 .popup-header.accelerator.incubator {
-  background: rgba(68, 255, 136, 0.06);
+  background: rgba(125, 249, 192, 0.06);
 }
 
 .popup-header.accelerator.studio {
@@ -12552,7 +12568,7 @@ a.prediction-link:hover {
 /* Government Spending */
 .spending-summary {
   padding: 8px;
-  background: rgba(68, 255, 136, 0.05);
+  background: rgba(125, 249, 192, 0.05);
   border-radius: 4px;
   margin-bottom: 8px;
 }
@@ -12820,7 +12836,7 @@ a.prediction-link:hover {
 .trade-badge {
   font-size: calc(9px * var(--wm-panel-effective-scale, 1));
   padding: 1px 5px;
-  background: rgba(68, 255, 136, 0.1);
+  background: rgba(125, 249, 192, 0.1);
   color: var(--text-dim);
   border-radius: 3px;
   white-space: nowrap;
@@ -12846,7 +12862,7 @@ a.prediction-link:hover {
 }
 
 .trade-status.status-terminated {
-  background: rgba(68, 255, 136, 0.1);
+  background: rgba(125, 249, 192, 0.1);
   color: var(--green);
 }
 
@@ -14649,7 +14665,7 @@ a.prediction-link:hover {
 
 /* Highlight glow on new items (first 30 seconds) */
 .item.item-new-highlight {
-  background: linear-gradient(90deg, rgba(68, 255, 136, 0.1) 0%, transparent 50%);
+  background: linear-gradient(90deg, rgba(125, 249, 192, 0.1) 0%, transparent 50%);
   border-left-color: var(--green) !important;
   position: relative;
   isolation: isolate;
@@ -14660,7 +14676,7 @@ a.prediction-link:hover {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(68, 255, 136, 0.15) 0%, transparent 60%);
+  background: linear-gradient(90deg, rgba(125, 249, 192, 0.15) 0%, transparent 60%);
   opacity: 0;
   pointer-events: none;
   /* Behind item text, matching the pre-conversion host-background glow. */
@@ -14695,9 +14711,9 @@ a.prediction-link:hover {
   content: '';
   position: absolute;
   inset: 0;
-  border: 1px solid #3b82f6;
+  border: 1px solid var(--accent);
   border-radius: inherit;
-  box-shadow: 0 0 20px 4px #3b82f6, inset 0 0 12px 0 rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 20px 4px var(--accent), inset 0 0 12px 0 var(--overlay-light);
   opacity: 0;
   pointer-events: none;
   animation: search-glow-pulse 3s ease-in-out forwards;
@@ -14731,7 +14747,7 @@ a.prediction-link:hover {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  box-shadow: 0 0 20px rgba(68, 255, 136, 0.4);
+  box-shadow: 0 0 20px rgba(125, 249, 192, 0.4);
   opacity: 0;
   pointer-events: none;
   animation: panel-flash 0.5s ease-out;
@@ -15414,7 +15430,7 @@ a.prediction-link:hover {
 
 .mobile-menu-item.active {
   color: var(--green);
-  background: rgba(68, 255, 136, 0.06);
+  background: rgba(125, 249, 192, 0.06);
 }
 
 .mobile-menu-footer-links {
@@ -16854,7 +16870,7 @@ a.prediction-link:hover {
   align-items: center;
   gap: 8px;
   padding: 10px;
-  background: rgba(68, 255, 136, 0.1);
+  background: rgba(125, 249, 192, 0.1);
   border: 1px solid var(--green);
   border-radius: 4px;
 }
@@ -16925,7 +16941,7 @@ a.prediction-link:hover {
   align-items: center;
   gap: 8px;
   padding: 6px 8px;
-  background: rgba(68, 255, 136, 0.05);
+  background: rgba(125, 249, 192, 0.05);
   border-radius: 4px;
 }
 
@@ -18153,7 +18169,7 @@ a.prediction-link:hover {
 }
 
 .popup-toggle-switch.on {
-  background: #3b82f6;
+  background: var(--accent);
 }
 
 .popup-toggle-knob {
@@ -19152,8 +19168,8 @@ a.prediction-link:hover {
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: #00e5ff;
-  background: rgba(0, 229, 255, 0.08);
+  color: var(--accent);
+  background: rgba(125, 249, 192, 0.08);
   border: 1px solid rgba(0, 229, 255, 0.4);
   border-radius: 4px;
   box-shadow:
@@ -19472,7 +19488,7 @@ a.prediction-link:hover {
 }
 
 .deckgl-layer-toggles .layer-toggle.has-data {
-  border-color: rgba(68, 255, 136, 0.2);
+  border-color: rgba(125, 249, 192, 0.2);
 }
 
 .deckgl-layer-toggles .layer-explain-btn {
@@ -19577,7 +19593,7 @@ a.prediction-link:hover {
   width: fit-content;
   margin-bottom: 8px;
   padding: 2px 6px;
-  border: 1px solid rgba(68, 255, 136, 0.35);
+  border: 1px solid rgba(125, 249, 192, 0.35);
   border-radius: 3px;
   color: var(--green);
   font-size: calc(9px * var(--wm-panel-effective-scale, 1));
@@ -20076,8 +20092,8 @@ a.prediction-link:hover {
   font-size: calc(10px * var(--wm-panel-effective-scale, 1));
   font-weight: 700;
   letter-spacing: 1.5px;
-  color: #00e5ff;
-  border-top: 1px solid rgba(0, 229, 255, 0.2);
+  color: var(--accent);
+  border-top: 1px solid rgba(125, 249, 192, 0.2);
   pointer-events: none;
 }
 
@@ -21004,8 +21020,8 @@ a.prediction-link:hover {
 }
 
 .unified-settings-region-pill.active {
-  background: rgba(68, 255, 136, 0.08);
-  border-color: rgba(68, 255, 136, 0.4);
+  background: rgba(125, 249, 192, 0.08);
+  border-color: rgba(125, 249, 192, 0.4);
   color: var(--green);
 }
 
@@ -21034,9 +21050,9 @@ a.prediction-link:hover {
 
 .unified-settings-preset-chip:hover,
 .unified-settings-preset-chip:focus-visible {
-  border-color: rgba(68, 255, 136, 0.4);
+  border-color: rgba(125, 249, 192, 0.4);
   color: var(--green);
-  background: rgba(68, 255, 136, 0.06);
+  background: rgba(125, 249, 192, 0.06);
 }
 
 .unified-settings-preset-chip:focus-visible {
@@ -22405,7 +22421,7 @@ body.has-breaking-alert .panels-grid {
   height: 80px;
   margin: 0 auto 16px;
   position: relative;
-  border: 2px solid rgba(68, 255, 136, 0.3);
+  border: 2px solid rgba(125, 249, 192, 0.3);
   border-radius: 50%;
   overflow: hidden;
 }
@@ -22489,7 +22505,7 @@ body.has-breaking-alert .panels-grid {
 }
 
 .posture-stage.complete .posture-stage-dot {
-  background: rgba(68, 255, 136, 0.6);
+  background: rgba(125, 249, 192, 0.6);
 }
 
 @keyframes pulse-dot {
@@ -24122,10 +24138,10 @@ body.has-breaking-alert .panels-grid {
 
 .cw-cta {
   padding: 6px 14px;
-  background: hsl(229, 48%, 55%);
-  border: none;
+  background: transparent;
+  border: 1px solid var(--accent);
   border-radius: 20px;
-  color: #fff;
+  color: var(--accent);
   font-size: calc(12px * var(--wm-panel-effective-scale, 1));
   font-weight: 600;
   cursor: pointer;
@@ -24135,7 +24151,7 @@ body.has-breaking-alert .panels-grid {
 }
 
 .cw-cta:hover {
-  background: hsl(229, 48%, 62%);
+  background: var(--overlay-light);
 }
 
 .cw-close {
@@ -24824,7 +24840,7 @@ body.map-width-resizing {
 
 .widget-chat-readiness.is-ready {
   color: color-mix(in srgb, #8cffc9 80%, var(--text));
-  background: color-mix(in srgb, #44ff88 12%, transparent);
+  background: color-mix(in srgb, var(--green) 12%, transparent);
 }
 
 .widget-chat-readiness.is-error {
@@ -25188,10 +25204,10 @@ body.map-width-resizing {
 .auth-submit-btn {
   width: 100%;
   padding: 10px;
-  border: none;
+  border: 1px solid var(--accent);
   border-radius: 6px;
-  background: #3b82f6;
-  color: #fff;
+  background: transparent;
+  color: var(--accent);
   font-size: calc(14px * var(--wm-panel-effective-scale, 1));
   font-weight: 600;
   cursor: pointer;
@@ -25205,7 +25221,7 @@ body.map-width-resizing {
 }
 
 .auth-error {
-  color: #e74c3c;
+  color: var(--danger);
   font-size: calc(13px * var(--wm-panel-effective-scale, 1));
   text-align: center;
   min-height: 18px;
@@ -25648,7 +25664,7 @@ body.map-width-resizing {
 
 .mcp-status-loading { color: var(--text-dim); }
 .mcp-status-info { color: var(--yellow, #f5a623); }
-.mcp-status-ok { color: #44ff88; }
+.mcp-status-ok { color: var(--green); }
 .mcp-status-error { color: var(--red, #ff4444); }
 
 .mcp-tools-section {
@@ -28776,9 +28792,9 @@ body.map-width-resizing {
 .us-notif-slack-oauth {
   display: inline-flex;
   align-items: center;
-  background: #4a154b;
-  border: 1px solid #4a154b;
-  color: #fff;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--accent);
   border-radius: 6px;
   padding: 6px 14px;
   font-size: calc(12px * var(--wm-panel-effective-scale, 1));
@@ -28788,17 +28804,17 @@ body.map-width-resizing {
 }
 
 .us-notif-slack-oauth:hover {
-  background: #611f69;
-  border-color: #611f69;
+  background: var(--overlay-light);
+  border-color: var(--accent);
 }
 
 /* Discord OAuth button */
 .us-notif-discord-oauth {
   display: inline-flex;
   align-items: center;
-  background: #5865f2;
-  border: 1px solid #5865f2;
-  color: #fff;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--accent);
   border-radius: 6px;
   padding: 6px 14px;
   font-size: calc(12px * var(--wm-panel-effective-scale, 1));
@@ -28808,8 +28824,8 @@ body.map-width-resizing {
 }
 
 .us-notif-discord-oauth:hover {
-  background: #4752c4;
-  border-color: #4752c4;
+  background: var(--overlay-light);
+  border-color: var(--accent);
 }
 
 /* Manage in Slack link */
@@ -29337,4 +29353,41 @@ body.map-width-resizing {
   .map-webcam-viewer.minimized {
     bottom: calc(76px + env(safe-area-inset-bottom, 0px));
   }
+}
+
+
+/* ============================================================
+   War room — surface & geometry (dark ground only)
+   ============================================================ */
+:root:not([data-theme="light"]) * {
+  /* Panels are equipment modules, not cards. */
+  border-radius: 0 !important;
+}
+:root:not([data-theme="light"]) body::before {
+  /* 3% static scanline */
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483000;
+  background: repeating-linear-gradient(0deg, transparent 0 2px, rgba(0, 0, 0, 0.03) 2px 3px);
+}
+:root:not([data-theme="light"]) body::after {
+  /* One slow bright band drifting down — keeps the surface alive */
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: -12%;
+  height: 12%;
+  pointer-events: none;
+  z-index: 2147483001;
+  background: linear-gradient(180deg, transparent, rgba(125, 249, 192, 0.07) 50%, transparent);
+  animation: wm-refresh-band 9s linear infinite;
+}
+@keyframes wm-refresh-band {
+  to { transform: translateY(calc(100vh + 24%)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-theme="light"]) body::after { animation: none; display: none; }
 }

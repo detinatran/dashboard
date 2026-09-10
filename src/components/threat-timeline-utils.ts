@@ -12,12 +12,15 @@ export const THREAT_LEVEL_LABELS: Record<TimelineThreatLevel, string> = {
   info: 'Info',
 };
 
+// War-room ladder: red is reserved for critical, amber for attention,
+// green for nominal. `low`/`info` are informational — a desaturated
+// green-grey so they never read as an alert (chroma is information).
 export const THREAT_LEVEL_COLORS: Record<TimelineThreatLevel, string> = {
-  critical: '#ef4444',
-  high: '#f97316',
-  medium: '#eab308',
-  low: '#38bdf8',
-  info: '#94a3b8',
+  critical: '#ff4b3e',
+  high: '#ffb000',
+  medium: '#ffb000',
+  low: '#6f8f82',
+  info: '#6f8f82',
 };
 
 const SEVERITY_RANK: Record<TimelineThreatLevel, number> = {
