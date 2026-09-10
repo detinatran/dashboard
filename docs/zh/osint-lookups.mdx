@@ -1,0 +1,93 @@
+---
+title: "OSINT 查询"
+description: "被动式情报查询端点——DNS、WHOIS、证书透明度、CVE、BGP、MAC 厂商、主机暴露面、制裁名单筛查与区块链钱包追踪，全部基于公开注册数据的只读查询。"
+---
+
+`/api/osint/*` 下的端点将单个标识符解析为公开注册库中的记录。它们都是针对**已公开数据**的只读查询——不会探测、扫描或连接查询对象本身。
+
+<Warning>
+这些端点服务于仪表盘自身的 RECON 面板，**不属于公开 API 契约**。它们可能在不预先通知的情况下变更或移除。稳定集成请优先使用领域 RPC 服务（`/api/<domain>/v1/*`）。
+</Warning>
+
+## 端点列表
+
+| 端点 | 参数 | 上游数据源 | 返回内容 |
+|------|------|-----------|---------|
+| `GET /api/osint/dns` | `domain` | Google DNS-over-HTTPS | A、AAAA、MX、NS、TXT、CNAME、SOA 记录 |
+| `GET /api/osint/whois` | `domain` | rdap.org | RDAP 注册记录，并与 OFAC SDN 名单交叉核对 |
+| `GET /api/osint/certs` | `domain` | crt.sh | 证书透明度日志条目 |
+| `GET /api/osint/cve` | `cve` | cve.circl.lu、cveawg.mitre.org | 漏洞详情、CVSS 评分、参考链接 |
+| `GET /api/osint/bgp` | `query` | RIPEstat | ASN 概览、前缀、宣告对等体。接受 ASN、IP 或前缀 |
+| `GET /api/osint/mac` | `mac` | maclookup.app | OUI 厂商与注册地址 |
+| `GET /api/osint/shodan` | `ip` | Shodan InternetDB | 开放端口、主机名、CPE、已知漏洞 |
+| `GET /api/osint/sanctions` | `query`、`schema`、`limit` | OpenSanctions（美国 OFAC SDN 镜像） | 匹配的受制裁个人、实体与船舶 |
+| `GET /api/osint/crypto` | `address`、`chain` | blockstream / mempool.space、Blockscout | 钱包余额、交易摘要、风险指标 |
+
+所有上游数据源均无需密钥。Shodan 使用的是 **InternetDB**——提供预索引数据的免费端点，而非需认证的扫描 API。
+
+## 刻意未提供的能力
+
+上游 OSIRIS 项目还包含主动式侦察路由，这些**未被移植**：
+
+| 不可用 | 原因 |
+|--------|------|
+| 端口扫描 | 会连接调用方并不拥有的主机 |
+| 子网扫描 | 同上，且为网络级规模 |
+| 用户名枚举 | 每次查询会探测数十个第三方站点 |
+| 数据泄露 / 窃密木马查询 | 会再分发泄露的个人数据 |
+
+如确有需要，请在你自己拥有且已获授权测试的基础设施上运行，而不是在共享部署环境中。
+
+## 速率限制
+
+按 IP 计算，由 `api/osint/lib/ssrf-guard.ts` 在进程内实施：
+
+| 端点 | 限额 |
+|------|------|
+| `cve` | 30 次 / 分钟 |
+| `dns`、`whois`、`certs`、`bgp`、`sanctions`、`crypto` | 20 次 / 分钟 |
+| `mac`、`shodan` | **未设限** |
+
+超出限额返回 `429`，响应体为 `{"error":"Rate limit exceeded"}`。
+
+<Note>
+`mac` 与 `shodan` 目前没有速率限制。两者调用的都是自带节流的无密钥上游，但若部署对不可信调用方开放，仍应补上限制——这两个路由最容易被高频驱动。
+</Note>
+
+该计数器是按进程维护的，并不跨无服务器实例共享，因此多实例部署下的实际上限高于上表数值。请将其视为防止意外循环调用的护栏，而非防滥用手段。
+
+## SSRF 防护
+
+`osint/bgp`、`osint/shodan` 与 `osint/crypto` 接受调用方提供的地址。在发起任何请求之前，`ssrf-guard.ts` 会拒绝：
+
+- 私有网段——`10/8`、`172.16/12`、`192.168/16`
+- 回环地址——`127/8`、`::1`
+- 链路本地地址——`169.254/16`，含云元数据端点 `169.254.169.254`
+- 运营商级 NAT——`100.64/10`
+- 保留与组播网段
+- 畸形或经过混淆的 IP 字面量（如 `999.1.1.1`、`0x7f.0.0.1`）
+
+畸形地址会被判定为「阻止」而非 `NaN`——后者与任何网段比较都返回 false，将使检查形同虚设。
+
+<Note>
+DNS 预解析已被移除：`tests/edge-functions.test.mjs` 禁止 api/ 目录下的任何文件导入 `node:` 模块，而 fetch 没有 `dns.lookup()` 的等价实现。此处实际暴露面很小——每个 OSINT 路由调用的都是**固定**上游（crt.sh、rdap.org、RIPEstat 等），调用方提供的值仅作为查询参数传递，因此解析到私有地址的主机名本身永远不会被真正连接。若日后要让这些路由指向调用方提供的源站，必须先恢复 DNS 解析。
+</Note>
+
+## 响应结构
+
+所有端点均返回 JSON。错误响应包含 `error` 字段与相应状态码：
+
+| 状态码 | 含义 |
+|--------|------|
+| `400` | 参数缺失或格式错误 |
+| `403` | 目标被 SSRF 防护拒绝 |
+| `429` | 超出速率限制 |
+| `502` | 上游不可达或返回错误 |
+
+设计上优先返回部分结果而非直接失败：例如当证书透明度日志不可用时，`certs` 会以状态码 `200` 返回 `{"certificates":[],"error":"crt.sh unavailable"}`，这样并排渲染多个查询的调用方不会被单个慢速数据源阻塞。
+
+## 已知限制
+
+- **比特币查询依赖 `mempool.space`**，该站点在部分网络下不可达。以太坊路径（Blockscout）独立运行，不受影响。
+- **`osint/phone` 不可用。** 它需要 `google-libphonenumber`，而本项目并未依赖该库。
+- **制裁数据为镜像副本**，缓存周期 24 小时。用于合规决策时，请以 OFAC 官方数据源为准，而非本端点。

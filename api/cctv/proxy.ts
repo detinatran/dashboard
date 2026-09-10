@@ -1,6 +1,3 @@
-import http from 'node:http';
-import https from 'node:https';
-
 /**
  * CCTV frame proxy, ported from OSIRIS (`api/cctv/proxy/route.ts`).
  *
@@ -8,8 +5,13 @@ import https from 'node:https';
  * referenced straight from the page fails. This re-fetches server-side.
  *
  * Strictly allowlisted: an unrestricted fetch-by-URL endpoint is an open proxy,
- * usable to reach internal addresses from this host. Only the six CDNs the ported
- * camera catalogue actually references are permitted.
+ * usable to reach internal addresses from this host. Only the six CDNs the
+ * ported camera catalogue actually references are permitted.
+ *
+ * Uses the standard `fetch` rather than node:http. Every other file under api/
+ * follows that rule (tests/edge-functions.test.mjs asserts it for the whole
+ * directory, regardless of the declared runtime) so the module stays portable
+ * across the edge and node runtimes.
  */
 export const config = { runtime: 'nodejs', maxDuration: 15 };
 
@@ -29,79 +31,52 @@ const ALLOWED_HOSTS = [
 // An Accept header is still required or these servers hang up.
 const NO_REFERER_HOSTS = ['thb.gov.tw'];
 
-// Several camera CDNs serve expired or mis-chained certificates. Verification is
-// therefore relaxed — but ONLY for the allowlisted hosts above, and the response
-// is treated as an opaque image either way, never as trusted data.
-const RELAXED_TLS_HOSTS = ['thb.gov.tw', 'etraffic.dgt.es', 'voyage.aprr.fr'];
-
 const MAX_BYTES = 12 * 1024 * 1024;
 const MAX_REDIRECTS = 3;
+const UPSTREAM_TIMEOUT_MS = 12_000;
 
 function hostMatches(hostname: string, list: string[]): boolean {
   return list.some((h) => hostname === h || hostname.endsWith(`.${h}`));
 }
 
-interface ProxyResult { status: number; contentType: string; data: Buffer }
+/**
+ * Follow redirects manually so the allowlist is re-checked on every hop —
+ * `redirect: 'follow'` would let an upstream 302 walk the request off the
+ * allowlist and turn this into an open proxy.
+ */
+async function proxyFetch(url: string, referer: string | null, depth = 0): Promise<Response> {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new Error('Invalid redirect target');
+  }
+  const host = parsed.hostname.toLowerCase();
+  if (!hostMatches(host, ALLOWED_HOSTS)) throw new Error('Redirect left the allowlist');
+  if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+    throw new Error('Unsupported protocol');
+  }
 
-function proxyFetch(url: string, referer: string | null, depth = 0): Promise<ProxyResult> {
-  return new Promise((resolve, reject) => {
-    let parsed: URL;
-    try {
-      parsed = new URL(url);
-    } catch {
-      reject(new Error('Invalid redirect target'));
-      return;
-    }
-    // Re-check on every hop: a redirect must not walk off the allowlist.
-    const host = parsed.hostname.toLowerCase();
-    if (!hostMatches(host, ALLOWED_HOSTS)) {
-      reject(new Error('Redirect left the allowlist'));
-      return;
-    }
-    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
-      reject(new Error('Unsupported protocol'));
-      return;
-    }
+  const headers: Record<string, string> = {
+    Accept: 'image/*,*/*',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+  };
+  if (referer) headers.Referer = referer;
 
-    const isHttps = parsed.protocol === 'https:';
-    const mod = isHttps ? https : http;
-    const headers: Record<string, string> = {
-      Accept: 'image/*,*/*',
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-    };
-    if (referer) headers.Referer = referer;
-
-    const options: https.RequestOptions = { headers, timeout: 12_000 };
-    if (isHttps && hostMatches(host, RELAXED_TLS_HOSTS)) {
-      options.rejectUnauthorized = false;
-    }
-
-    const req = mod.get(url, options, (res) => {
-      const status = res.statusCode ?? 502;
-      if ((status === 301 || status === 302 || status === 307 || status === 308) && res.headers.location) {
-        res.resume();
-        if (depth >= MAX_REDIRECTS) { reject(new Error('Too many redirects')); return; }
-        const next = new URL(res.headers.location, url).toString();
-        proxyFetch(next, referer, depth + 1).then(resolve).catch(reject);
-        return;
-      }
-      const chunks: Buffer[] = [];
-      let size = 0;
-      res.on('data', (chunk: Buffer) => {
-        size += chunk.length;
-        if (size > MAX_BYTES) { req.destroy(); reject(new Error('Response too large')); return; }
-        chunks.push(chunk);
-      });
-      res.on('end', () => resolve({
-        status,
-        contentType: String(res.headers['content-type'] || 'image/jpeg'),
-        data: Buffer.concat(chunks),
-      }));
-      res.on('error', reject);
-    });
-    req.on('error', reject);
-    req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
+  const response = await fetch(url, {
+    headers,
+    redirect: 'manual',
+    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
   });
+
+  const status = response.status;
+  if (status === 301 || status === 302 || status === 307 || status === 308) {
+    const location = response.headers.get('location');
+    if (!location) return response;
+    if (depth >= MAX_REDIRECTS) throw new Error('Too many redirects');
+    return proxyFetch(new URL(location, url).toString(), referer, depth + 1);
+  }
+  return response;
 }
 
 export default async function handler(request: Request): Promise<Response> {
@@ -127,23 +102,31 @@ export default async function handler(request: Request): Promise<Response> {
   }
 
   try {
-    const result = await proxyFetch(
+    const upstream = await proxyFetch(
       target.toString(),
       hostMatches(host, NO_REFERER_HOSTS) ? null : `https://${target.hostname}/`,
     );
-    if (result.status >= 400) {
-      return Response.json({ error: `Upstream ${result.status}` }, { status: result.status });
+
+    if (upstream.status >= 400) {
+      return Response.json({ error: `Upstream ${upstream.status}` }, { status: upstream.status });
     }
+
     // Only ever hand back an image. A camera host that starts returning HTML
     // (a login wall, an error page) must not be reflected to the browser.
-    const contentType = result.contentType.toLowerCase();
-    if (!contentType.startsWith('image/')) {
+    const contentType = upstream.headers.get('content-type') || 'image/jpeg';
+    if (!contentType.toLowerCase().startsWith('image/')) {
       return Response.json({ error: 'Upstream did not return an image' }, { status: 502 });
     }
-    return new Response(new Uint8Array(result.data), {
+
+    const body = new Uint8Array(await upstream.arrayBuffer());
+    if (body.byteLength > MAX_BYTES) {
+      return Response.json({ error: 'Response too large' }, { status: 502 });
+    }
+
+    return new Response(body, {
       status: 200,
       headers: {
-        'Content-Type': result.contentType,
+        'Content-Type': contentType,
         'Cache-Control': 'public, max-age=5, stale-while-revalidate=10',
         'Access-Control-Allow-Origin': '*',
         'X-Content-Type-Options': 'nosniff',
