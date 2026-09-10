@@ -62,6 +62,14 @@ export default defineConfig({
     // Every test file installs its own listeners on a shared `document`;
     // isolate so a leaked listener cannot reach across files.
     isolate: true,
+    // Node 25 ships an experimental built-in `globalThis.localStorage`. With no
+    // `--localstorage-file` it is an inert empty object — no getItem, no
+    // clear — and because it already exists when the happy-dom environment
+    // boots, happy-dom never installs its own Storage over it. Every test
+    // that touches localStorage then dies with "clear is not a function"
+    // (65 of them on Node 25). The flag exists on Node 24 too, so CI is
+    // unaffected; it simply restores the pre-25 behaviour in the workers.
+    execArgv: ['--no-experimental-webstorage'],
     // Single mechanism for spy cleanup — test files must NOT also call
     // vi.restoreAllMocks() or the two can drift.
     restoreMocks: true,

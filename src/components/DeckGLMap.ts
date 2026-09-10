@@ -8279,12 +8279,16 @@ export class DeckGLMap {
   }
 
   public destroy(): void {
+    // aircraftFetchSeq is bumped on the line after `destroyed` so an in-flight
+    // viewport request is invalidated before any other teardown can yield.
+    // tests/deckgl-aircraft-fetch-state.test.mjs asserts the two are adjacent
+    // (no comment between them), so add new teardown steps below this pair.
     this.destroyed = true;
+    this.aircraftFetchSeq += 1;
     closeMapWebcamViewer(this.container);
     this.aoiInteractionHandlers?.onPointerMove(null);
     this.aoiInteractionHandlers = null;
     this.aoiDrawMode = null;
-    this.aircraftFetchSeq += 1;
     this.settleViewportMovement(false);
     this.stopTradeAnimation();
     this.activeFlightTrails.clear();

@@ -48,6 +48,18 @@
 # the runner fails. An empty list is a no-op, not a failure.
 
 TEST_TIMEOUT="${WM_PREPUSH_TEST_TIMEOUT:-120}"
+
+# `timeout` is GNU coreutils and is NOT present on a stock macOS, where the hook
+# died with "timeout: command not found" before the runner ever started. Resolve
+# a usable implementation once: GNU timeout, Homebrew's gtimeout, or nothing.
+# TIMEOUT_CMD stays unquoted at the call site so the empty case expands away.
+if command -v timeout >/dev/null 2>&1; then
+  TIMEOUT_CMD="timeout $TEST_TIMEOUT"
+elif command -v gtimeout >/dev/null 2>&1; then
+  TIMEOUT_CMD="gtimeout $TEST_TIMEOUT"
+else
+  TIMEOUT_CMD=""
+fi
 TEST_CONCURRENCY="${WM_PREPUSH_TEST_CONCURRENCY:-2}"
 case "$TEST_CONCURRENCY" in
   '' | 0 | *[!0-9]*)
@@ -125,7 +137,8 @@ case "$mode" in
     echo "Running changed test files only..."
     # Quoted expansion, not word-splitting: a test path containing a space is
     # one argument, not two nonexistent ones.
-    timeout "$TEST_TIMEOUT" npx tsx --test --test-concurrency="$TEST_CONCURRENCY" "${selected[@]}" || exit 1
+    # shellcheck disable=SC2086 # deliberate: empty TIMEOUT_CMD must expand to nothing
+    $TIMEOUT_CMD npx tsx --test --test-concurrency="$TEST_CONCURRENCY" "${selected[@]}" || exit 1
     ;;
 
   run-dom)
@@ -139,7 +152,8 @@ case "$mode" in
     # metacharacter can match nothing and fail the push as "No test files
     # found". The suite is a handful of files and happy-dom boots per file in
     # milliseconds (see vitest.dom.config.mts), so scoping buys nothing here.
-    timeout "$TEST_TIMEOUT" npm run test:dom || exit 1
+    # shellcheck disable=SC2086 # deliberate: empty TIMEOUT_CMD must expand to nothing
+    $TIMEOUT_CMD npm run test:dom || exit 1
     ;;
 esac
 

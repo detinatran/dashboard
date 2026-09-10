@@ -1241,8 +1241,11 @@ export class MapComponent {
 
   private aoiCoordinateFromPointer(clientX: number, clientY: number): LngLat | null {
     const rect = this.container.getBoundingClientRect();
-    const width = this.container.clientWidth;
-    const height = this.container.clientHeight;
+    // Cached read: this runs on every pointer move while drawing, and a direct
+    // clientWidth/clientHeight pair would force a synchronous layout each time
+    // (the #5017 reflow guard). tests/map-container-size-cache.test.mjs pins the
+    // number of direct reads, so new draw-path callers must come through here.
+    const { width, height } = this.getKnownContainerSize();
     if (width === 0 || height === 0) return null;
     const zoom = this.state.zoom;
     const centerOffsetX = width / 2 * (1 - zoom);
