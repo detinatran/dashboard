@@ -5,6 +5,7 @@
  * Supports an optional 3D globe mode (globe.gl) selectable from Settings.
  */
 import { isMobileDevice } from '@/utils';
+import { MapRenderVisibility } from '@/utils/map-render-visibility';
 import { markLcpDebug } from '@/utils/lcp-debug';
 import {
   isLayerToggleAllowed,
@@ -172,6 +173,10 @@ type CIIScore = { code: string; score: number; level: string };
  * based on device capabilities
  */
 export class MapContainer {
+  private renderVisibility = new MapRenderVisibility((paused) => {
+    this.deckGLMap?.setRenderPaused(paused);
+    this.globeMap?.setRenderPaused(paused);
+  });
   private container: HTMLElement;
   private isMobile: boolean;
   private deckGLMap: DeckGLMap | null = null;
@@ -303,6 +308,7 @@ export class MapContainer {
     this.useGlobe = preferGlobe && this.hasGlobeSupport();
 
     this.useDeckGL = !this.useGlobe && this.shouldUseDeckGL();
+    this.renderVisibility.observe(this.container);
 
     // A WebMCP viewport action can wait for the UI and renderer to become
     // ready. Any direct map interaction during that wait owns the newer user
@@ -438,6 +444,7 @@ export class MapContainer {
     // async renderer could wake callers that are waiting on its replacement.
     if (!this.isCurrentRendererInit(token)) return;
     this.rendererReady = true;
+    this.renderVisibility?.apply();
     this.rendererDemandRequested = false;
     this.releaseRendererDemand = null;
     // Replay viewport commands before resolving readiness so callers waiting to
@@ -1751,9 +1758,7 @@ export class MapContainer {
   }
 
   public setRenderPaused(paused: boolean): void {
-    if (this.useDeckGL) {
-      this.deckGLMap?.setRenderPaused(paused);
-    }
+    this.renderVisibility.setManual(paused);
   }
 
   // ─── Route Highlight ─────────────────────────────────────────────────────────
@@ -1832,6 +1837,7 @@ export class MapContainer {
 
   public destroy(): void {
     this.destroyed = true;
+    this.renderVisibility?.destroy();
     this.container.removeEventListener('pointerdown', this.invalidateViewportAuthority);
     this.container.removeEventListener('wheel', this.invalidateViewportAuthority);
     this.container.removeEventListener('touchstart', this.invalidateViewportAuthority);

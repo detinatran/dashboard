@@ -59,6 +59,7 @@ export interface ServerInsights {
 }
 
 let cached: ServerInsights | null = null;
+let pendingFetch: Promise<ServerInsights | null> | null = null;
 // Server cron interval: scripts/seed-insights.mjs runs every 30 min
 // (CACHE_TTL=10800s/3h, maxStaleMin: 30). The previous 15-min freshness gate
 // was strictly less than the cron interval, so the panel spent ~50% of every
@@ -108,6 +109,17 @@ export function getServerInsights(): ServerInsights | null {
  */
 export async function fetchServerInsights(timeoutMs = 5_000): Promise<ServerInsights | null> {
   if (cached && isFresh(cached)) return cached;
+  if (pendingFetch) return pendingFetch;
+  const request = loadServerInsights(timeoutMs);
+  pendingFetch = request;
+  try {
+    return await request;
+  } finally {
+    if (pendingFetch === request) pendingFetch = null;
+  }
+}
+
+async function loadServerInsights(timeoutMs: number): Promise<ServerInsights | null> {
   try {
     const resp = await fetch(toApiUrl('/api/bootstrap?keys=insights'), {
       signal: AbortSignal.timeout(timeoutMs),
@@ -129,4 +141,5 @@ export function setServerInsights(data: ServerInsights): void {
 /** Test-only: reset module-local cache so suites can exercise the drain-once behavior. */
 export function __resetServerInsightsCacheForTests(): void {
   cached = null;
+  pendingFetch = null;
 }

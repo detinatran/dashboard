@@ -3191,6 +3191,13 @@ export class GlobeMap {
     this.renderPaused = paused;
 
     if (paused) {
+      if (this.idleTimer) { clearTimeout(this.idleTimer); this.idleTimer = null; }
+      if (this.extrasAnimFrameId != null) {
+        cancelAnimationFrame(this.extrasAnimFrameId);
+        this.extrasAnimFrameId = null;
+      }
+      this.isGlobeAnimating = false;
+      this.globe?.pauseAnimation();
       if (this.flushTimer) { clearTimeout(this.flushTimer); this.flushTimer = null; }
       if (this.flushMaxTimer) { clearTimeout(this.flushMaxTimer); this.flushMaxTimer = null; }
       this.pendingFlushWhilePaused = true;
@@ -3225,6 +3232,10 @@ export class GlobeMap {
     if (!paused && this.pendingFlushWhilePaused) {
       this.pendingFlushWhilePaused = false;
       this.flushMarkers();
+    }
+    if (!paused) {
+      this.wakeGlobe();
+      if (this.outerGlow) this.startExtrasLoop();
     }
   }
   public updateHotspotActivity(_news: any[]): void {}
@@ -3898,7 +3909,7 @@ export class GlobeMap {
   }
 
   private startExtrasLoop(): void {
-    if (this.extrasAnimFrameId != null) return;
+    if (this.extrasAnimFrameId != null || this.renderPaused || document.hidden) return;
     const animateExtras = () => {
       if (this.destroyed) return;
       if (this.outerGlow) this.outerGlow.rotation.y += 0.0003;
@@ -4002,7 +4013,7 @@ export class GlobeMap {
   // Pause when idle to save CPU; resume on interaction or data change.
 
   private wakeGlobe(): void {
-    if (this.destroyed || !this.globe) return;
+    if (this.destroyed || !this.globe || this.renderPaused || document.hidden) return;
     if (!this.isGlobeAnimating) {
       this.isGlobeAnimating = true;
       try { (this.globe as any).resumeAnimation?.(); } catch { /* best-effort */ }

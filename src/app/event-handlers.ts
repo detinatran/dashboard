@@ -791,9 +791,7 @@ export class EventHandlerManager implements AppModule {
 
     this.boundVisibilityHandler = () => {
       document.body?.classList.toggle('animations-paused', document.hidden);
-      if (this.ctx.isDesktopApp) {
-        this.ctx.map?.setRenderPaused(document.hidden);
-      }
+      // MapContainer combines document/viewport visibility with modal pauses.
       if (document.hidden) {
         this.callbacks.setHiddenSince(Date.now());
         mlWorker.unloadOptionalModels();
