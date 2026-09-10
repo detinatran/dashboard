@@ -1,5 +1,3 @@
-import { lookup } from 'node:dns/promises';
-import { isIP } from 'node:net';
 
 /**
  * SSRF guard shared by route handlers that take a user-controlled host / IP
@@ -8,12 +6,27 @@ import { isIP } from 'node:net';
  * Defense is two-layered:
  *   1. Canonicalise the input. Reject non-dotted-quad IPv4 forms and any
  *      IPv6 address that falls inside a reserved range.
- *   2. For hostnames, resolve A + AAAA records and reject if *any* answer
- *      lands in a reserved range. Total Time-Of-Check / Time-Of-Use defence
- *      requires IP pinning at the socket layer, but rejecting at lookup time
- *      blocks every non-rebinding attack and forces a rebinder to win a
- *      TTL=0 race against the downstream consumer.
+ *   2. Reject hostnames that syntactically resolve to a reserved name
+ *      (localhost, *.internal, …) via NAME_BLOCKLIST.
+ *
+ * NOTE: DNS pre-resolution was removed. tests/edge-functions.test.mjs forbids
+ * `node:` imports anywhere under api/, and there is no fetch-based equivalent
+ * of dns.lookup(). The practical exposure is small here: every OSINT route
+ * calls a FIXED upstream (crt.sh, rdap.org, RIPEstat, …) and only passes the
+ * caller's value as a query parameter, so a hostname that resolves to a
+ * private address is never itself dialled. Restore resolution before pointing
+ * any of these routes at a caller-supplied origin.
  */
+
+/** Classifies a literal IP without node:net. 4 = IPv4, 6 = IPv6, 0 = neither. */
+function ipVersion(value: string): 0 | 4 | 6 {
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(value)) {
+    return value.split('.').every((o) => Number(o) <= 255) ? 4 : 0;
+  }
+  // Loose IPv6 shape check: hex groups and/or '::', optional zone id.
+  if (/^[0-9a-fA-F:]+(%[0-9a-zA-Z]+)?$/.test(value) && value.includes(':')) return 6;
+  return 0;
+}
 
 const IPV4_BLOCKS_TEXT: Array<[string, number]> = [
   ['0.0.0.0', 8],          // "this" network
@@ -143,7 +156,7 @@ export async function validateHost(host: string): Promise<ValidationResult> {
   }
 
   // Literal IP path
-  const ipFamily = isIP(bracketed);
+  const ipFamily = ipVersion(bracketed);
   if (ipFamily === 4) {
     const canonical = parseIPv4(bracketed);
     if (!canonical) return { ok: false, reason: 'non-canonical IPv4 form rejected' };
@@ -155,28 +168,22 @@ export async function validateHost(host: string): Promise<ValidationResult> {
     return { ok: true, resolved: [bracketed] };
   }
 
-  // Hostname — basic syntax check then resolve and re-check
+  // Anything that LOOKS like an IP but did not classify as one above is a
+  // malformed or obfuscated literal (999.1.1.1, 0x7f.0.0.1, octal forms).
+  // Treating it as a hostname would let it through, so reject outright —
+  // a real hostname never consists solely of digits, dots and hex prefixes.
+  if (/^[0-9a-fA-FxX.]+$/.test(bracketed) && /\d/.test(bracketed)) {
+    return { ok: false, reason: 'malformed or obfuscated IP literal rejected' };
+  }
+
+  // Hostname — syntax check only; see the module note on DNS resolution.
   if (!/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*$/.test(trimmed)) {
     return { ok: false, reason: 'invalid hostname syntax' };
   }
 
-  let answers: Array<{ address: string; family: number }> = [];
-  try {
-    answers = await lookup(trimmed, { all: true });
-  } catch (err) {
-    return { ok: false, reason: `DNS lookup failed: ${(err as Error).message}` };
-  }
-  if (answers.length === 0) {
-    return { ok: false, reason: 'hostname has no A/AAAA records' };
-  }
-  for (const a of answers) {
-    if (a.family === 4) {
-      if (ipv4InBlocked(a.address)) return { ok: false, reason: `hostname resolves to reserved IPv4 ${a.address}` };
-    } else if (a.family === 6) {
-      if (ipv6InBlocked(a.address)) return { ok: false, reason: `hostname resolves to reserved IPv6 ${a.address}` };
-    }
-  }
-  return { ok: true, resolved: answers.map(a => a.address) };
+  // A syntactically valid public hostname. It is NOT resolved here (see the
+  // module note above), so `resolved` carries the name rather than addresses.
+  return { ok: true, resolved: [trimmed] };
 }
 
 /**

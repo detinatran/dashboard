@@ -77,9 +77,19 @@ Before any request is made, `ssrf-guard.ts` rejects:
 - Link-local — `169.254/16`, including the `169.254.169.254` cloud metadata endpoint
 - Carrier-grade NAT — `100.64/10`
 - Reserved and multicast blocks
+- Malformed or obfuscated IP literals (`999.1.1.1`, `0x7f.0.0.1`)
 
 A malformed address scores as blocked rather than as `NaN`, which would compare
 false against every range and defeat the check.
+
+<Note>
+DNS pre-resolution was removed: `tests/edge-functions.test.mjs` forbids `node:`
+imports anywhere under api/, and fetch has no equivalent of `dns.lookup()`. The
+practical exposure is small — every OSINT route calls a **fixed** upstream
+(crt.sh, rdap.org, RIPEstat, …) and passes the caller's value only as a query
+parameter, so a hostname resolving to a private address is never itself dialled.
+Restore resolution before pointing any of these routes at a caller-supplied origin.
+</Note>
 
 ## Response shape
 
