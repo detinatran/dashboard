@@ -95,7 +95,7 @@ export class BusinessSeatsSection {
 
     const renderSeat = (seat: BusinessSeat) => {
       const statusLabel = seat.status === 'accepted' ? 'Accepted' : seat.status === 'expired' ? 'Expired' : 'Pending';
-      const statusColor = seat.status === 'accepted' ? '#22c55e' : seat.status === 'expired' ? '#666' : '#eab308';
+      const statusColor = seat.status === 'accepted' ? 'var(--color-success)' : seat.status === 'expired' ? '#6f8f82' : 'var(--warning)';
       const expires = seat.status === 'pending'
         ? `<div style="font-size:calc(11px * var(--wm-panel-effective-scale, 1));color:#666;">Expires ${new Date(seat.expiresAt).toLocaleDateString()}</div>`
         : '';

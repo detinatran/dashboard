@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 import * as topojson from 'topojson-client';
 import { escapeHtml } from '@/utils/sanitize';
 import { getCSSColor } from '@/utils';
+import { WEBCAM_CATEGORIES } from '@/services/webcams/categories';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import type { Feature, Geometry } from 'geojson';
 import type { MapLayers, Hotspot, NewsItem, InternetOutage, RelatedAsset, AssetType, AisDisruptionEvent, AisDensityZone, CableAdvisory, RepairShip, SocialUnrestEvent, MilitaryFlight, MilitaryVessel, MilitaryFlightCluster, MilitaryVesselCluster, NaturalEvent, CyberThreat, CableHealthRecord, MilitaryBase } from '@/types';
@@ -3715,10 +3716,11 @@ export class MapComponent {
 
     // Webcam markers (colored circles, gated by zoom >= 2)
     if (this.state.layers.webcams && this.webcamData.length > 0 && this.state.zoom >= 2) {
-      const CATEGORY_COLORS: Record<string, string> = {
-        traffic: '#ffd700', city: '#00d4ff', landscape: '#45b7d1',
-        nature: '#96ceb4', beach: '#f4a460', water: '#4169e1', other: '#888888',
-      };
+      // Single source of truth — a local copy of this map is how the SVG
+      // renderer's colours drifted from the globe's. See WEBCAM_CATEGORIES.
+      const CATEGORY_COLORS: Record<string, string> = Object.fromEntries(
+        Object.entries(WEBCAM_CATEGORIES).map(([k, v]) => [k, v.color]),
+      );
       this.webcamData.forEach((cam) => {
         if (this.isOverlayMarkerCut(cam)) return;
         const pos = projection([cam.lng, cam.lat]);

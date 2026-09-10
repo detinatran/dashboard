@@ -39,12 +39,12 @@ function getSectorLabel(sector: GulfInvestmentSector): string {
 }
 
 const STATUS_COLORS: Record<GulfInvestmentStatus, string> = {
-  'operational':         '#22c55e',
-  'under-construction':  '#f59e0b',
-  'announced':           '#60a5fa',
-  'rumoured':            '#a78bfa',
-  'cancelled':           '#ef4444',
-  'divested':            '#6b7280',
+  'operational':         'var(--color-success)',
+  'under-construction':  'var(--warning)',
+  'announced':           '#6f8f82',
+  'rumoured':            '#6f8f82',
+  'cancelled':           'var(--danger)',
+  'divested':            '#6f8f82',
 };
 
 const FLAG: Record<string, string> = {

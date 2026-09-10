@@ -126,10 +126,10 @@ async function executeIntent(intent: Intent): Promise<CommandResult> {
         const rows = summaries.map(s => {
             // #3707: 'unknown' = no telemetry. Render desaturated grey + 'NO DATA'
             // suffix so users don't conflate uncovered airports with healthy ones.
-            const sevColor = s.severity === 'unknown' ? '#7d7d8a'
-                : s.severity === 'normal' ? '#22c55e'
-                : s.severity === 'minor' ? '#f59e0b'
-                : '#ef4444';
+            const sevColor = s.severity === 'unknown' ? '#6f8f82'
+                : s.severity === 'normal' ? 'var(--color-success)'
+                : s.severity === 'minor' ? 'var(--warning)'
+                : 'var(--danger)';
             const sevLabel = s.severity === 'unknown' ? 'NO DATA' : s.severity.toUpperCase();
             const suffix = s.severity === 'unknown'
                 ? ''
@@ -139,7 +139,7 @@ async function executeIntent(intent: Intent): Promise<CommandResult> {
         <strong>${escapeHtml(s.iata)}</strong>
         <span style="color:${sevColor}">${sevLabel}</span>
         ${suffix}
-        ${s.closureStatus ? '<span style="color:#ef4444">CLOSED</span>' : ''}
+        ${s.closureStatus ? '<span style="color:var(--danger)">CLOSED</span>' : ''}
       </div>`;
         }).join('');
         return { html: `<div class="cmd-section"><strong>✈️ Ops Snapshot</strong>${rows}</div>` };
@@ -167,7 +167,7 @@ async function executeIntent(intent: Intent): Promise<CommandResult> {
       <strong>✈️ ${escapeHtml(f.flightNumber)}</strong>${carrierLabel ? ` <span style="color:#9ca3af">(${escapeHtml(carrierLabel)})</span>` : ''}
       <div>${escapeHtml(f.origin.iata)} → ${escapeHtml(f.destination.iata)} · ${f.status}${depStr ? ` · ${depStr}` : ''}${arrStr}</div>
       ${acLine}${gateLine}
-      ${f.delayMinutes > 0 ? `<div style="color:#f97316">+${f.delayMinutes}m delay</div>` : ''}
+      ${f.delayMinutes > 0 ? `<div style="color:var(--warning)">+${f.delayMinutes}m delay</div>` : ''}
     </div>` };
     }
 
@@ -260,7 +260,7 @@ async function executeIntent(intent: Intent): Promise<CommandResult> {
         // Demo mode is opt-in only. When it fires, show an unmistakable
         // banner above the result set, not a tiny gray footnote.
         const demoBanner = isDemoMode
-            ? `<div style="background:rgba(245,158,11,0.15);border:1px solid #f59e0b;color:#f59e0b;padding:6px 10px;border-radius:4px;margin-bottom:6px;font-size:calc(12px * var(--wm-panel-effective-scale, 1));font-weight:600">⚠ DEMO DATA — synthetic distance-based estimates, not live market quotes</div>`
+            ? `<div style="background:rgba(255,176,0,0.15);border:1px solid var(--warning);color:var(--warning);padding:6px 10px;border-radius:4px;margin-bottom:6px;font-size:calc(12px * var(--wm-panel-effective-scale, 1));font-weight:600">⚠ DEMO DATA — synthetic distance-based estimates, not live market quotes</div>`
             : '';
         return {
             html: `<div class="cmd-section">${demoBanner}${header}${rows}</div>`,
@@ -390,7 +390,7 @@ export class AviationCommandBar {
             const result = await executeIntent(intent);
             setTrustedHtml(resultEl, trustedHtml(result.html, "legacy direct innerHTML migration"));
         } catch (err) {
-            setTrustedHtml(resultEl, trustedHtml(`<div style="color:#ef4444">Error: ${err instanceof Error ? escapeHtml(err.message) : 'Unknown error'}</div>`, "legacy direct innerHTML migration"));
+            setTrustedHtml(resultEl, trustedHtml(`<div style="color:var(--danger)">Error: ${err instanceof Error ? escapeHtml(err.message) : 'Unknown error'}</div>`, "legacy direct innerHTML migration"));
         }
     }
 

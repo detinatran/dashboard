@@ -278,7 +278,7 @@ export class ThreatTimelinePanel extends Panel {
         .threat-timeline-stat-label, .threat-timeline-trend-copy, .threat-timeline-footer, .threat-timeline-note { display: block; font-size: calc(11px * var(--wm-panel-effective-scale, 1)); color: var(--text-secondary); margin-top: 4px; }
         .threat-timeline-trend { border-left: 3px solid var(--accent-color); }
         .threat-timeline-trend.worsening { border-left-color: #ef4444; }
-        .threat-timeline-trend.easing { border-left-color: #38bdf8; }
+        .threat-timeline-trend.easing { border-left-color: #6f8f82; }
         .threat-timeline-trend-label { display: block; color: var(--text-primary); font-size: calc(13px * var(--wm-panel-effective-scale, 1)); font-weight: 700; }
         .threat-timeline-chart-wrap { border: 1px solid var(--border-color); border-radius: 8px; background: rgba(15, 23, 42, 0.18); padding: 6px; }
         .threat-timeline-chart { width: 100%; height: 150px; display: block; overflow: visible; }
@@ -302,7 +302,7 @@ export class ThreatTimelinePanel extends Panel {
         .threat-critical .threat-timeline-group-header { border-left: 3px solid #ef4444; }
         .threat-high .threat-timeline-group-header { border-left: 3px solid #f97316; }
         .threat-medium .threat-timeline-group-header { border-left: 3px solid #eab308; }
-        .threat-low .threat-timeline-group-header { border-left: 3px solid #38bdf8; }
+        .threat-low .threat-timeline-group-header { border-left: 3px solid #6f8f82; }
         .threat-info .threat-timeline-group-header { border-left: 3px solid #94a3b8; }
         .threat-timeline-empty, .threat-timeline-empty-inline { border: 1px dashed var(--border-color); border-radius: 8px; padding: 14px; color: var(--text-secondary); background: var(--bg-secondary); }
         .threat-timeline-empty-title { color: var(--text-primary); font-size: calc(13px * var(--wm-panel-effective-scale, 1)); font-weight: 700; }

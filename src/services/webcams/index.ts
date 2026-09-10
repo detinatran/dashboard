@@ -173,16 +173,6 @@ export async function fetchWebcamImage(webcamId: string): Promise<GetWebcamImage
 }
 
 // Category mapping for marker rendering
-export const WEBCAM_CATEGORIES: Record<string, { color: string; emoji: string }> = {
-  traffic:   { color: '#ffd700', emoji: '\u{1F697}' },    // 🚗
-  city:      { color: '#00d4ff', emoji: '\u{1F3D9}\uFE0F' }, // 🏙️
-  landscape: { color: '#45b7d1', emoji: '\u{1F3D4}\uFE0F' }, // 🏔️
-  nature:    { color: '#96ceb4', emoji: '\u{1F33F}' },    // 🌿
-  beach:     { color: '#f4a460', emoji: '\u{1F3D6}\uFE0F' }, // 🏖️
-  water:     { color: '#4169e1', emoji: '\u{1F30A}' },    // 🌊
-  other:     { color: '#888888', emoji: '\u{1F4F7}' },    // 📷
-};
-
 export function getClusterCellSize(zoom: number): number {
   if (zoom < 3) return 8;
   if (zoom <= 4) return 5;
@@ -191,9 +181,7 @@ export function getClusterCellSize(zoom: number): number {
   return 0.5;
 }
 
-export function getCategoryStyle(category: string) {
-  return WEBCAM_CATEGORIES[category] ?? WEBCAM_CATEGORIES.other!;
-}
+export { WEBCAM_CATEGORIES, getCategoryStyle } from './categories';
 
 export type { WebcamEntry, WebcamCluster, GetWebcamImageResponse };
 export { getOsirisCctvCamera } from './osiris-cctv';
