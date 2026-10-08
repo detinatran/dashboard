@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
@@ -14,7 +15,7 @@ const liveWebcamsSrc = readSrc('src/components/LiveWebcamsPanel.ts');
 const liveNewsSvc = readSrc('src/services/live-news.ts');
 const youtubeApi = readSrc('api/youtube/live.js');
 const sidecarSrc = readSrc('src-tauri/sidecar/local-api-server.mjs');
-const vercelConfig = JSON.parse(readSrc('vercel.json'));
+const vercelConfig = loadVercelAppConfig();
 const tauriConfig = JSON.parse(readSrc('src-tauri/tauri.conf.json'));
 
 const globalCsp = vercelConfig.headers

@@ -4,10 +4,11 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const indexHtml = readFileSync(resolve(__dirname, '../index.html'), 'utf-8');
-const vercelConfig = JSON.parse(readFileSync(resolve(__dirname, '../vercel.json'), 'utf-8'));
+const vercelConfig = loadVercelAppConfig();
 const csp = vercelConfig.headers
   .find((entry) => entry.headers?.some(
     (header) => header.key === 'X-Frame-Options' && header.value === 'SAMEORIGIN',

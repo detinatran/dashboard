@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const ROOT = resolve(dirname(__filename), '..');
@@ -15,7 +16,7 @@ const serverCard = JSON.parse(
 const agentCard = JSON.parse(
   readFileSync(join(ROOT, 'public/.well-known/agent-card.json'), 'utf-8'),
 );
-const vercelConfig = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf-8'));
+const vercelConfig = loadVercelAppConfig();
 const productFacts = JSON.parse(readFileSync(join(ROOT, 'public/product-facts.json'), 'utf-8'));
 
 // Guards for the ?mode=agent machine-readable homepage view (orank Identity
