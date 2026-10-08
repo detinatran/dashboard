@@ -9,9 +9,8 @@
 import { describe, it } from 'node:test';
 import { strict as assert } from 'node:assert';
 import { readFileSync } from 'node:fs';
-import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
-const vercel = loadVercelAppConfig();
+const vercel = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
 
 const DASHBOARD_HTML_DESTINATION = '/dashboard.html';
 

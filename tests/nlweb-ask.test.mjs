@@ -3,12 +3,11 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const ROOT = resolve(dirname(__filename), '..');
 
-const vercelConfig = loadVercelAppConfig();
+const vercelConfig = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf-8'));
 
 // Guards for the NLWeb surface (orank Access `nlweb-ask` + `nlweb-streaming`):
 // POST /ask must return NLWeb-conformant JSON with the `_meta`

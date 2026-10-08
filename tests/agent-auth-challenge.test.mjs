@@ -5,10 +5,9 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import handler from '../api/agent-auth.ts';
-import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const vercelConfig = loadVercelAppConfig();
+const vercelConfig = JSON.parse(readFileSync(resolve(__dirname, '../vercel.json'), 'utf-8'));
 
 const call = (host, init) =>
   handler(new Request('https://' + host + '/agent/auth', { headers: { host }, ...init }));

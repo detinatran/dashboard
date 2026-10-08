@@ -20,11 +20,10 @@ import {
   discoverContentCorpusPages,
 } from '../scripts/discover-content-corpus-pages.mjs';
 import { guardBuiltOutput, shouldSkipBuiltOutput } from './_lib/built-output-guard.mjs';
-import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageJson = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf-8'));
-const vercelConfig = loadVercelAppConfig();
+const vercelConfig = JSON.parse(readFileSync(resolve(__dirname, '../vercel.json'), 'utf-8'));
 const viteConfigSource = readFileSync(resolve(__dirname, '../vite.config.ts'), 'utf-8');
 const proViteConfigSource = readFileSync(resolve(__dirname, '../pro-test/vite.config.ts'), 'utf-8');
 const playwrightConfigSource = readFileSync(resolve(__dirname, '../playwright.config.ts'), 'utf-8');
@@ -3460,7 +3459,7 @@ describe('vercel.json functions config (none expected after carousel moved to ed
 // card rel carries anchor="/mcp" because the server card describes
 // the /mcp endpoint, not the document URL being fetched.
 describe('agent readiness: homepage Link headers', () => {
-  const vercel = loadVercelAppConfig();
+  const vercel = JSON.parse(readFileSync(resolve(__dirname, '../vercel.json'), 'utf-8'));
 
   for (const source of ['/', '/dashboard', '/dashboard.html']) {
     it(`${source} emits a Link header`, () => {
