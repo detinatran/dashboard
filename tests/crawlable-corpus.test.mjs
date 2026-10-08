@@ -22,7 +22,6 @@ import { buildSitemapEntries } from '../scripts/build-sitemap.mjs';
 import { buildSourceCatalog, sourceProviderDisplayName } from '../scripts/crawlable-sources-page.mjs';
 import { resolveSourceOrigin, sourceOriginLabel } from '../scripts/source-origin.mjs';
 import { rawCatalogProviderNames, rawManifestActiveEntries } from './helpers/raw-catalog-providers.mjs';
-import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
 const repoRoot = resolve(fileURLToPath(new URL('..', import.meta.url)));
 
@@ -449,7 +448,7 @@ function pageMetaDescription(html, route) {
 }
 
 function productionScriptNonce() {
-  const config = loadVercelAppConfig();
+  const config = JSON.parse(readFileSync(join(repoRoot, 'vercel.json'), 'utf8'));
   const csp = config.headers
     .flatMap((rule) => rule.headers || [])
     .find((header) => header.key === 'Content-Security-Policy' && header.value.includes("'strict-dynamic'"));

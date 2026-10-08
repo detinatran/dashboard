@@ -6,10 +6,9 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import handler from '../api/http-message-signatures-directory.ts';
-import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const vercelConfig = loadVercelAppConfig();
+const vercelConfig = JSON.parse(readFileSync(resolve(__dirname, '../vercel.json'), 'utf-8'));
 
 const WELL_KNOWN_PATH = '/.well-known/http-message-signatures-directory';
 const call = (init) => handler(new Request('https://worldmonitor.app' + WELL_KNOWN_PATH, init));

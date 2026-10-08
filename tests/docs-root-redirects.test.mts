@@ -8,9 +8,10 @@ import {
   buildRootlessDocsRedirects,
   getRootlessDocsDestination,
 } from '../src/config/docs-root-redirects.ts';
-import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
-const vercelConfig = loadVercelAppConfig() as {
+const vercelConfig = JSON.parse(
+  readFileSync(resolve(import.meta.dirname, '../vercel.json'), 'utf8')
+) as {
   redirects: Array<{ source: string; destination: string }>;
   rewrites: Array<{ source: string; destination: string }>;
 };

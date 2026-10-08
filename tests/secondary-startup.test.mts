@@ -9,12 +9,11 @@ import {
   isVercelAnalyticsHost,
 } from '../src/bootstrap/secondary-startup.ts';
 import { scheduleAfterFirstPaint } from '../src/utils/after-paint.ts';
-import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
 const indexHtml = readFileSync(resolve(root, 'index.html'), 'utf8');
-const vercelConfig = loadVercelAppConfig();
+const vercelConfig = JSON.parse(readFileSync(resolve(root, 'vercel.json'), 'utf8'));
 const dashboardCsp = vercelConfig.headers
   .find((entry: { headers?: Array<{ key: string; value: string }> }) => entry.headers?.some(
     (header) => header.key === 'X-Frame-Options' && header.value === 'SAMEORIGIN',

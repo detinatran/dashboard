@@ -3,17 +3,17 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const ROOT = resolve(dirname(__filename), '..');
 
 const CARD_PATH = join(ROOT, 'public/.well-known/agent-card.json');
 const SERVER_CARD_PATH = join(ROOT, 'public/.well-known/mcp/server-card.json');
+const VERCEL_JSON_PATH = join(ROOT, 'vercel.json');
 
 const card = JSON.parse(readFileSync(CARD_PATH, 'utf-8'));
 const serverCard = JSON.parse(readFileSync(SERVER_CARD_PATH, 'utf-8'));
-const vercelConfig = loadVercelAppConfig();
+const vercelConfig = JSON.parse(readFileSync(VERCEL_JSON_PATH, 'utf-8'));
 
 // Guards for the A2A surface (orank Identity `a2a-agent-card`): the card at
 // /.well-known/agent-card.json and the JSON-RPC endpoint at /a2a must stay
