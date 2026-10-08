@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 
 import catchAll, { config } from '../api/[...notfound].ts';
 import notFound from '../api/not-found.ts';
+import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
 function isShadowingApiNotFoundRewrite(rewrite) {
   if (rewrite?.destination !== '/api/not-found') return false;
@@ -42,7 +43,7 @@ describe('api/[...notfound].ts — filesystem catch-all replaces the shadowing r
   });
 
   it('vercel.json no longer contains a broad API rewrite that shadows dynamic gateways', () => {
-    const vercel = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
+    const vercel = loadVercelAppConfig();
     const shadow = (vercel.rewrites ?? []).find(isShadowingApiNotFoundRewrite);
     assert.equal(
       shadow,

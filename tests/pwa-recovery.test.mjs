@@ -5,6 +5,7 @@ import { dirname, resolve } from 'node:path';
 import { describe, it } from 'node:test';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
+import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const navigationSource = readFileSync(resolve(ROOT, 'public/sw-navigation.js'), 'utf8');
@@ -147,7 +148,7 @@ describe('offline Retry CSP', () => {
   });
 
   it('ships the Retry script hash on Vercel and both nginx dashboard CSP surfaces', () => {
-    const vercel = JSON.parse(readFileSync(resolve(ROOT, 'vercel.json'), 'utf8'));
+    const vercel = loadVercelAppConfig();
     const vercelCsp = vercel.headers
       .find((entry) => entry.headers?.some(
         (header) => header.key === 'X-Frame-Options' && header.value === 'SAMEORIGIN',

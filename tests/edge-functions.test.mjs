@@ -4,6 +4,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { dirname, resolve, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { listTrackedApiSourceFiles } from '../scripts/check-edge-function-bundles.mjs';
+import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
@@ -298,7 +299,7 @@ describe('api/slack/oauth/callback.ts safety', () => {
 });
 
 describe('vercel.json CSP: Slack OAuth callback has unsafe-inline override', () => {
-  const vercelJson = JSON.parse(readFileSync(join(root, 'vercel.json'), 'utf-8'));
+  const vercelJson = loadVercelAppConfig();
 
   it('vercel.json has a CSP override for /api/slack/oauth/callback allowing unsafe-inline scripts', () => {
     const rule = vercelJson.headers?.find((r) => r.source === '/api/slack/oauth/callback');

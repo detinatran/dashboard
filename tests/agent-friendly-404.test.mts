@@ -16,10 +16,9 @@ import {
   prefersAgentNotFound,
 } from '../src/config/agent-not-found.ts';
 import { CONTENT_CORPUS_PREFIXES } from '../scripts/discover-content-corpus-pages.mjs';
+import { loadVercelAppConfig } from './helpers/vercel-config.mjs';
 
-const vercelConfig = JSON.parse(
-  readFileSync(resolve(import.meta.dirname, '../vercel.json'), 'utf8'),
-) as {
+const vercelConfig = loadVercelAppConfig() as {
   redirects: Array<{ source: string }>;
   rewrites: Array<{ source: string; destination: string }>;
 };
