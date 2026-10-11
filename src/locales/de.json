@@ -425,7 +425,8 @@
     "marketBreadth": "Marktbreite",
     "climateNews": "Klimanachrichten",
     "fx": "Wechselkurse",
-    "ukCrisisMonitor": "Live-Krisenmonitor"
+    "ukCrisisMonitor": "Live-Krisenmonitor",
+    "ukTwin": "Digitaler Zwilling & Kaskade"
   },
   "commands": {
     "prefixes": {
@@ -2734,6 +2735,20 @@
       "quakes": "Erdbeben (7 T.)",
       "filterAll": "Alle",
       "showOnMap": "Auf Karte zeigen"
+    },
+    "ukTwin": {
+      "about": "Wissensgraph aus 112 britischen Anlagen und ihren Abhängigkeiten. Klicken Sie auf eine Anlage oder wählen Sie ein Szenario, um sie ausfallen zu lassen; die Engine überträgt den Kapazitätsverlust über Liefer-, Strom- und Transportkanten, die Karte spiegelt das Ergebnis.",
+      "loadError": "Der digitale Zwilling des Vereinigten Königreichs konnte nicht geladen werden.",
+      "reset": "Zurücksetzen",
+      "hint": "Knoten anklicken zum Ausfallen/Wiederherstellen · oben ein Szenario wählen",
+      "idle": "Keine Ausfälle simuliert. Szenario wählen oder Anlagen im Graphen anklicken.",
+      "down": "ausgefallen",
+      "severe": "schwer",
+      "degraded": "beeinträchtigt",
+      "minor": "gering",
+      "serviceDisruption": "Ausfall der Filialversorgung: {{pct}} %",
+      "direct": "direkter Treffer",
+      "clickToToggle": "klicken zum Ausfallen/Wiederherstellen"
     }
   },
   "popups": {

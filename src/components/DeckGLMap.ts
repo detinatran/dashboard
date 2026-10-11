@@ -921,6 +921,7 @@ export class DeckGLMap {
   private ukTwinNodes: UkTwinNode[] = [];
   private ukTwinEdges: Array<{ edge: UkTwinEdge; path: [[number, number], [number, number]] }> = [];
   private ukDataVersion = 0;
+  private ukTwinLosses: Record<string, number> = {};
   /** Basemap theme currently rendered, so a site-theme switch can tell whether the basemap must be rebuilt. */
   private activeMapTheme: string | null = null;
   private lastCableHighlightSignature = '';
@@ -1468,6 +1469,13 @@ export class DeckGLMap {
   /** CrisisTwin UK: geolocated live alerts (alerts without coordinates are skipped). */
   public setUkAlerts(alerts: UkAlert[]): void {
     this.ukAlerts = (Array.isArray(alerts) ? alerts : []).filter(a => a.lat != null && a.lon != null);
+    this.ukDataVersion += 1;
+    this.render();
+  }
+
+  /** Cascade losses per twin node id (0..1); recolors the ukTwin layer. */
+  public setUkTwinImpacts(losses: Record<string, number>): void {
+    this.ukTwinLosses = losses && typeof losses === 'object' ? losses : {};
     this.ukDataVersion += 1;
     this.render();
   }
@@ -3403,9 +3411,13 @@ export class DeckGLMap {
         id: 'uk-twin-edges-layer',
         data: this.ukTwinEdges,
         getPath: (d: { path: [[number, number], [number, number]] }) => d.path,
-        getColor: (d: { edge: UkTwinEdge }) => (d.edge.kind === 'powers' || d.edge.kind === 'supplies_gas'
-          ? [255, 176, 0, 70]
-          : [125, 180, 255, 80]) as [number, number, number, number],
+        getColor: (d: { edge: UkTwinEdge }) => {
+          const upstreamLoss = this.ukTwinLosses[d.edge.from] ?? 0;
+          if (upstreamLoss >= 0.3) return [255, 75, 62, Math.round(60 + upstreamLoss * 120)] as [number, number, number, number];
+          return (d.edge.kind === 'powers' || d.edge.kind === 'supplies_gas'
+            ? [255, 176, 0, 70]
+            : [125, 180, 255, 80]) as [number, number, number, number];
+        },
         getWidth: (d: { edge: UkTwinEdge }) => 0.6 + d.edge.dependency * 1.6,
         widthUnits: 'pixels',
         pickable: true,
@@ -3416,8 +3428,20 @@ export class DeckGLMap {
         data: this.ukTwinNodes,
         getPosition: (d: UkTwinNode) => [d.lon, d.lat],
         getRadius: (d: UkTwinNode) => 1500 + d.criticality * 900,
-        getFillColor: (d: UkTwinNode) => [...UK_NODE_TYPE_COLORS[d.type], d.owner === 'sample' ? 255 : 210] as [number, number, number, number],
-        getLineColor: (d: UkTwinNode) => (d.owner === 'sample' ? [255, 255, 255, 255] : [10, 14, 12, 200]) as [number, number, number, number],
+        getFillColor: (d: UkTwinNode) => {
+          const [r, g, b] = UK_NODE_TYPE_COLORS[d.type];
+          const loss = Math.min(1, (this.ukTwinLosses[d.id] ?? 0) * 1.1);
+          // Blend the type colour toward alarm red as cascade loss grows.
+          return [
+            Math.round(r + (255 - r) * loss),
+            Math.round(g * (1 - loss * 0.7)),
+            Math.round(b * (1 - loss * 0.75)),
+            d.owner === 'sample' ? 255 : 210,
+          ] as [number, number, number, number];
+        },
+        getLineColor: (d: UkTwinNode) => ((this.ukTwinLosses[d.id] ?? 0) >= 0.995
+          ? [255, 75, 62, 255]
+          : d.owner === 'sample' ? [255, 255, 255, 255] : [10, 14, 12, 200]) as [number, number, number, number],
         stroked: true,
         lineWidthMinPixels: 1,
         radiusMinPixels: 3,

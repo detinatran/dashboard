@@ -429,7 +429,8 @@
     "marketBreadth": "Szerokość Rynku",
     "climateNews": "Wiadomości Klimatyczne",
     "fx": "Kursy walut",
-    "ukCrisisMonitor": "Monitor kryzysów na żywo"
+    "ukCrisisMonitor": "Monitor kryzysów na żywo",
+    "ukTwin": "Cyfrowy bliźniak i kaskada"
   },
   "commands": {
     "prefixes": {
@@ -2772,6 +2773,20 @@
       "quakes": "Trzęsienia (7 dni)",
       "filterAll": "Wszystkie",
       "showOnMap": "Pokaż na mapie"
+    },
+    "ukTwin": {
+      "about": "Graf wiedzy 112 brytyjskich obiektów i ich zależności. Kliknij obiekt lub wybierz scenariusz, aby wywołać awarię; silnik propaguje utratę przepustowości wzdłuż powiązań dostaw, energii i transportu, a mapa odzwierciedla wynik.",
+      "loadError": "Nie udało się wczytać cyfrowego bliźniaka Wielkiej Brytanii.",
+      "reset": "Resetuj",
+      "hint": "Kliknij węzeł, aby wywołać awarię/przywrócić · wybierz scenariusz powyżej",
+      "idle": "Brak symulowanych awarii. Wybierz scenariusz lub kliknij obiekty w grafie.",
+      "down": "wyłączone",
+      "severe": "poważnie",
+      "degraded": "ograniczone",
+      "minor": "lekko",
+      "serviceDisruption": "Zakłócenie obsługi sklepów: {{pct}}%",
+      "direct": "bezpośrednie trafienie",
+      "clickToToggle": "kliknij, aby wywołać awarię/przywrócić"
     }
   },
   "popups": {

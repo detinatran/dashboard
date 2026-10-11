@@ -108,7 +108,8 @@
     "marketBreadth": "Marktbreedte",
     "climateNews": "Klimaatnieuws",
     "fx": "Wisselkoersen",
-    "ukCrisisMonitor": "Live crisismonitor"
+    "ukCrisisMonitor": "Live crisismonitor",
+    "ukTwin": "Digitale tweeling & cascade"
   },
   "commands": {
     "prefixes": {
@@ -2417,6 +2418,20 @@
       "quakes": "Aardbevingen (7 d)",
       "filterAll": "Alles",
       "showOnMap": "Toon op kaart"
+    },
+    "ukTwin": {
+      "about": "Kennisgraaf van 112 Britse objecten en hun afhankelijkheden. Klik op een object of kies een scenario om het te laten uitvallen; de engine verspreidt capaciteitsverlies langs leverings-, energie- en transportverbindingen en de kaart toont het resultaat.",
+      "loadError": "De digitale tweeling van het VK kon niet worden geladen.",
+      "reset": "Herstellen",
+      "hint": "Klik op een knooppunt om het te laten uitvallen/herstellen · kies hierboven een scenario",
+      "idle": "Geen storingen gesimuleerd. Kies een scenario of klik op objecten in de graaf.",
+      "down": "uitgevallen",
+      "severe": "ernstig",
+      "degraded": "verminderd",
+      "minor": "licht",
+      "serviceDisruption": "Verstoring winkelservice: {{pct}}%",
+      "direct": "directe treffer",
+      "clickToToggle": "klik om uit te laten vallen/herstellen"
     }
   },
   "popups": {

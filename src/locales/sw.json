@@ -494,7 +494,8 @@
     "marketBreadth": "Upana wa Soko",
     "climateNews": "Habari za Hali ya Hewa",
     "fx": "FX Rates",
-    "ukCrisisMonitor": "Kifuatiliaji cha Migogoro Moja kwa Moja"
+    "ukCrisisMonitor": "Kifuatiliaji cha Migogoro Moja kwa Moja",
+    "ukTwin": "Pacha wa Kidijitali na Mfululizo"
   },
   "commands": {
     "prefixes": {
@@ -2803,6 +2804,20 @@
       "quakes": "Matetemeko (siku 7)",
       "filterAll": "Zote",
       "showOnMap": "Onyesha kwenye ramani"
+    },
+    "ukTwin": {
+      "about": "Grafu ya maarifa ya rasilimali 112 za Uingereza na utegemezi wake. Bofya rasilimali au chagua hali ili kuifanya ishindwe; injini inasambaza upotevu wa uwezo kupitia viungo vya usambazaji, nishati na usafiri, na ramani inaonyesha matokeo.",
+      "loadError": "Imeshindwa kupakia pacha wa kidijitali wa Uingereza.",
+      "reset": "Weka upya",
+      "hint": "Bofya nodi ili kuizima/kuirejesha · chagua hali hapo juu",
+      "idle": "Hakuna hitilafu zilizoigwa. Chagua hali au bofya rasilimali kwenye grafu.",
+      "down": "zimesimama",
+      "severe": "kali",
+      "degraded": "zimepungua",
+      "minor": "ndogo",
+      "serviceDisruption": "Usumbufu wa huduma madukani: {{pct}}%",
+      "direct": "pigo la moja kwa moja",
+      "clickToToggle": "bofya ili kuzima/kurejesha"
     }
   },
   "popups": {

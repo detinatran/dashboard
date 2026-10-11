@@ -425,7 +425,8 @@
     "marketBreadth": "Pazar Genişliği",
     "climateNews": "İklim Haberleri",
     "fx": "Döviz Kurları",
-    "ukCrisisMonitor": "Canlı Kriz İzleyici"
+    "ukCrisisMonitor": "Canlı Kriz İzleyici",
+    "ukTwin": "Dijital İkiz ve Zincirleme Etki"
   },
   "commands": {
     "prefixes": {
@@ -2734,6 +2735,20 @@
       "quakes": "Depremler (7 g)",
       "filterAll": "Tümü",
       "showOnMap": "Haritada göster"
+    },
+    "ukTwin": {
+      "about": "Birleşik Krallık'taki 112 varlığın ve bağımlılıklarının bilgi grafı. Bir varlığa tıklayın veya devre dışı bırakmak için bir senaryo seçin; motor kapasite kaybını tedarik, enerji ve ulaşım bağlantıları boyunca yayar ve harita sonucu yansıtır.",
+      "loadError": "Birleşik Krallık dijital ikizi yüklenemedi.",
+      "reset": "Sıfırla",
+      "hint": "Devre dışı bırakmak/geri getirmek için bir düğüme tıklayın · yukarıdan senaryo seçin",
+      "idle": "Simüle edilmiş arıza yok. Bir senaryo seçin veya graftaki varlıklara tıklayın.",
+      "down": "devre dışı",
+      "severe": "ağır",
+      "degraded": "kısıtlı",
+      "minor": "hafif",
+      "serviceDisruption": "Mağaza hizmet kesintisi: %{{pct}}",
+      "direct": "doğrudan isabet",
+      "clickToToggle": "devre dışı bırakmak/geri getirmek için tıklayın"
     }
   },
   "popups": {

@@ -497,7 +497,8 @@
     "marketBreadth": "Širina Tržišta",
     "climateNews": "Klimatske Vijesti",
     "fx": "Devizni tečajevi",
-    "ukCrisisMonitor": "Praćenje kriza uživo"
+    "ukCrisisMonitor": "Praćenje kriza uživo",
+    "ukTwin": "Digitalni blizanac i kaskada"
   },
   "commands": {
     "prefixes": {
@@ -2829,6 +2830,20 @@
       "quakes": "Potresi (7 d)",
       "filterAll": "Sve",
       "showOnMap": "Prikaži na karti"
+    },
+    "ukTwin": {
+      "about": "Graf znanja od 112 britanskih objekata i njihovih ovisnosti. Kliknite objekt ili odaberite scenarij kako bi otkazao; motor širi gubitak kapaciteta duž veza opskrbe, energije i prijevoza, a karta prikazuje rezultat.",
+      "loadError": "Nije moguće učitati digitalnog blizanca Ujedinjenog Kraljevstva.",
+      "reset": "Poništi",
+      "hint": "Kliknite čvor za otkaz/obnovu · odaberite scenarij iznad",
+      "idle": "Nema simuliranih otkaza. Odaberite scenarij ili kliknite objekte u grafu.",
+      "down": "izvan pogona",
+      "severe": "teško",
+      "degraded": "smanjeno",
+      "minor": "blago",
+      "serviceDisruption": "Prekid usluge u trgovinama: {{pct}} %",
+      "direct": "izravan pogodak",
+      "clickToToggle": "kliknite za otkaz/obnovu"
     }
   },
   "popups": {

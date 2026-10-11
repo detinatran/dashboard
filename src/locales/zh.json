@@ -425,7 +425,8 @@
     "marketBreadth": "市场广度",
     "climateNews": "气候新闻",
     "fx": "外汇汇率",
-    "ukCrisisMonitor": "实时危机监测"
+    "ukCrisisMonitor": "实时危机监测",
+    "ukTwin": "数字孪生与连锁影响"
   },
   "commands": {
     "prefixes": {
@@ -2734,6 +2735,20 @@
       "quakes": "地震（7天）",
       "filterAll": "全部",
       "showOnMap": "在地图上显示"
+    },
+    "ukTwin": {
+      "about": "英国 112 项资产及其依赖关系的知识图谱。点击资产或选择情景使其失效；引擎沿供应、电力和运输关系传播产能损失，地图同步显示结果。",
+      "loadError": "无法加载英国数字孪生。",
+      "reset": "重置",
+      "hint": "点击节点使其失效/恢复 · 在上方选择情景",
+      "idle": "尚未模拟任何故障。请选择情景或点击图中的资产。",
+      "down": "停运",
+      "severe": "严重",
+      "degraded": "受损",
+      "minor": "轻微",
+      "serviceDisruption": "门店服务中断：{{pct}}%",
+      "direct": "直接受影响",
+      "clickToToggle": "点击使其失效/恢复"
     }
   },
   "popups": {

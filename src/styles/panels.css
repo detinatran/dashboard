@@ -3939,3 +3939,42 @@ a.hub-top-story {
 [data-variant="uk"] .propaganda-badge {
   display: none;
 }
+
+/* ============================================
+   CrisisTwin UK — Digital Twin & Cascade
+   ============================================ */
+.uk-twin { display: flex; flex-direction: column; gap: 8px; }
+.uk-scenarios { display: flex; flex-wrap: wrap; gap: 4px; }
+.uk-scenario-chip {
+  padding: 4px 9px; font: inherit; font-size: 11px; cursor: pointer;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border-strong);
+}
+.uk-scenario-chip:hover { border-color: var(--accent); color: var(--accent); }
+.uk-scenario-reset { border-style: dashed; color: var(--text-dim); }
+.uk-twin-canvas-wrap { background: var(--surface); border: 1px solid var(--border); }
+.uk-twin-canvas { display: block; width: 100%; }
+.uk-twin-hint { font-size: 11px; color: var(--text-muted); }
+.uk-twin-idle { padding: 10px 4px; font-size: 12px; color: var(--text-dim); }
+.uk-twin-counts { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 10px; font-size: 12px; padding: 2px 0 4px; }
+.uk-level { font-weight: 700; }
+.uk-level-down { color: var(--semantic-critical); }
+.uk-level-severe { color: #ff7043; }
+.uk-level-degraded { color: var(--semantic-high); }
+.uk-level-minor { color: var(--text-dim); font-weight: 400; }
+.uk-service { margin-left: auto; color: var(--text); font-weight: 600; }
+.uk-impact-list { display: flex; flex-direction: column; }
+.uk-impact-row {
+  display: flex; align-items: center; gap: 7px; padding: 4px 2px;
+  border-bottom: 1px solid var(--border-subtle); font-size: 12px;
+}
+.uk-impact-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; }
+.uk-impact-name {
+  padding: 0; background: none; border: none; font: inherit; color: var(--text);
+  cursor: pointer; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  max-width: 42%;
+}
+.uk-impact-name:hover { color: var(--accent); text-decoration: underline; }
+.uk-impact-type { color: var(--text-muted); font-size: 10px; white-space: nowrap; }
+.uk-impact-bar { flex: 1; height: 5px; background: var(--border); overflow: hidden; min-width: 40px; }
+.uk-impact-bar span { display: block; height: 100%; }
+.uk-impact-pct { width: 36px; text-align: right; color: var(--text-dim); font-size: 11px; }

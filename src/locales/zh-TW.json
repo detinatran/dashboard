@@ -425,7 +425,8 @@
     "marketBreadth": "市場廣度",
     "climateNews": "氣候新聞",
     "fx": "外匯匯率",
-    "ukCrisisMonitor": "即時危機監測"
+    "ukCrisisMonitor": "即時危機監測",
+    "ukTwin": "數字孿生與連鎖影響"
   },
   "commands": {
     "prefixes": {
@@ -2734,6 +2735,20 @@
       "quakes": "地震（7天）",
       "filterAll": "全部",
       "showOnMap": "在地圖上顯示"
+    },
+    "ukTwin": {
+      "about": "英國 112 項資產及其依賴關係的知識圖譜。點選資產或選擇情景使其失效；引擎沿供應、電力和運輸關係傳播產能損失，地圖同步顯示結果。",
+      "loadError": "無法載入英國數字孿生。",
+      "reset": "重置",
+      "hint": "點選節點使其失效/恢復 · 在上方選擇情景",
+      "idle": "尚未模擬任何故障。請選擇情景或點選圖中的資產。",
+      "down": "停運",
+      "severe": "嚴重",
+      "degraded": "受損",
+      "minor": "輕微",
+      "serviceDisruption": "門店服務中斷：{{pct}}%",
+      "direct": "直接受影響",
+      "clickToToggle": "點選使其失效/恢復"
     }
   },
   "popups": {

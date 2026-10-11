@@ -108,7 +108,8 @@
     "marketBreadth": "Marknadsbredd",
     "climateNews": "Klimatnyheter",
     "fx": "Valutakurser",
-    "ukCrisisMonitor": "Krisövervakning i realtid"
+    "ukCrisisMonitor": "Krisövervakning i realtid",
+    "ukTwin": "Digital tvilling och kaskad"
   },
   "commands": {
     "prefixes": {
@@ -2417,6 +2418,20 @@
       "quakes": "Jordbävningar (7 d)",
       "filterAll": "Alla",
       "showOnMap": "Visa på kartan"
+    },
+    "ukTwin": {
+      "about": "Kunskapsgraf över 112 brittiska tillgångar och deras beroenden. Klicka på en tillgång eller välj ett scenario för att slå ut den; motorn sprider kapacitetsförlusten längs försörjnings-, el- och transportlänkar och kartan speglar resultatet.",
+      "loadError": "Det gick inte att läsa in Storbritanniens digitala tvilling.",
+      "reset": "Återställ",
+      "hint": "Klicka på en nod för att slå ut/återställa · välj ett scenario ovan",
+      "idle": "Inga simulerade avbrott. Välj ett scenario eller klicka på tillgångar i grafen.",
+      "down": "ur drift",
+      "severe": "allvarligt",
+      "degraded": "försämrade",
+      "minor": "lindrigt",
+      "serviceDisruption": "Avbrott i butiksservice: {{pct}} %",
+      "direct": "direkt träff",
+      "clickToToggle": "klicka för att slå ut/återställa"
     }
   },
   "popups": {

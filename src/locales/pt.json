@@ -108,7 +108,8 @@
     "marketBreadth": "Amplitude de Mercado",
     "climateNews": "Notícias Climáticas",
     "fx": "Taxas de Câmbio",
-    "ukCrisisMonitor": "Monitor de crises ao vivo"
+    "ukCrisisMonitor": "Monitor de crises ao vivo",
+    "ukTwin": "Gêmeo digital e cascata"
   },
   "commands": {
     "prefixes": {
@@ -2434,6 +2435,20 @@
       "quakes": "Terremotos (7 d)",
       "filterAll": "Todos",
       "showOnMap": "Ver no mapa"
+    },
+    "ukTwin": {
+      "about": "Grafo de conhecimento de 112 ativos do Reino Unido e suas dependências. Clique em um ativo ou escolha um cenário para fazê-lo falhar; o motor propaga a perda de capacidade pelos vínculos de abastecimento, energia e transporte e o mapa reflete o resultado.",
+      "loadError": "Não foi possível carregar o gêmeo digital do Reino Unido.",
+      "reset": "Redefinir",
+      "hint": "Clique em um nó para falhar/restaurar · escolha um cenário acima",
+      "idle": "Nenhuma falha simulada. Escolha um cenário ou clique em ativos no grafo.",
+      "down": "parados",
+      "severe": "graves",
+      "degraded": "degradados",
+      "minor": "leves",
+      "serviceDisruption": "Interrupção do serviço nas lojas: {{pct}}%",
+      "direct": "impacto direto",
+      "clickToToggle": "clique para falhar/restaurar"
     }
   },
   "popups": {

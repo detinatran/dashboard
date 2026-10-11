@@ -425,7 +425,8 @@
     "marketBreadth": "Độ rộng Thị trường",
     "climateNews": "Tin tức về Khí hậu",
     "fx": "Tỷ Giá Ngoại Tệ",
-    "ukCrisisMonitor": "Giám sát khủng hoảng trực tiếp"
+    "ukCrisisMonitor": "Giám sát khủng hoảng trực tiếp",
+    "ukTwin": "Bản sao số & lan truyền"
   },
   "commands": {
     "prefixes": {
@@ -2734,6 +2735,20 @@
       "quakes": "Động đất (7 ngày)",
       "filterAll": "Tất cả",
       "showOnMap": "Xem trên bản đồ"
+    },
+    "ukTwin": {
+      "about": "Đồ thị tri thức gồm 112 tài sản của Anh và các quan hệ phụ thuộc. Bấm vào một tài sản hoặc chọn kịch bản để cho nó ngừng hoạt động; engine lan truyền mức mất công suất theo các liên kết cung ứng, điện và vận tải, bản đồ phản ánh kết quả.",
+      "loadError": "Không thể tải bản sao số của Anh.",
+      "reset": "Đặt lại",
+      "hint": "Bấm vào node để cho ngừng/khôi phục · chọn kịch bản ở trên",
+      "idle": "Chưa mô phỏng sự cố nào. Chọn một kịch bản hoặc bấm vào tài sản trong đồ thị.",
+      "down": "ngừng hoạt động",
+      "severe": "nghiêm trọng",
+      "degraded": "suy giảm",
+      "minor": "nhẹ",
+      "serviceDisruption": "Gián đoạn dịch vụ cửa hàng: {{pct}}%",
+      "direct": "bị ảnh hưởng trực tiếp",
+      "clickToToggle": "bấm để cho ngừng/khôi phục"
     }
   },
   "popups": {

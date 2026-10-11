@@ -425,7 +425,8 @@
     "marketBreadth": "시장 폭",
     "climateNews": "기후 뉴스",
     "fx": "환율",
-    "ukCrisisMonitor": "실시간 위기 모니터"
+    "ukCrisisMonitor": "실시간 위기 모니터",
+    "ukTwin": "디지털 트윈 및 연쇄 영향"
   },
   "commands": {
     "prefixes": {
@@ -2734,6 +2735,20 @@
       "quakes": "지진(7일)",
       "filterAll": "전체",
       "showOnMap": "지도에 표시"
+    },
+    "ukTwin": {
+      "about": "영국 자산 112개와 그 의존 관계의 지식 그래프입니다. 자산을 클릭하거나 시나리오를 선택해 장애를 일으키면, 엔진이 공급·전력·운송 연결을 따라 용량 손실을 전파하고 지도에 결과를 반영합니다.",
+      "loadError": "영국 디지털 트윈을 불러올 수 없습니다.",
+      "reset": "초기화",
+      "hint": "노드를 클릭해 장애/복구 · 위에서 시나리오 선택",
+      "idle": "시뮬레이션된 장애가 없습니다. 시나리오를 선택하거나 그래프의 자산을 클릭하세요.",
+      "down": "중단",
+      "severe": "심각",
+      "degraded": "저하",
+      "minor": "경미",
+      "serviceDisruption": "매장 서비스 중단: {{pct}}%",
+      "direct": "직접 타격",
+      "clickToToggle": "클릭하여 장애/복구"
     }
   },
   "popups": {

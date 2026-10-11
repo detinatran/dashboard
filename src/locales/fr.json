@@ -427,7 +427,8 @@
     "marketBreadth": "Étendue du marché",
     "climateNews": "Actualités climatiques",
     "fx": "Taux de Change",
-    "ukCrisisMonitor": "Moniteur de crise en direct"
+    "ukCrisisMonitor": "Moniteur de crise en direct",
+    "ukTwin": "Jumeau numérique et cascade"
   },
   "commands": {
     "prefixes": {
@@ -2753,6 +2754,20 @@
       "quakes": "Séismes (7 j)",
       "filterAll": "Tout",
       "showOnMap": "Voir sur la carte"
+    },
+    "ukTwin": {
+      "about": "Graphe de connaissances de 112 actifs britanniques et de leurs dépendances. Cliquez sur un actif ou choisissez un scénario pour le mettre en panne ; le moteur propage la perte de capacité le long des liens d’approvisionnement, d’énergie et de transport, et la carte reflète le résultat.",
+      "loadError": "Impossible de charger le jumeau numérique du Royaume-Uni.",
+      "reset": "Réinitialiser",
+      "hint": "Cliquez sur un nœud pour le mettre en panne/le rétablir · choisissez un scénario ci-dessus",
+      "idle": "Aucune panne simulée. Choisissez un scénario ou cliquez sur des actifs du graphe.",
+      "down": "à l’arrêt",
+      "severe": "sévères",
+      "degraded": "dégradés",
+      "minor": "mineurs",
+      "serviceDisruption": "Perturbation du service en magasin : {{pct}} %",
+      "direct": "impact direct",
+      "clickToToggle": "cliquer pour mettre en panne/rétablir"
     }
   },
   "popups": {

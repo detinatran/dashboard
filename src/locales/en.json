@@ -401,6 +401,7 @@
     "gdeltIntel": "Live Intelligence",
     "cascade": "Infrastructure Cascade",
     "ukCrisisMonitor": "Live Crisis Monitor",
+    "ukTwin": "Digital Twin & Cascade",
     "politics": "World News",
     "us": "United States",
     "europe": "Europe",
@@ -2803,6 +2804,20 @@
       "quakes": "Quakes (7d)",
       "filterAll": "All",
       "showOnMap": "Show on map"
+    },
+    "ukTwin": {
+      "about": "Knowledge graph of 112 UK assets and their dependencies. Click an asset or pick a scenario to fail it; the engine propagates capacity loss along supply, power and transport edges and the map mirrors the result.",
+      "loadError": "Could not load the UK digital twin.",
+      "reset": "Reset",
+      "hint": "Click a node to fail/restore it · pick a scenario above",
+      "idle": "No failures simulated. Pick a scenario or click assets in the graph.",
+      "down": "down",
+      "severe": "severe",
+      "degraded": "degraded",
+      "minor": "minor",
+      "serviceDisruption": "Store service disruption: {{pct}}%",
+      "direct": "direct hit",
+      "clickToToggle": "click to fail/restore"
     }
   },
   "popups": {

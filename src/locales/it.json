@@ -427,7 +427,8 @@
     "marketBreadth": "Ampiezza di Mercato",
     "climateNews": "Notizie Clima",
     "fx": "Tassi di cambio",
-    "ukCrisisMonitor": "Monitor delle crisi in tempo reale"
+    "ukCrisisMonitor": "Monitor delle crisi in tempo reale",
+    "ukTwin": "Gemello digitale e cascata"
   },
   "commands": {
     "prefixes": {
@@ -2753,6 +2754,20 @@
       "quakes": "Terremoti (7 g)",
       "filterAll": "Tutti",
       "showOnMap": "Mostra sulla mappa"
+    },
+    "ukTwin": {
+      "about": "Grafo della conoscenza di 112 asset del Regno Unito e delle loro dipendenze. Fai clic su un asset o scegli uno scenario per metterlo fuori servizio; il motore propaga la perdita di capacità lungo i collegamenti di fornitura, energia e trasporto e la mappa riflette il risultato.",
+      "loadError": "Impossibile caricare il gemello digitale del Regno Unito.",
+      "reset": "Reimposta",
+      "hint": "Clic su un nodo per guastarlo/ripristinarlo · scegli uno scenario sopra",
+      "idle": "Nessun guasto simulato. Scegli uno scenario o fai clic sugli asset del grafo.",
+      "down": "fuori servizio",
+      "severe": "gravi",
+      "degraded": "degradati",
+      "minor": "lievi",
+      "serviceDisruption": "Interruzione del servizio nei negozi: {{pct}}%",
+      "direct": "impatto diretto",
+      "clickToToggle": "clic per guastare/ripristinare"
     }
   },
   "popups": {

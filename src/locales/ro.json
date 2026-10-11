@@ -427,7 +427,8 @@
     "marketBreadth": "Amploarea pieței",
     "climateNews": "Știri despre climă",
     "fx": "Cursuri de schimb valutar",
-    "ukCrisisMonitor": "Monitor de crize live"
+    "ukCrisisMonitor": "Monitor de crize live",
+    "ukTwin": "Geamăn digital și cascadă"
   },
   "commands": {
     "prefixes": {
@@ -2753,6 +2754,20 @@
       "quakes": "Cutremure (7 z)",
       "filterAll": "Toate",
       "showOnMap": "Arată pe hartă"
+    },
+    "ukTwin": {
+      "about": "Graf de cunoștințe cu 112 active din Regatul Unit și dependențele lor. Faceți clic pe un activ sau alegeți un scenariu pentru a-l scoate din funcțiune; motorul propagă pierderea de capacitate pe legăturile de aprovizionare, energie și transport, iar harta reflectă rezultatul.",
+      "loadError": "Nu s-a putut încărca geamănul digital al Regatului Unit.",
+      "reset": "Resetare",
+      "hint": "Clic pe un nod pentru a-l scoate din funcțiune/restabili · alegeți un scenariu mai sus",
+      "idle": "Nicio defecțiune simulată. Alegeți un scenariu sau faceți clic pe active în graf.",
+      "down": "oprite",
+      "severe": "grav",
+      "degraded": "degradate",
+      "minor": "ușor",
+      "serviceDisruption": "Întreruperea serviciului în magazine: {{pct}}%",
+      "direct": "lovitură directă",
+      "clickToToggle": "clic pentru scoatere din funcțiune/restabilire"
     }
   },
   "popups": {

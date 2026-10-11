@@ -225,6 +225,7 @@ export function variantSwitcherHref(
 // constructor and this map, removing the duplication entirely (see #4490).
 export const DEFERRED_PANEL_NATURAL_FOOTPRINTS: Readonly<Record<string, DeferredPanelShellFootprint>> = {
   cii: { rowSpan: 2 },
+  'uk-twin': { rowSpan: 2 },
   'chat-analyst': { rowSpan: 2 },
   'china-corridors': { rowSpan: 2, className: 'panel-wide' },
   'china-activity-nowcast': { rowSpan: 2, className: 'panel-wide' },
@@ -2217,12 +2218,17 @@ export class PanelLayoutManager implements AppModule {
     });
   }
 
-  /** CrisisTwin UK: the Live Crisis Monitor dispatches rather than importing the map. */
+  /** CrisisTwin UK: panels dispatch events rather than importing the map. */
   private bindUkAlertFocus(): void {
     window.addEventListener('wm:uk-focus', (event) => {
       const { lat, lon } = (event as CustomEvent<{ lat?: number; lon?: number }>).detail ?? {};
       if (this.ctx.isDestroyed || !Number.isFinite(lat) || !Number.isFinite(lon)) return;
       this.ctx.map?.setCenter(lat as number, lon as number, 9);
+    });
+    window.addEventListener('wm:uk-twin-impacts', (event) => {
+      const losses = (event as CustomEvent<{ losses?: Record<string, number> }>).detail?.losses;
+      if (this.ctx.isDestroyed || !losses) return;
+      this.ctx.map?.setUkTwinImpacts?.(losses);
     });
   }
 
@@ -2588,6 +2594,7 @@ export class PanelLayoutManager implements AppModule {
 
     this.lazyDefaultPanel('cascade', () => import('@/components/CascadePanel'), 'CascadePanel');
     this.lazyDefaultPanel('uk-crisis-monitor', () => import('@/components/UkCrisisMonitorPanel'), 'UkCrisisMonitorPanel');
+    this.lazyDefaultPanel('uk-twin', () => import('@/components/UkTwinPanel'), 'UkTwinPanel');
     this.lazyDefaultPanel('satellite-fires', () => import('@/components/SatelliteFiresPanel'), 'SatelliteFiresPanel');
 
     this.lazyDefaultPanel('defense-patents', () => import('@/components/DefensePatentsPanel'), 'DefensePatentsPanel');

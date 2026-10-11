@@ -429,7 +429,8 @@
     "marketBreadth": "Šíře trhu",
     "climateNews": "Zprávy o klimatu",
     "fx": "Kurzy měn",
-    "ukCrisisMonitor": "Živý monitor krizí"
+    "ukCrisisMonitor": "Živý monitor krizí",
+    "ukTwin": "Digitální dvojče a kaskáda"
   },
   "commands": {
     "prefixes": {
@@ -2772,6 +2773,20 @@
       "quakes": "Zemětřesení (7 dní)",
       "filterAll": "Vše",
       "showOnMap": "Zobrazit na mapě"
+    },
+    "ukTwin": {
+      "about": "Znalostní graf 112 britských aktiv a jejich závislostí. Klikněte na aktivum nebo zvolte scénář, aby selhalo; engine šíří ztrátu kapacity po vazbách dodávek, energie a dopravy a mapa výsledek zrcadlí.",
+      "loadError": "Digitální dvojče Spojeného království se nepodařilo načíst.",
+      "reset": "Obnovit",
+      "hint": "Kliknutím na uzel jej vyřadíte/obnovíte · zvolte scénář výše",
+      "idle": "Žádná simulovaná selhání. Zvolte scénář nebo klikněte na aktiva v grafu.",
+      "down": "mimo provoz",
+      "severe": "vážně",
+      "degraded": "omezeno",
+      "minor": "mírně",
+      "serviceDisruption": "Výpadek služeb prodejen: {{pct}} %",
+      "direct": "přímý zásah",
+      "clickToToggle": "kliknutím vyřadit/obnovit"
     }
   },
   "popups": {

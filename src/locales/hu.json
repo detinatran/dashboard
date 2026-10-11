@@ -494,7 +494,8 @@
     "marketBreadth": "Piaci szélesség",
     "climateNews": "Klíma hírek",
     "fx": "FX árfolyamok",
-    "ukCrisisMonitor": "Élő válságfigyelő"
+    "ukCrisisMonitor": "Élő válságfigyelő",
+    "ukTwin": "Digitális iker és kaszkád"
   },
   "commands": {
     "prefixes": {
@@ -2803,6 +2804,20 @@
       "quakes": "Földrengések (7 nap)",
       "filterAll": "Összes",
       "showOnMap": "Megjelenítés a térképen"
+    },
+    "ukTwin": {
+      "about": "112 egyesült királyságbeli eszköz és függőségeik tudásgráfja. Kattintson egy eszközre vagy válasszon forgatókönyvet a kiesés szimulálásához; a motor a kapacitásvesztést továbbítja az ellátási, energia- és szállítási kapcsolatokon, a térkép pedig tükrözi az eredményt.",
+      "loadError": "Nem sikerült betölteni az Egyesült Királyság digitális ikrét.",
+      "reset": "Visszaállítás",
+      "hint": "Kattintson egy csomópontra a kieséshez/helyreállításhoz · válasszon fent forgatókönyvet",
+      "idle": "Nincs szimulált kiesés. Válasszon forgatókönyvet vagy kattintson eszközökre a gráfban.",
+      "down": "leállt",
+      "severe": "súlyos",
+      "degraded": "romlott",
+      "minor": "enyhe",
+      "serviceDisruption": "Üzleti kiszolgálás zavara: {{pct}}%",
+      "direct": "közvetlen találat",
+      "clickToToggle": "kattintson a kieséshez/helyreállításhoz"
     }
   },
   "popups": {

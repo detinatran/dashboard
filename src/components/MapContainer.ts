@@ -240,6 +240,7 @@ export class MapContainer {
   private cachedCoastalStations: CoastalMarker[] = [];
   private cachedUkAlerts: UkAlert[] = [];
   private cachedUkTwin: { nodes: UkTwinNode[]; edges: UkTwinEdge[] } | null = null;
+  private cachedUkTwinImpacts: Record<string, number> | null = null;
   private cachedAoiInteractionHandlers: AoiInteractionHandlers | null = null;
 
   // ─── Data cache (survives map mode switches) ───────────────────────────────
@@ -790,6 +791,7 @@ export class MapContainer {
       if (this.cachedCoastalStations.length) this.deckGLMap?.setCoastalStations(this.cachedCoastalStations);
       if (this.cachedUkAlerts.length) this.deckGLMap?.setUkAlerts(this.cachedUkAlerts);
       if (this.cachedUkTwin) this.deckGLMap?.setUkTwin(this.cachedUkTwin.nodes, this.cachedUkTwin.edges);
+      if (this.cachedUkTwinImpacts) this.deckGLMap?.setUkTwinImpacts(this.cachedUkTwinImpacts);
     } else if (!this.useGlobe) {
       this.svgMap?.setAoiOverlay(this.cachedAoiOverlay);
       this.svgMap?.setAoiInteraction(this.cachedAoiDrawMode, this.cachedAoiInteractionHandlers);
@@ -1099,6 +1101,11 @@ export class MapContainer {
   public setUkTwin(nodes: UkTwinNode[], edges: UkTwinEdge[]): void {
     this.cachedUkTwin = { nodes, edges };
     this.deckGLMap?.setUkTwin(nodes, edges);
+  }
+
+  public setUkTwinImpacts(losses: Record<string, number>): void {
+    this.cachedUkTwinImpacts = losses;
+    this.deckGLMap?.setUkTwinImpacts(losses);
   }
 
   public setAoiInteraction(mode: AoiDrawMode | null, handlers: AoiInteractionHandlers | null): boolean {
