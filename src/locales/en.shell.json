@@ -105,6 +105,7 @@
     "cascade": "Infrastructure Cascade",
     "ukCrisisMonitor": "Live Crisis Monitor",
     "ukTwin": "Digital Twin & Cascade",
+    "ukRisk": "Risk Outlook",
     "politics": "World News",
     "us": "United States",
     "europe": "Europe",
@@ -806,7 +807,7 @@
       "previewStatus": "Live preview"
     },
     "ukCrisisMonitor": {
-      "infoTooltip": "UK flood, weather, grid, TfL and earthquake alerts from official live sources, ranked by severity."
+      "infoTooltip": "Live UK flood, weather, grid, TfL and quake alerts, ranked by severity."
     }
   },
   "modals": {

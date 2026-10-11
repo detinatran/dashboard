@@ -426,7 +426,8 @@
     "climateNews": "気候ニュース",
     "fx": "為替レート",
     "ukCrisisMonitor": "ライブ危機モニター",
-    "ukTwin": "デジタルツインと連鎖影響"
+    "ukTwin": "デジタルツインと連鎖影響",
+    "ukRisk": "リスク見通し"
   },
   "commands": {
     "prefixes": {
@@ -2749,6 +2750,23 @@
       "serviceDisruption": "店舗サービスの途絶: {{pct}}%",
       "direct": "直撃",
       "clickToToggle": "クリックで停止/復旧"
+    },
+    "ukRisk": {
+      "about": "Open-Meteo と GloFAS の予報および Environment Agency の現行警報から、各資産の72時間ハザード見通しを説明可能なモデルで評価します（各スコアに要因を表示）。レジリエンスタブでは地域を順位付けします。",
+      "loadError": "予報を読み込めませんでした。",
+      "tabOutlook": "72時間見通し",
+      "tabResilience": "レジリエンス指数",
+      "sources": "Open-Meteo · GloFAS · EA — {{minutes}}分前に更新",
+      "level_high": "高",
+      "level_elevated": "上昇",
+      "level_guarded": "注意",
+      "level_low": "低",
+      "calm": "今後72時間、低リスクを超える資産はありません。",
+      "predicted": "予測される影響: {{assets}}資産が低下以上 · 店舗サービス {{pct}}% 低下",
+      "clear": "クリア",
+      "simulate": "予測される影響をシミュレート（リスクのある資産 {{count}}件）",
+      "components": "冗長性 {{redundancy}} · 洪水にさらされる重要資産 {{exposure}} · 単一点への依存 {{concentration}} · 予報ハザード {{hazard}}",
+      "resilienceNote": "弱い順。冗長性、重要資産の洪水曝露、単一点依存、今週の予報から 0〜100 で算出。"
     }
   },
   "popups": {

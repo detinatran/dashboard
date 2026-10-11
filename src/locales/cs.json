@@ -430,7 +430,8 @@
     "climateNews": "Zprávy o klimatu",
     "fx": "Kurzy měn",
     "ukCrisisMonitor": "Živý monitor krizí",
-    "ukTwin": "Digitální dvojče a kaskáda"
+    "ukTwin": "Digitální dvojče a kaskáda",
+    "ukRisk": "Výhled rizik"
   },
   "commands": {
     "prefixes": {
@@ -2787,6 +2788,23 @@
       "serviceDisruption": "Výpadek služeb prodejen: {{pct}} %",
       "direct": "přímý zásah",
       "clickToToggle": "kliknutím vyřadit/obnovit"
+    },
+    "ukRisk": {
+      "about": "72hodinový výhled ohrožení pro každé aktivum z předpovědí Open-Meteo a GloFAS a aktuálních varování Environment Agency, hodnocený vysvětlitelným modelem (každé skóre uvádí své faktory). Karta Odolnost řadí regiony.",
+      "loadError": "Výhled se nepodařilo načíst.",
+      "tabOutlook": "Výhled 72 h",
+      "tabResilience": "Index odolnosti",
+      "sources": "Open-Meteo · GloFAS · EA — aktualizováno před {{minutes}} min",
+      "level_high": "vysoké",
+      "level_elevated": "zvýšené",
+      "level_guarded": "mírné",
+      "level_low": "nízké",
+      "calm": "Žádné aktivum nemá v příštích 72 hodinách vyšší než nízké riziko.",
+      "predicted": "Předpokládaný dopad: {{assets}} aktiv omezeno či hůř · výpadek služeb prodejen {{pct}} %",
+      "clear": "Vymazat",
+      "simulate": "Simulovat předpokládaný dopad ({{count}} ohrožených aktiv)",
+      "components": "Redundance {{redundancy}} · kritická aktiva ohrožená povodní {{exposure}} · zátěž na jediném bodě {{concentration}} · předpovídané ohrožení {{hazard}}",
+      "resilienceNote": "Nejslabší první. 0–100 podle redundance, ohrožení kritických aktiv povodní, závislosti na jediném bodě a předpovědi na tento týden."
     }
   },
   "popups": {

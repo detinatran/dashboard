@@ -109,7 +109,8 @@
     "climateNews": "Klimaatnieuws",
     "fx": "Wisselkoersen",
     "ukCrisisMonitor": "Live crisismonitor",
-    "ukTwin": "Digitale tweeling & cascade"
+    "ukTwin": "Digitale tweeling & cascade",
+    "ukRisk": "Risicovooruitzicht"
   },
   "commands": {
     "prefixes": {
@@ -2432,6 +2433,23 @@
       "serviceDisruption": "Verstoring winkelservice: {{pct}}%",
       "direct": "directe treffer",
       "clickToToggle": "klik om uit te laten vallen/herstellen"
+    },
+    "ukRisk": {
+      "about": "72-uurs gevarenvooruitzicht voor elk object op basis van Open-Meteo- en GloFAS-voorspellingen plus actieve waarschuwingen van de Environment Agency, beoordeeld met een uitlegbaar model (elke score noemt zijn factoren). Het tabblad Veerkracht rangschikt de regio’s.",
+      "loadError": "Het vooruitzicht kon niet worden geladen.",
+      "tabOutlook": "Vooruitzicht 72 u",
+      "tabResilience": "Veerkrachtindex",
+      "sources": "Open-Meteo · GloFAS · EA — {{minutes}} min geleden bijgewerkt",
+      "level_high": "hoog",
+      "level_elevated": "verhoogd",
+      "level_guarded": "matig",
+      "level_low": "laag",
+      "calm": "Geen enkel object boven laag risico in de komende 72 uur.",
+      "predicted": "Verwachte impact: {{assets}} objecten verminderd of erger · winkelservice −{{pct}}%",
+      "clear": "Wissen",
+      "simulate": "Verwachte impact simuleren ({{count}} objecten in gevaar)",
+      "components": "Redundantie {{redundancy}} · kritieke objecten overstromingsgevoelig {{exposure}} · belasting op één punt {{concentration}} · voorspeld gevaar {{hazard}}",
+      "resilienceNote": "Zwakste eerst. 0–100 op basis van redundantie, overstromingsblootstelling van kritieke objecten, afhankelijkheid van één punt en de weekvoorspelling."
     }
   },
   "popups": {

@@ -3978,3 +3978,40 @@ a.hub-top-story {
 .uk-impact-bar { flex: 1; height: 5px; background: var(--border); overflow: hidden; min-width: 40px; }
 .uk-impact-bar span { display: block; height: 100%; }
 .uk-impact-pct { width: 36px; text-align: right; color: var(--text-dim); font-size: 11px; }
+
+/* ============================================
+   CrisisTwin UK — Risk Outlook
+   ============================================ */
+.uk-risk { display: flex; flex-direction: column; gap: 8px; }
+.uk-risk-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.uk-risk-chip {
+  padding: 3px 8px; font-size: 12px; background: var(--surface);
+  border: 1px solid var(--border); border-left: 3px solid var(--semantic-low);
+}
+.uk-risk-chip.uk-risk-high { border-left-color: var(--semantic-critical); }
+.uk-risk-chip.uk-risk-elevated { border-left-color: var(--semantic-high); }
+.uk-risk-chip.uk-risk-guarded { border-left-color: var(--semantic-elevated); }
+.uk-risk-predicted {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 6px 8px; font-size: 12px; background: color-mix(in srgb, var(--semantic-critical) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--semantic-critical) 40%, transparent);
+}
+.uk-risk-list, .uk-res-list { display: flex; flex-direction: column; }
+.uk-risk-row, .uk-res-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 7px;
+  padding: 5px 2px; border-bottom: 1px solid var(--border-subtle); font-size: 12px;
+}
+.uk-risk-row .uk-impact-bar span { background: var(--semantic-low); }
+.uk-risk-row.uk-risk-high .uk-impact-bar span { background: var(--semantic-critical); }
+.uk-risk-row.uk-risk-elevated .uk-impact-bar span { background: var(--semantic-high); }
+.uk-risk-row.uk-risk-guarded .uk-impact-bar span { background: var(--semantic-elevated); }
+.uk-risk-drivers { flex-basis: 100%; font-size: 11px; color: var(--text-dim); }
+.uk-res-note { font-size: 11px; color: var(--text-muted); }
+.uk-res-name { flex: 0 0 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.uk-res-score { width: 30px; text-align: right; font-weight: 700; }
+.uk-res-good { background: var(--semantic-normal); }
+.uk-res-fair { background: var(--semantic-high); }
+.uk-res-weak { background: var(--semantic-critical); }
+.uk-res-good-text { color: var(--semantic-normal); }
+.uk-res-fair-text { color: var(--semantic-high); }
+.uk-res-weak-text { color: var(--semantic-critical); }

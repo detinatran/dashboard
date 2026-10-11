@@ -426,7 +426,8 @@
     "climateNews": "기후 뉴스",
     "fx": "환율",
     "ukCrisisMonitor": "실시간 위기 모니터",
-    "ukTwin": "디지털 트윈 및 연쇄 영향"
+    "ukTwin": "디지털 트윈 및 연쇄 영향",
+    "ukRisk": "위험 전망"
   },
   "commands": {
     "prefixes": {
@@ -2749,6 +2750,23 @@
       "serviceDisruption": "매장 서비스 중단: {{pct}}%",
       "direct": "직접 타격",
       "clickToToggle": "클릭하여 장애/복구"
+    },
+    "ukRisk": {
+      "about": "Open-Meteo·GloFAS 예보와 Environment Agency의 현행 경보를 바탕으로 모든 자산의 72시간 위험 전망을 설명 가능한 모델로 산출합니다(각 점수에 요인 표시). 회복력 탭은 지역 순위를 보여 줍니다.",
+      "loadError": "예보를 불러올 수 없습니다.",
+      "tabOutlook": "72시간 전망",
+      "tabResilience": "회복력 지수",
+      "sources": "Open-Meteo · GloFAS · EA — {{minutes}}분 전 업데이트",
+      "level_high": "높음",
+      "level_elevated": "상승",
+      "level_guarded": "주의",
+      "level_low": "낮음",
+      "calm": "향후 72시간 동안 낮은 위험을 넘는 자산이 없습니다.",
+      "predicted": "예상 영향: {{assets}}개 자산 저하 이상 · 매장 서비스 {{pct}}% 감소",
+      "clear": "지우기",
+      "simulate": "예상 영향 시뮬레이션 (위험 자산 {{count}}개)",
+      "components": "중복성 {{redundancy}} · 홍수에 노출된 핵심 자산 {{exposure}} · 단일 지점 부하 {{concentration}} · 예보 위험 {{hazard}}",
+      "resilienceNote": "취약한 지역부터. 중복성, 핵심 자산의 홍수 노출, 단일 지점 의존도, 이번 주 예보로 0–100 산출."
     }
   },
   "popups": {

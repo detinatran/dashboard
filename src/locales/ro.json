@@ -428,7 +428,8 @@
     "climateNews": "Știri despre climă",
     "fx": "Cursuri de schimb valutar",
     "ukCrisisMonitor": "Monitor de crize live",
-    "ukTwin": "Geamăn digital și cascadă"
+    "ukTwin": "Geamăn digital și cascadă",
+    "ukRisk": "Perspectiva riscului"
   },
   "commands": {
     "prefixes": {
@@ -2768,6 +2769,23 @@
       "serviceDisruption": "Întreruperea serviciului în magazine: {{pct}}%",
       "direct": "lovitură directă",
       "clickToToggle": "clic pentru scoatere din funcțiune/restabilire"
+    },
+    "ukRisk": {
+      "about": "Perspectiva pericolului pe 72 de ore pentru fiecare activ din prognozele Open-Meteo și GloFAS plus avertizările active ale Environment Agency, evaluată cu un model explicabil (fiecare scor își listează factorii). Fila Reziliență clasifică regiunile.",
+      "loadError": "Nu s-a putut încărca perspectiva.",
+      "tabOutlook": "Perspectivă 72 h",
+      "tabResilience": "Indice de reziliență",
+      "sources": "Open-Meteo · GloFAS · EA — actualizat acum {{minutes}} min",
+      "level_high": "ridicat",
+      "level_elevated": "crescut",
+      "level_guarded": "moderat",
+      "level_low": "scăzut",
+      "calm": "Niciun activ peste riscul scăzut în următoarele 72 de ore.",
+      "predicted": "Impact prognozat: {{assets}} active degradate sau mai rău · serviciu în magazine −{{pct}}%",
+      "clear": "Șterge",
+      "simulate": "Simulează impactul prognozat ({{count}} active la risc)",
+      "components": "Redundanță {{redundancy}} · active critice expuse la inundații {{exposure}} · sarcină pe punct unic {{concentration}} · pericol prognozat {{hazard}}",
+      "resilienceNote": "Cele mai slabe întâi. 0–100 din redundanță, expunerea activelor critice la inundații, dependența de un punct unic și prognoza săptămânii."
     }
   },
   "popups": {

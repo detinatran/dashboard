@@ -428,7 +428,8 @@
     "climateNews": "Actualités climatiques",
     "fx": "Taux de Change",
     "ukCrisisMonitor": "Moniteur de crise en direct",
-    "ukTwin": "Jumeau numérique et cascade"
+    "ukTwin": "Jumeau numérique et cascade",
+    "ukRisk": "Perspective des risques"
   },
   "commands": {
     "prefixes": {
@@ -2768,6 +2769,23 @@
       "serviceDisruption": "Perturbation du service en magasin : {{pct}} %",
       "direct": "impact direct",
       "clickToToggle": "cliquer pour mettre en panne/rétablir"
+    },
+    "ukRisk": {
+      "about": "Perspective de danger à 72 heures pour chaque actif à partir des prévisions Open-Meteo et GloFAS et des alertes actives de l’Environment Agency, évaluée par un modèle explicable (chaque score liste ses facteurs). L’onglet Résilience classe les régions.",
+      "loadError": "Impossible de charger les prévisions.",
+      "tabOutlook": "Perspective 72 h",
+      "tabResilience": "Indice de résilience",
+      "sources": "Open-Meteo · GloFAS · EA — mis à jour il y a {{minutes}} min",
+      "level_high": "élevé",
+      "level_elevated": "accru",
+      "level_guarded": "modéré",
+      "level_low": "faible",
+      "calm": "Aucun actif au-dessus d’un risque faible dans les 72 prochaines heures.",
+      "predicted": "Impact prévu : {{assets}} actifs dégradés ou pire · service en magasin −{{pct}} %",
+      "clear": "Effacer",
+      "simulate": "Simuler l’impact prévu ({{count}} actifs à risque)",
+      "components": "Redondance {{redundancy}} · actifs critiques exposés aux crues {{exposure}} · charge sur point unique {{concentration}} · danger prévu {{hazard}}",
+      "resilienceNote": "Les plus fragiles d’abord. 0–100 selon la redondance, l’exposition des actifs critiques aux crues, la dépendance à un point unique et la prévision de la semaine."
     }
   },
   "popups": {

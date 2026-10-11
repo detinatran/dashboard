@@ -426,7 +426,8 @@
     "climateNews": "Tin tức về Khí hậu",
     "fx": "Tỷ Giá Ngoại Tệ",
     "ukCrisisMonitor": "Giám sát khủng hoảng trực tiếp",
-    "ukTwin": "Bản sao số & lan truyền"
+    "ukTwin": "Bản sao số & lan truyền",
+    "ukRisk": "Triển vọng rủi ro"
   },
   "commands": {
     "prefixes": {
@@ -2749,6 +2750,23 @@
       "serviceDisruption": "Gián đoạn dịch vụ cửa hàng: {{pct}}%",
       "direct": "bị ảnh hưởng trực tiếp",
       "clickToToggle": "bấm để cho ngừng/khôi phục"
+    },
+    "ukRisk": {
+      "about": "Triển vọng nguy cơ 72 giờ cho mọi tài sản, dựa trên dự báo Open-Meteo và GloFAS cùng cảnh báo hiện hành của Environment Agency, chấm bằng mô hình giải thích được (mỗi điểm số đều nêu yếu tố đóng góp). Tab Khả năng chống chịu xếp hạng các vùng.",
+      "loadError": "Không thể tải dự báo.",
+      "tabOutlook": "Triển vọng 72 giờ",
+      "tabResilience": "Chỉ số chống chịu",
+      "sources": "Open-Meteo · GloFAS · EA — cập nhật {{minutes}} phút trước",
+      "level_high": "cao",
+      "level_elevated": "tăng",
+      "level_guarded": "cần theo dõi",
+      "level_low": "thấp",
+      "calm": "Không có tài sản nào vượt mức rủi ro thấp trong 72 giờ tới.",
+      "predicted": "Tác động dự báo: {{assets}} tài sản suy giảm trở lên · dịch vụ cửa hàng giảm {{pct}}%",
+      "clear": "Xoá",
+      "simulate": "Mô phỏng tác động dự báo ({{count}} tài sản có nguy cơ)",
+      "components": "Dự phòng {{redundancy}} · tài sản trọng yếu dễ ngập {{exposure}} · phụ thuộc điểm đơn {{concentration}} · nguy cơ dự báo {{hazard}}",
+      "resilienceNote": "Yếu nhất trước. Thang 0–100 từ mức dự phòng, mức phơi nhiễm lũ của tài sản trọng yếu, phụ thuộc điểm đơn và dự báo tuần này."
     }
   },
   "popups": {

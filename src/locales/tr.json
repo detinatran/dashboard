@@ -426,7 +426,8 @@
     "climateNews": "İklim Haberleri",
     "fx": "Döviz Kurları",
     "ukCrisisMonitor": "Canlı Kriz İzleyici",
-    "ukTwin": "Dijital İkiz ve Zincirleme Etki"
+    "ukTwin": "Dijital İkiz ve Zincirleme Etki",
+    "ukRisk": "Risk Görünümü"
   },
   "commands": {
     "prefixes": {
@@ -2749,6 +2750,23 @@
       "serviceDisruption": "Mağaza hizmet kesintisi: %{{pct}}",
       "direct": "doğrudan isabet",
       "clickToToggle": "devre dışı bırakmak/geri getirmek için tıklayın"
+    },
+    "ukRisk": {
+      "about": "Open-Meteo ve GloFAS tahminleri ile Environment Agency'nin etkin uyarılarına göre her varlık için 72 saatlik tehlike görünümü, açıklanabilir bir modelle puanlanır (her puan etkenlerini listeler). Dayanıklılık sekmesi bölgeleri sıralar.",
+      "loadError": "Tahmin yüklenemedi.",
+      "tabOutlook": "72 sa görünüm",
+      "tabResilience": "Dayanıklılık endeksi",
+      "sources": "Open-Meteo · GloFAS · EA — {{minutes}} dk önce güncellendi",
+      "level_high": "yüksek",
+      "level_elevated": "artmış",
+      "level_guarded": "temkinli",
+      "level_low": "düşük",
+      "calm": "Önümüzdeki 72 saatte düşük riskin üzerinde varlık yok.",
+      "predicted": "Öngörülen etki: {{assets}} varlık kısıtlı veya daha kötü · mağaza hizmeti −%{{pct}}",
+      "clear": "Temizle",
+      "simulate": "Öngörülen etkiyi simüle et ({{count}} riskli varlık)",
+      "components": "Yedeklilik {{redundancy}} · sele açık kritik varlıklar {{exposure}} · tek nokta yükü {{concentration}} · öngörülen tehlike {{hazard}}",
+      "resilienceNote": "En zayıf önce. Yedeklilik, kritik varlıkların sel maruziyeti, tek nokta bağımlılığı ve bu haftanın tahmininden 0–100."
     }
   },
   "popups": {

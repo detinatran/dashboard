@@ -96,6 +96,7 @@ import type { EnergyRiskOverviewPanel } from '@/components/EnergyRiskOverviewPan
 import type { ChokepointStripPanel } from '@/components/ChokepointStripPanel';
 import type { ClimateNewsPanel } from '@/components/ClimateNewsPanel';
 import type { UkCrisisMonitorPanel } from '@/components/UkCrisisMonitorPanel';
+import type { UkRiskPanel } from '@/components/UkRiskPanel';
 import type { ConsumerPricesPanel } from '@/components/ConsumerPricesPanel';
 import type { DefensePatentsPanel } from '@/components/DefensePatentsPanel';
 import type { MacroTilesPanel } from '@/components/MacroTilesPanel';
@@ -791,6 +792,10 @@ export class App {
     if (shouldPrime('uk-crisis-monitor')) {
       const panel = this.state.panels['uk-crisis-monitor'] as UkCrisisMonitorPanel | undefined;
       if (panel) primeTask('uk-crisis-monitor', () => panel.fetchData());
+    }
+    if (shouldPrime('uk-risk')) {
+      const panel = this.state.panels['uk-risk'] as UkRiskPanel | undefined;
+      if (panel) primeTask('uk-risk', () => panel.fetchData());
     }
     if (shouldPrime('consumer-prices')) {
       const panel = this.state.panels['consumer-prices'] as ConsumerPricesPanel | undefined;
@@ -3638,6 +3643,13 @@ export class App {
       () => (this.state.panels['uk-crisis-monitor'] as UkCrisisMonitorPanel).fetchData(),
       REFRESH_INTERVALS.ukCrisisMonitor,
       () => this.isPanelNearViewport('uk-crisis-monitor')
+    );
+
+    this.refreshScheduler.scheduleRefresh(
+      'uk-risk',
+      () => (this.state.panels['uk-risk'] as UkRiskPanel).fetchData(),
+      REFRESH_INTERVALS.ukRisk,
+      () => this.isPanelNearViewport('uk-risk')
     );
 
     this.refreshScheduler.scheduleRefresh(

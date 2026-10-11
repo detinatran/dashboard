@@ -495,7 +495,8 @@
     "climateNews": "Klíma hírek",
     "fx": "FX árfolyamok",
     "ukCrisisMonitor": "Élő válságfigyelő",
-    "ukTwin": "Digitális iker és kaszkád"
+    "ukTwin": "Digitális iker és kaszkád",
+    "ukRisk": "Kockázati kilátások"
   },
   "commands": {
     "prefixes": {
@@ -2818,6 +2819,23 @@
       "serviceDisruption": "Üzleti kiszolgálás zavara: {{pct}}%",
       "direct": "közvetlen találat",
       "clickToToggle": "kattintson a kieséshez/helyreállításhoz"
+    },
+    "ukRisk": {
+      "about": "72 órás veszélyelőrejelzés minden eszközre az Open-Meteo és a GloFAS előrejelzései, valamint az Environment Agency aktív riasztásai alapján, magyarázható modellel (minden pontszám megadja a tényezőit). Az Ellenálló képesség lap rangsorolja a régiókat.",
+      "loadError": "Nem sikerült betölteni az előrejelzést.",
+      "tabOutlook": "72 órás kilátás",
+      "tabResilience": "Ellenállóképesség-index",
+      "sources": "Open-Meteo · GloFAS · EA — {{minutes}} perce frissítve",
+      "level_high": "magas",
+      "level_elevated": "emelkedett",
+      "level_guarded": "mérsékelt",
+      "level_low": "alacsony",
+      "calm": "A következő 72 órában egyetlen eszköz sincs alacsony kockázat felett.",
+      "predicted": "Várható hatás: {{assets}} eszköz romlott vagy rosszabb · üzleti kiszolgálás −{{pct}}%",
+      "clear": "Törlés",
+      "simulate": "Várható hatás szimulálása ({{count}} veszélyeztetett eszköz)",
+      "components": "Redundancia {{redundancy}} · árvíznek kitett kritikus eszközök {{exposure}} · egypontos terhelés {{concentration}} · előrejelzett veszély {{hazard}}",
+      "resilienceNote": "A leggyengébbek elöl. 0–100 a redundancia, a kritikus eszközök árvízi kitettsége, az egypontos függőség és a heti előrejelzés alapján."
     }
   },
   "popups": {

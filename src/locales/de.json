@@ -426,7 +426,8 @@
     "climateNews": "Klimanachrichten",
     "fx": "Wechselkurse",
     "ukCrisisMonitor": "Live-Krisenmonitor",
-    "ukTwin": "Digitaler Zwilling & Kaskade"
+    "ukTwin": "Digitaler Zwilling & Kaskade",
+    "ukRisk": "Risikoausblick"
   },
   "commands": {
     "prefixes": {
@@ -2749,6 +2750,23 @@
       "serviceDisruption": "Ausfall der Filialversorgung: {{pct}} %",
       "direct": "direkter Treffer",
       "clickToToggle": "klicken zum Ausfallen/Wiederherstellen"
+    },
+    "ukRisk": {
+      "about": "72-Stunden-Gefahrenausblick für jede Anlage aus Open-Meteo- und GloFAS-Prognosen plus aktuellen Warnungen der Environment Agency, bewertet mit einem erklärbaren Modell (jeder Wert nennt seine Treiber). Der Tab Resilienz rangiert die Regionen.",
+      "loadError": "Der Ausblick konnte nicht geladen werden.",
+      "tabOutlook": "72-h-Ausblick",
+      "tabResilience": "Resilienzindex",
+      "sources": "Open-Meteo · GloFAS · EA — vor {{minutes}} Min. aktualisiert",
+      "level_high": "hoch",
+      "level_elevated": "erhöht",
+      "level_guarded": "mäßig",
+      "level_low": "niedrig",
+      "calm": "Keine Anlage liegt in den nächsten 72 Stunden über niedrigem Risiko.",
+      "predicted": "Prognostizierte Auswirkung: {{assets}} Anlagen beeinträchtigt oder schlechter · Filialversorgung −{{pct}} %",
+      "clear": "Löschen",
+      "simulate": "Prognostizierte Auswirkung simulieren ({{count}} gefährdete Anlagen)",
+      "components": "Redundanz {{redundancy}} · kritische Anlagen hochwassergefährdet {{exposure}} · Single-Point-Last {{concentration}} · prognostizierte Gefahr {{hazard}}",
+      "resilienceNote": "Schwächste zuerst. 0–100 aus Redundanz, Hochwassergefährdung kritischer Anlagen, Single-Point-Abhängigkeit und der Wochenprognose."
     }
   },
   "popups": {

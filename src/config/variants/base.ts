@@ -62,6 +62,7 @@ export const REFRESH_INTERVALS = {
   oilInventories: 5 * 60 * 1000, // EIA weekly + EU gas daily; 5min refresh
   climateNews: 30 * 60 * 1000, // seeded every 30min; match cadence
   ukCrisisMonitor: 5 * 60 * 1000, // EA flood warnings update every 15min; TfL/grid faster
+  ukRisk: 30 * 60 * 1000, // Open-Meteo/GloFAS forecasts move hourly at most; service caches 30min
   intelligence: 15 * 60 * 1000,
   correlationEngine: 5 * 60 * 1000,
   defensePatents: 24 * 60 * 60 * 1000, // 24h — data is weekly, daily poll is sufficient

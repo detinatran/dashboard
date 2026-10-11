@@ -14,6 +14,11 @@ export interface UkCascadeOptions {
   floor?: number;
   /** Relaxation passes; the dataset is acyclic, so this is a safety bound. */
   maxPasses?: number;
+  /**
+   * Partial starting losses (0..1), e.g. forecast hazard probabilities. Unlike
+   * failed ids these still receive propagated loss from their own providers.
+   */
+  seedLosses?: Map<string, number>;
 }
 
 export interface UkCascadeResult {
@@ -42,7 +47,7 @@ export interface UkCascadeSummary {
   criticalAffected: UkCascadeImpact[];
 }
 
-const DEFAULTS: Required<UkCascadeOptions> = {
+const DEFAULTS: Required<Omit<UkCascadeOptions, 'seedLosses'>> = {
   substitutionFactor: 0.35,
   floor: 0.05,
   maxPasses: 24,
@@ -62,6 +67,7 @@ export function simulateCascade(
   options: UkCascadeOptions = {},
 ): UkCascadeResult {
   const { substitutionFactor, floor, maxPasses } = { ...DEFAULTS, ...options };
+  const seeds = options.seedLosses ?? new Map<string, number>();
   const known = new Set(nodes.map(n => n.id));
   const failed = new Set([...failedIds].filter(id => known.has(id)));
 
@@ -74,6 +80,9 @@ export function simulateCascade(
   }
 
   const losses = new Map<string, number>();
+  for (const [id, loss] of seeds) {
+    if (known.has(id) && loss > 0) losses.set(id, Math.min(1, loss));
+  }
   for (const id of failed) losses.set(id, 1);
   const lossOf = (id: string): number => losses.get(id) ?? 0;
 
@@ -94,7 +103,9 @@ export function simulateCascade(
           .some(alt => known.has(alt) && lossOf(alt) < 0.25);
         total += edge.dependency * providerLoss * (hasHealthyAlternative ? substitutionFactor : 1);
       }
-      const next = Math.min(1, total);
+      // A seeded node keeps at least its own hazard loss; providers add to it.
+      const seed = seeds.get(to) ?? 0;
+      const next = Math.min(1, 1 - (1 - seed) * (1 - Math.min(1, total)));
       const current = lossOf(to);
       if (next > current + 1e-6) {
         losses.set(to, next);
@@ -105,7 +116,7 @@ export function simulateCascade(
   }
 
   for (const [id, loss] of losses) {
-    if (loss < floor && !failed.has(id)) losses.delete(id);
+    if (loss < floor && !failed.has(id) && !seeds.has(id)) losses.delete(id);
   }
   return { losses, failed, passes };
 }

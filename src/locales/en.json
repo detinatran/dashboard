@@ -402,6 +402,7 @@
     "cascade": "Infrastructure Cascade",
     "ukCrisisMonitor": "Live Crisis Monitor",
     "ukTwin": "Digital Twin & Cascade",
+    "ukRisk": "Risk Outlook",
     "politics": "World News",
     "us": "United States",
     "europe": "Europe",
@@ -2788,7 +2789,7 @@
       "chartNow": "NOW"
     },
     "ukCrisisMonitor": {
-      "infoTooltip": "UK flood, weather, grid, TfL and earthquake alerts from official live sources, ranked by severity.",
+      "infoTooltip": "Live UK flood, weather, grid, TfL and quake alerts, ranked by severity.",
       "loadError": "Could not reach the UK live sources.",
       "allClear": "No active UK alerts right now.",
       "degraded": "Unavailable: {{sources}}",
@@ -2818,6 +2819,23 @@
       "serviceDisruption": "Store service disruption: {{pct}}%",
       "direct": "direct hit",
       "clickToToggle": "click to fail/restore"
+    },
+    "ukRisk": {
+      "about": "72-hour hazard outlook for every twin asset from Open-Meteo and GloFAS forecasts plus live Environment Agency warnings, scored by an explainable model (every score lists its drivers). The Resilience tab ranks UK regions.",
+      "loadError": "Could not load the forecast outlook.",
+      "tabOutlook": "72h outlook",
+      "tabResilience": "Resilience index",
+      "sources": "Open-Meteo · GloFAS · EA warnings — updated {{minutes}} min ago",
+      "level_high": "high",
+      "level_elevated": "elevated",
+      "level_guarded": "guarded",
+      "level_low": "low",
+      "calm": "No asset above low risk in the next 72 hours.",
+      "predicted": "Predicted impact: {{assets}} assets degraded or worse · store service down {{pct}}%",
+      "clear": "Clear",
+      "simulate": "Simulate predicted impact ({{count}} at-risk assets)",
+      "components": "Redundancy {{redundancy}} · critical assets flood-exposed {{exposure}} · single-point load {{concentration}} · forecast hazard {{hazard}}",
+      "resilienceNote": "Weakest first. 0–100 from redundancy, flood exposure of critical assets, single-point dependency and this week’s forecast."
     }
   },
   "popups": {

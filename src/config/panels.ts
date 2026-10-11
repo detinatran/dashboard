@@ -1195,6 +1195,7 @@ const UK_PANELS: Record<string, PanelConfig> = {
   map: { name: 'CrisisTwin UK Map', enabled: true, priority: 1 },
   'uk-crisis-monitor': { name: 'Live Crisis Monitor', enabled: true, priority: 1 },
   'uk-twin': { name: 'Digital Twin & Cascade', enabled: true, priority: 1 },
+  'uk-risk': { name: 'Risk Outlook', enabled: true, priority: 1 },
   'uk-resilience-news': { name: 'UK Resilience News', enabled: true, priority: 1 },
   'uk-headlines': { name: 'UK Headlines', enabled: true, priority: 1 },
   'live-news': { name: 'UK Live News', enabled: true, priority: 2 },
@@ -1712,7 +1713,7 @@ export const PANEL_CATEGORY_MAP: Record<string, { labelKey: string; panelKeys: s
   // CrisisTwin UK
   crisisTwin: {
     labelKey: 'header.panelCatCrisisTwin',
-    panelKeys: ['uk-crisis-monitor', 'uk-twin', 'uk-resilience-news', 'uk-headlines'],
+    panelKeys: ['uk-crisis-monitor', 'uk-twin', 'uk-risk', 'uk-resilience-news', 'uk-headlines'],
     variants: ['uk'],
   },
 

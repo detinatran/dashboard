@@ -426,7 +426,8 @@
     "climateNews": "气候新闻",
     "fx": "外汇汇率",
     "ukCrisisMonitor": "实时危机监测",
-    "ukTwin": "数字孪生与连锁影响"
+    "ukTwin": "数字孪生与连锁影响",
+    "ukRisk": "风险展望"
   },
   "commands": {
     "prefixes": {
@@ -2749,6 +2750,23 @@
       "serviceDisruption": "门店服务中断：{{pct}}%",
       "direct": "直接受影响",
       "clickToToggle": "点击使其失效/恢复"
+    },
+    "ukRisk": {
+      "about": "基于 Open-Meteo 与 GloFAS 预报以及 Environment Agency 现行预警，对每项资产给出 72 小时灾害展望，采用可解释模型评分（每个分数都列出影响因素）。韧性标签页对各地区排名。",
+      "loadError": "无法加载预报。",
+      "tabOutlook": "72 小时展望",
+      "tabResilience": "韧性指数",
+      "sources": "Open-Meteo · GloFAS · EA — {{minutes}} 分钟前更新",
+      "level_high": "高",
+      "level_elevated": "升高",
+      "level_guarded": "关注",
+      "level_low": "低",
+      "calm": "未来 72 小时内没有资产高于低风险。",
+      "predicted": "预计影响：{{assets}} 项资产受损或更严重 · 门店服务下降 {{pct}}%",
+      "clear": "清除",
+      "simulate": "模拟预计影响（{{count}} 项风险资产）",
+      "components": "冗余度 {{redundancy}} · 易受洪水影响的关键资产 {{exposure}} · 单点负载 {{concentration}} · 预报灾害 {{hazard}}",
+      "resilienceNote": "最薄弱者优先。根据冗余度、关键资产洪水暴露、单点依赖及本周预报计算 0–100 分。"
     }
   },
   "popups": {

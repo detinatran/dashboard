@@ -105,6 +105,7 @@ export const COMMANDS: Command[] = [
   { id: 'panel:latam', keywords: ['latin america news', 'latam news', 'latin america', 'south america'], label: 'Panel: Latin America', icon: '\u{1F30E}', category: 'panels' },
   { id: 'panel:asia', keywords: ['asia news', 'asia-pacific news', 'asia', 'asia pacific', 'indo-pacific'], label: 'Panel: Asia-Pacific', icon: '\u{1F30F}', category: 'panels' },
   { id: 'panel:energy', keywords: ['energy', 'resources', 'oil news'], label: 'Panel: Energy & Resources', icon: '\u26A1', category: 'panels' },
+  { id: 'panel:uk-risk', keywords: ['risk outlook', 'risk prediction', 'flood forecast', 'resilience index', 'uk risk', 'storm forecast', 'river levels'], label: 'Panel: Risk Outlook', icon: '\u{1F4C8}', category: 'panels' },
   { id: 'panel:uk-twin', keywords: ['digital twin', 'knowledge graph', 'cascade simulator', 'what if', 'dependency graph', 'uk twin', 'impact simulation'], label: 'Panel: Digital Twin & Cascade', icon: '\u{1F517}', category: 'panels' },
   { id: 'panel:uk-crisis-monitor', keywords: ['uk crisis', 'live crisis monitor', 'flood warnings', 'met office warnings', 'uk alerts', 'crisistwin', 'national grid', 'tfl disruption'], label: 'Panel: Live Crisis Monitor (UK)', icon: '\u{1F6A8}', category: 'panels' },
   { id: 'panel:uk-resilience-news', keywords: ['uk resilience news', 'uk crisis news', 'uk floods news', 'uk power cuts', 'uk transport disruption'], label: 'Panel: UK Crisis & Resilience News', icon: '\u{1F4F0}', category: 'panels' },

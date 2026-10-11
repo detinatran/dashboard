@@ -109,7 +109,8 @@
     "climateNews": "Klimatnyheter",
     "fx": "Valutakurser",
     "ukCrisisMonitor": "Krisövervakning i realtid",
-    "ukTwin": "Digital tvilling och kaskad"
+    "ukTwin": "Digital tvilling och kaskad",
+    "ukRisk": "Riskutsikter"
   },
   "commands": {
     "prefixes": {
@@ -2432,6 +2433,23 @@
       "serviceDisruption": "Avbrott i butiksservice: {{pct}} %",
       "direct": "direkt träff",
       "clickToToggle": "klicka för att slå ut/återställa"
+    },
+    "ukRisk": {
+      "about": "72-timmars riskutsikt för varje tillgång utifrån prognoser från Open-Meteo och GloFAS samt aktiva varningar från Environment Agency, bedömd med en förklarbar modell (varje poäng anger sina faktorer). Fliken Motståndskraft rangordnar regionerna.",
+      "loadError": "Det gick inte att läsa in prognosen.",
+      "tabOutlook": "Utsikt 72 h",
+      "tabResilience": "Motståndskraftsindex",
+      "sources": "Open-Meteo · GloFAS · EA — uppdaterad för {{minutes}} min sedan",
+      "level_high": "hög",
+      "level_elevated": "förhöjd",
+      "level_guarded": "måttlig",
+      "level_low": "låg",
+      "calm": "Ingen tillgång över låg risk de kommande 72 timmarna.",
+      "predicted": "Förväntad påverkan: {{assets}} tillgångar försämrade eller värre · butiksservice −{{pct}} %",
+      "clear": "Rensa",
+      "simulate": "Simulera förväntad påverkan ({{count}} riskutsatta tillgångar)",
+      "components": "Redundans {{redundancy}} · kritiska tillgångar översvämningsutsatta {{exposure}} · last på en enda punkt {{concentration}} · prognostiserad fara {{hazard}}",
+      "resilienceNote": "Svagast först. 0–100 utifrån redundans, översvämningsexponering för kritiska tillgångar, beroende av en enda punkt och veckans prognos."
     }
   },
   "popups": {

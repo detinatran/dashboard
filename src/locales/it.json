@@ -428,7 +428,8 @@
     "climateNews": "Notizie Clima",
     "fx": "Tassi di cambio",
     "ukCrisisMonitor": "Monitor delle crisi in tempo reale",
-    "ukTwin": "Gemello digitale e cascata"
+    "ukTwin": "Gemello digitale e cascata",
+    "ukRisk": "Prospettiva di rischio"
   },
   "commands": {
     "prefixes": {
@@ -2768,6 +2769,23 @@
       "serviceDisruption": "Interruzione del servizio nei negozi: {{pct}}%",
       "direct": "impatto diretto",
       "clickToToggle": "clic per guastare/ripristinare"
+    },
+    "ukRisk": {
+      "about": "Prospettiva di pericolo a 72 ore per ogni asset dalle previsioni Open-Meteo e GloFAS più le allerte attive dell’Environment Agency, valutata con un modello spiegabile (ogni punteggio elenca i suoi fattori). La scheda Resilienza classifica le regioni.",
+      "loadError": "Impossibile caricare le previsioni.",
+      "tabOutlook": "Prospettiva 72 h",
+      "tabResilience": "Indice di resilienza",
+      "sources": "Open-Meteo · GloFAS · EA — aggiornato {{minutes}} min fa",
+      "level_high": "alto",
+      "level_elevated": "elevato",
+      "level_guarded": "moderato",
+      "level_low": "basso",
+      "calm": "Nessun asset sopra il rischio basso nelle prossime 72 ore.",
+      "predicted": "Impatto previsto: {{assets}} asset degradati o peggio · servizio nei negozi −{{pct}}%",
+      "clear": "Cancella",
+      "simulate": "Simula l’impatto previsto ({{count}} asset a rischio)",
+      "components": "Ridondanza {{redundancy}} · asset critici esposti ad alluvione {{exposure}} · carico su punto singolo {{concentration}} · pericolo previsto {{hazard}}",
+      "resilienceNote": "I più deboli per primi. 0–100 in base a ridondanza, esposizione degli asset critici alle alluvioni, dipendenza da punto singolo e previsioni della settimana."
     }
   },
   "popups": {

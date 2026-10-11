@@ -39,7 +39,7 @@ const EXPECTED_VARIANT_PANEL_SNAPSHOTS: Record<DashboardVariant, {
   commodity: { enabledCount: 33, enabledSha256: 'b534510a2e814392e3966beb211e300e75a2b33f05c283613dd4f6cee50ddfe0' },
   happy: { enabledCount: 10, enabledSha256: 'f62bbf19c2f7ca75fefeb12a7ba32da991a72f494f91e6d310910d5b7a0468ad' },
   energy: { enabledCount: 26, enabledSha256: '4566c4b42ec77521cddce83cccabe91069ffb211ade9441ef0cf115f11a3cd67' },
-  uk: { enabledCount: 7, enabledSha256: '01fb8550231f21fb32edcdce5be741071e3e910103a50487d2e1b33537f92d04' },
+  uk: { enabledCount: 8, enabledSha256: 'fca434d3d194df5e664a66c924f75b870651bb37830e665be5ce4cf99d0dfcd7' },
 };
 
 const EXPECTED_VARIANT_DEFAULT_SNAPSHOTS: Record<DashboardVariant, {
@@ -53,7 +53,7 @@ const EXPECTED_VARIANT_DEFAULT_SNAPSHOTS: Record<DashboardVariant, {
   commodity: { total: 36, enabled: 33, sha256: 'cc9e0b178dec33dff354a1eea95b5b215302fc7ce685b3d92b82a356df6d6bee' },
   happy: { total: 10, enabled: 10, sha256: '197a73a578d8734d49e844e0a83b89204d5a6fc6b973b1ed698272d846a2c308' },
   energy: { total: 28, enabled: 26, sha256: 'c29563083968049da7c1c7c0b6a856143c3797c010b9c21d2424bbbbb3febbc1' },
-  uk: { total: 7, enabled: 7, sha256: '1283a5e918f22c54436b5a9e53cd619d8b9c019fe0afe5a6931eb5c854aa5fa7' },
+  uk: { total: 8, enabled: 8, sha256: '53979f6a91c5f319b068d80a80c89f9f5a1c6a16d3cd18f635e3bfc0abe8f691' },
 };
 
 function makeContext(

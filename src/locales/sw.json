@@ -495,7 +495,8 @@
     "climateNews": "Habari za Hali ya Hewa",
     "fx": "FX Rates",
     "ukCrisisMonitor": "Kifuatiliaji cha Migogoro Moja kwa Moja",
-    "ukTwin": "Pacha wa Kidijitali na Mfululizo"
+    "ukTwin": "Pacha wa Kidijitali na Mfululizo",
+    "ukRisk": "Mtazamo wa Hatari"
   },
   "commands": {
     "prefixes": {
@@ -2818,6 +2819,23 @@
       "serviceDisruption": "Usumbufu wa huduma madukani: {{pct}}%",
       "direct": "pigo la moja kwa moja",
       "clickToToggle": "bofya ili kuzima/kurejesha"
+    },
+    "ukRisk": {
+      "about": "Mtazamo wa hatari wa saa 72 kwa kila rasilimali kutoka kwa utabiri wa Open-Meteo na GloFAS pamoja na maonyo hai ya Environment Agency, ukipimwa kwa modeli inayoelezeka (kila alama inaonyesha vichocheo vyake). Kichupo cha Ustahimilivu kinapanga maeneo.",
+      "loadError": "Imeshindwa kupakia utabiri.",
+      "tabOutlook": "Mtazamo wa saa 72",
+      "tabResilience": "Kielezo cha ustahimilivu",
+      "sources": "Open-Meteo · GloFAS · EA — imesasishwa dakika {{minutes}} zilizopita",
+      "level_high": "juu",
+      "level_elevated": "imeongezeka",
+      "level_guarded": "tahadhari",
+      "level_low": "chini",
+      "calm": "Hakuna rasilimali iliyo juu ya hatari ndogo katika saa 72 zijazo.",
+      "predicted": "Athari inayotarajiwa: rasilimali {{assets}} zimepungua au zaidi · huduma madukani −{{pct}}%",
+      "clear": "Futa",
+      "simulate": "Iga athari inayotarajiwa (rasilimali {{count}} hatarini)",
+      "components": "Upungufu wa mbadala {{redundancy}} · rasilimali muhimu zilizo hatarini kwa mafuriko {{exposure}} · mzigo wa sehemu moja {{concentration}} · hatari iliyotabiriwa {{hazard}}",
+      "resilienceNote": "Dhaifu zaidi kwanza. 0–100 kutokana na mbadala, hatari ya mafuriko kwa rasilimali muhimu, utegemezi wa sehemu moja na utabiri wa wiki hii."
     }
   },
   "popups": {

@@ -430,7 +430,8 @@
     "climateNews": "Wiadomości Klimatyczne",
     "fx": "Kursy walut",
     "ukCrisisMonitor": "Monitor kryzysów na żywo",
-    "ukTwin": "Cyfrowy bliźniak i kaskada"
+    "ukTwin": "Cyfrowy bliźniak i kaskada",
+    "ukRisk": "Perspektywa ryzyka"
   },
   "commands": {
     "prefixes": {
@@ -2787,6 +2788,23 @@
       "serviceDisruption": "Zakłócenie obsługi sklepów: {{pct}}%",
       "direct": "bezpośrednie trafienie",
       "clickToToggle": "kliknij, aby wywołać awarię/przywrócić"
+    },
+    "ukRisk": {
+      "about": "72-godzinna perspektywa zagrożeń dla każdego obiektu na podstawie prognoz Open-Meteo i GloFAS oraz aktywnych ostrzeżeń Environment Agency, oceniana modelem wyjaśnialnym (każdy wynik podaje swoje czynniki). Karta Odporność szereguje regiony.",
+      "loadError": "Nie udało się wczytać prognozy.",
+      "tabOutlook": "Perspektywa 72 h",
+      "tabResilience": "Indeks odporności",
+      "sources": "Open-Meteo · GloFAS · EA — zaktualizowano {{minutes}} min temu",
+      "level_high": "wysokie",
+      "level_elevated": "podwyższone",
+      "level_guarded": "umiarkowane",
+      "level_low": "niskie",
+      "calm": "Żaden obiekt nie przekracza niskiego ryzyka w ciągu najbliższych 72 godzin.",
+      "predicted": "Przewidywany wpływ: {{assets}} obiektów ograniczonych lub gorzej · spadek obsługi sklepów {{pct}}%",
+      "clear": "Wyczyść",
+      "simulate": "Symuluj przewidywany wpływ ({{count}} zagrożonych obiektów)",
+      "components": "Redundancja {{redundancy}} · krytyczne obiekty narażone na powódź {{exposure}} · obciążenie pojedynczego punktu {{concentration}} · prognozowane zagrożenie {{hazard}}",
+      "resilienceNote": "Najsłabsze najpierw. 0–100 na podstawie redundancji, narażenia krytycznych obiektów na powódź, zależności od pojedynczego punktu i prognozy tygodniowej."
     }
   },
   "popups": {

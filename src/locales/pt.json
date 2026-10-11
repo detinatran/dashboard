@@ -109,7 +109,8 @@
     "climateNews": "Notícias Climáticas",
     "fx": "Taxas de Câmbio",
     "ukCrisisMonitor": "Monitor de crises ao vivo",
-    "ukTwin": "Gêmeo digital e cascata"
+    "ukTwin": "Gêmeo digital e cascata",
+    "ukRisk": "Perspectiva de risco"
   },
   "commands": {
     "prefixes": {
@@ -2449,6 +2450,23 @@
       "serviceDisruption": "Interrupção do serviço nas lojas: {{pct}}%",
       "direct": "impacto direto",
       "clickToToggle": "clique para falhar/restaurar"
+    },
+    "ukRisk": {
+      "about": "Perspectiva de perigo de 72 horas para cada ativo a partir das previsões Open-Meteo e GloFAS e dos alertas ativos da Environment Agency, avaliada por um modelo explicável (cada pontuação lista seus fatores). A aba Resiliência classifica as regiões.",
+      "loadError": "Não foi possível carregar a perspectiva.",
+      "tabOutlook": "Perspectiva 72 h",
+      "tabResilience": "Índice de resiliência",
+      "sources": "Open-Meteo · GloFAS · EA — atualizado há {{minutes}} min",
+      "level_high": "alto",
+      "level_elevated": "elevado",
+      "level_guarded": "moderado",
+      "level_low": "baixo",
+      "calm": "Nenhum ativo acima do risco baixo nas próximas 72 horas.",
+      "predicted": "Impacto previsto: {{assets}} ativos degradados ou pior · serviço nas lojas −{{pct}}%",
+      "clear": "Limpar",
+      "simulate": "Simular o impacto previsto ({{count}} ativos em risco)",
+      "components": "Redundância {{redundancy}} · ativos críticos expostos a enchentes {{exposure}} · carga em ponto único {{concentration}} · perigo previsto {{hazard}}",
+      "resilienceNote": "Os mais frágeis primeiro. 0–100 com base em redundância, exposição de ativos críticos a enchentes, dependência de ponto único e a previsão da semana."
     }
   },
   "popups": {

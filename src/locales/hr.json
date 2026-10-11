@@ -498,7 +498,8 @@
     "climateNews": "Klimatske Vijesti",
     "fx": "Devizni tečajevi",
     "ukCrisisMonitor": "Praćenje kriza uživo",
-    "ukTwin": "Digitalni blizanac i kaskada"
+    "ukTwin": "Digitalni blizanac i kaskada",
+    "ukRisk": "Izgledi rizika"
   },
   "commands": {
     "prefixes": {
@@ -2844,6 +2845,23 @@
       "serviceDisruption": "Prekid usluge u trgovinama: {{pct}} %",
       "direct": "izravan pogodak",
       "clickToToggle": "kliknite za otkaz/obnovu"
+    },
+    "ukRisk": {
+      "about": "Izgledi opasnosti za 72 sata za svaki objekt iz prognoza Open-Meteo i GloFAS te aktivnih upozorenja Environment Agencyja, ocijenjeni objašnjivim modelom (svaka ocjena navodi svoje čimbenike). Kartica Otpornost rangira regije.",
+      "loadError": "Nije moguće učitati prognozu.",
+      "tabOutlook": "Izgledi 72 h",
+      "tabResilience": "Indeks otpornosti",
+      "sources": "Open-Meteo · GloFAS · EA — ažurirano prije {{minutes}} min",
+      "level_high": "visok",
+      "level_elevated": "povišen",
+      "level_guarded": "umjeren",
+      "level_low": "nizak",
+      "calm": "Nijedan objekt nije iznad niskog rizika u sljedeća 72 sata.",
+      "predicted": "Predviđeni utjecaj: {{assets}} objekata smanjeno ili gore · pad usluge u trgovinama {{pct}} %",
+      "clear": "Očisti",
+      "simulate": "Simuliraj predviđeni utjecaj ({{count}} ugroženih objekata)",
+      "components": "Redundancija {{redundancy}} · kritični objekti izloženi poplavi {{exposure}} · opterećenje jedne točke {{concentration}} · predviđena opasnost {{hazard}}",
+      "resilienceNote": "Najslabiji prvi. 0–100 prema redundanciji, izloženosti kritičnih objekata poplavi, ovisnosti o jednoj točki i ovotjednoj prognozi."
     }
   },
   "popups": {
