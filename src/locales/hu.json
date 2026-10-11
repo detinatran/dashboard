@@ -381,7 +381,9 @@
     "panelCatCommodityEcon": "Gazdaság & Kereskedelem",
     "panelCatHappyNews": "Jó Hírek",
     "panelCatHappyPlanet": "Bolygó & Adományozás",
-    "embed": "Beágyazás"
+    "embed": "Beágyazás",
+    "uk": "Egyesült Királyság",
+    "panelCatCrisisTwin": "CrisisTwin Egyesült Királyság"
   },
   "panels": {
     "liveNews": "Élő Hírek",
@@ -491,7 +493,8 @@
     "fearGreed": "Félelem és mohóság",
     "marketBreadth": "Piaci szélesség",
     "climateNews": "Klíma hírek",
-    "fx": "FX árfolyamok"
+    "fx": "FX árfolyamok",
+    "ukCrisisMonitor": "Élő válságfigyelő"
   },
   "commands": {
     "prefixes": {
@@ -1310,7 +1313,8 @@
         "asia": "Ázsia",
         "latam": "Latin-Amerika",
         "africa": "Afrika",
-        "oceania": "Óceánia"
+        "oceania": "Óceánia",
+        "uk": "Egyesült Királyság"
       },
       "layers": {
         "startupHubs": "Startup központok",
@@ -1361,7 +1365,10 @@
         "speciesRecovery": "Fajmegmentés",
         "renewableInstallations": "Tiszta energia",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "Élő riasztások – Egyesült Királyság",
+        "ukTwin": "Az Egyesült Királyság digitális ikre"
       },
       "tooltip": {
         "earthquake": "Földrengés",
@@ -2734,6 +2741,68 @@
       "rubBase": "Orosz jegybank — rubel 1 egységenként",
       "rubPerUnit": "Rubel egységenként",
       "sourceCbr": "Forrás: Orosz jegybank"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "Az Egyesült Királyság aktuális veszélyei egyetlen hírfolyamban: az Environment Agency árvízriasztásai, a Met Office időjárási figyelmeztetései, a NESO hálózati figyelmeztetései, a TfL vonalainak zavarai és a BGS földrengései, súlyosság szerint rendezve. Néhány percenként közvetlenül a nyilvános forrásokból töltődik be.",
+      "loadError": "Nem érhetők el az Egyesült Királyság élő forrásai.",
+      "allClear": "Jelenleg nincs aktív riasztás az Egyesült Királyságban.",
+      "degraded": "Nem elérhető: {{sources}}",
+      "updated": "Frissítve: {{time}}",
+      "grid": "Hálózat",
+      "carbon": "Szén-intenzitás",
+      "renewables": "Megújulók",
+      "demand": "Terhelés",
+      "floods": "Árvízriasztások",
+      "weather": "Időjárási figyelmeztetések",
+      "gridWarnings": "Hálózati figyelmeztetések",
+      "transport": "TfL-zavarok",
+      "quakes": "Földrengések (7 nap)",
+      "filterAll": "Összes",
+      "showOnMap": "Megjelenítés a térképen"
     }
   },
   "popups": {

@@ -140,7 +140,7 @@ const PANEL_CLUSTER: Record<string, PanelChunkName> = {
   // CorrelationPanel base lives here, so all *Correlation consumers MUST stay
   // in this cluster — splitting them across clusters caused TDZ on init.
   ChatAnalyst: 'panels-intel', CII: 'panels-intel',
-  Cascade: 'panels-intel', Correlation: 'panels-intel',
+  Cascade: 'panels-intel', Correlation: 'panels-intel', UkCrisisMonitor: 'panels-intel',
   CountryBrief: 'panels-intel', CountryBriefPage: 'panels-intel',
   CountryDeepDive: 'panels-intel',
   CrossSourceSignals: 'panels-intel', CustomWidget: 'panels-intel',
@@ -157,7 +157,7 @@ const PANEL_CLUSTER: Record<string, PanelChunkName> = {
   RegionalIntelligenceBoard: 'panels-intel',
   Regulation: 'panels-intel',
   // Disasters / climate / connectivity / society
-  ClimateAnomaly: 'panels-risk', Counters: 'panels-risk',
+  ClimateAnomaly: 'panels-risk', CoastalStation: 'panels-risk', Counters: 'panels-risk',
   DiseaseOutbreaks: 'panels-risk',
   Displacement: 'panels-risk', GeoHubs: 'panels-risk',
   Giving: 'panels-risk', InternetDisruptions: 'panels-risk',
@@ -256,8 +256,11 @@ function htmlVariantPlugin(activeMeta: VariantMeta, activeVariant: string, isDes
       // Desktop builds: inject build-time variant into the inline script so data-variant is set
       // before CSS loads. Web builds always use 'full' — runtime hostname detection handles variants.
       if (activeVariant !== 'full') {
+        // The prepaint script pairs this `if` with an `else` that clears the
+        // attribute; replacing the `if` alone left a dangling `else` and a
+        // SyntaxError that killed the whole prepaint script on variant builds.
         result = result.replace(
-          /if\(v\)document\.documentElement\.dataset\.variant=v;/,
+          /if\(v\)document\.documentElement\.dataset\.variant=v;(?:else document\.documentElement\.removeAttribute\('data-variant'\);)?/,
           `v='${activeVariant}';document.documentElement.dataset.variant=v;`
         );
       }
@@ -550,6 +553,7 @@ function sebufApiPlugin(): Plugin {
       sanctionsServerMod, sanctionsHandlerMod,
       thermalServerMod, thermalHandlerMod,
       webcamServerMod, webcamHandlerMod,
+      coastalServerMod, coastalHandlerMod,
     ] = await Promise.all([
         import('./server/router'),
         import('./server/cors'),
@@ -624,6 +628,8 @@ function sebufApiPlugin(): Plugin {
         import('./server/worldmonitor/thermal/v1/handler'),
         import('./src/generated/server/worldmonitor/webcam/v1/service_server'),
         import('./server/worldmonitor/webcam/v1/handler'),
+        import('./src/generated/server/worldmonitor/coastal/v1/service_server'),
+        import('./server/worldmonitor/coastal/v1/handler'),
       ]);
 
     const serverOptions = {
@@ -643,6 +649,7 @@ function sebufApiPlugin(): Plugin {
       ...sanctionsServerMod.createSanctionsServiceRoutes(sanctionsHandlerMod.sanctionsHandler, serverOptions),
       ...thermalServerMod.createThermalServiceRoutes(thermalHandlerMod.thermalHandler, serverOptions),
       ...webcamServerMod.createWebcamServiceRoutes(webcamHandlerMod.webcamHandler, serverOptions),
+      ...coastalServerMod.createCoastalServiceRoutes(coastalHandlerMod.coastalHandler, serverOptions),
 
       ...seismologyServerMod.createSeismologyServiceRoutes(seismologyHandlerMod.seismologyHandler, serverOptions),
       ...wildfireServerMod.createWildfireServiceRoutes(wildfireHandlerMod.wildfireHandler, serverOptions),

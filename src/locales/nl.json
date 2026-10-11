@@ -107,7 +107,8 @@
     "fearGreed": "Angst & Hebzucht",
     "marketBreadth": "Marktbreedte",
     "climateNews": "Klimaatnieuws",
-    "fx": "Wisselkoersen"
+    "fx": "Wisselkoersen",
+    "ukCrisisMonitor": "Live crisismonitor"
   },
   "commands": {
     "prefixes": {
@@ -515,7 +516,8 @@
         "mena": "MENA",
         "asia": "Azië",
         "africa": "Afrika",
-        "oceania": "Oceanië"
+        "oceania": "Oceanië",
+        "uk": "Verenigd Koninkrijk"
       },
       "zoomIn": "Inzoomen",
       "zoomOut": "Uitzoomen",
@@ -597,7 +599,10 @@
         "radiationSpike": "Stralingspiek",
         "radiationElevated": "Verhoogde straling",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "Live-meldingen VK",
+        "ukTwin": "Digitale tweeling VK"
       },
       "layersTitle": "Lagen",
       "layerSearch": "Lagen zoeken...",
@@ -2350,6 +2355,68 @@
       "rubBase": "Centrale Bank van Rusland — roebel per 1 eenheid",
       "rubPerUnit": "Roebel per eenheid",
       "sourceCbr": "Bron: Centrale Bank van Rusland"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "Actuele risico’s in het Verenigd Koninkrijk in één feed: overstromingswaarschuwingen van de Environment Agency, weerwaarschuwingen van het Met Office, netwaarschuwingen van NESO, storingen op TfL-lijnen en aardbevingen van de BGS, gesorteerd op ernst. Wordt om de paar minuten rechtstreeks uit de openbare bronnen opgehaald.",
+      "loadError": "De live-bronnen van het VK zijn niet bereikbaar.",
+      "allClear": "Er zijn momenteel geen actieve meldingen in het VK.",
+      "degraded": "Niet beschikbaar: {{sources}}",
+      "updated": "Bijgewerkt {{time}}",
+      "grid": "Net",
+      "carbon": "Koolstofintensiteit",
+      "renewables": "Hernieuwbaar",
+      "demand": "Vraag",
+      "floods": "Overstromingswaarschuwingen",
+      "weather": "Weerwaarschuwingen",
+      "gridWarnings": "Netwaarschuwingen",
+      "transport": "TfL-storingen",
+      "quakes": "Aardbevingen (7 d)",
+      "filterAll": "Alles",
+      "showOnMap": "Toon op kaart"
     }
   },
   "popups": {
@@ -3088,7 +3155,9 @@
     "panelCatCommodityEcon": "Economie & Handel",
     "panelCatHappyNews": "Goed Nieuws",
     "panelCatHappyPlanet": "Planeet & Geven",
-    "embed": "Insluiten"
+    "embed": "Insluiten",
+    "uk": "VK",
+    "panelCatCrisisTwin": "CrisisTwin Verenigd Koninkrijk"
   },
   "countryBrief": {
     "identifying": "Land identificeren...",

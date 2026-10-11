@@ -83,6 +83,7 @@ export default [
   "feeds.nos.nl",
   "feeds.npr.org",
   "feeds.reuters.com",
+  "feeds.skynews.com",
   "finance.yahoo.com",
   "financialpost.com",
   "foreignpolicy.com",
@@ -334,6 +335,7 @@ export default [
   "www.lowyinstitute.org",
   "www.lrt.lt",
   "www.mei.edu",
+  "www.metoffice.gov.uk",
   "www.militarytimes.com",
   "www.mining-journal.com",
   "www.mining-technology.com",
@@ -429,5 +431,5 @@ export default [
   "wwwnc.cdc.gov",
   "xml2.corriereobjects.it",
   "yle.fi",
-  "yourstory.com",
+  "yourstory.com"
 ];

@@ -178,6 +178,9 @@ const layers = {
   commodityPorts: false,
   webcams: false,
   diseaseOutbreaks: false,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 await initI18n();

@@ -107,6 +107,13 @@ const SOURCE_DOMAIN_MATCHERS = [
 // Keep ambiguous structured providers explicit so a new unmatched provider
 // fails the build instead of silently becoming "geopolitics".
 const SOURCE_DOMAIN_OVERRIDES = new Map([
+  // CrisisTwin UK live sources.
+  ['NESO Carbon Intensity API', 'energy'],
+  ['Elexon BMRS', 'energy'],
+  ['Environment Agency', 'environment'],
+  ['Open-Meteo', 'environment'],
+  ['Met Office', 'environment'],
+  ['British Geological Survey', 'environment'],
   ['Alberta Emergency Alert', 'environment'],
   ['B.C. Evacuation Orders and Alerts', 'environment'],
   ['SaskAlert', 'environment'],

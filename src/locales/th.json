@@ -187,7 +187,9 @@
       "corporateDisclosures": "การเปิดเผยข้อมูลองค์กร",
       "corridorConditions": "สภาวะทางเดิน",
       "activityNowcast": "การคาดการณ์กิจกรรมปัจจุบัน",
-      "decisionSignalsUnavailable": "ภาพรวมสัญญาณการตัดสินใจของจีนไม่พร้อมใช้งานในขณะนี้"
+      "decisionSignalsUnavailable": "ภาพรวมสัญญาณการตัดสินใจของจีนไม่พร้อมใช้งานในขณะนี้",
+      "activeDisruptions_one": "{{count}} active disruption",
+      "activeSignals_one": "{{count}} active signal"
     },
     "foodStocks": "Food stocks",
     "foodStocksHelp": "USDA PSD commodity stocks-to-use by marketing year, with the world ratio alongside for context. FAOSTAT fills production only where PSD has no country coverage.",
@@ -310,7 +312,9 @@
     "panelCatCommodityEcon": "เศรษฐกิจและการค้า",
     "panelCatHappyNews": "ข่าวดี",
     "panelCatHappyPlanet": "โลกและการให้กำลังใจ",
-    "embed": "ฝังตัว"
+    "embed": "ฝังตัว",
+    "uk": "สหราชอาณาจักร",
+    "panelCatCrisisTwin": "CrisisTwin สหราชอาณาจักร"
   },
   "panels": {
     "liveNews": "ข่าวสด",
@@ -420,7 +424,8 @@
     "fearGreed": "ความกลัวและความโลภ",
     "marketBreadth": "ความกว้างของตลาด",
     "climateNews": "ข่าวสภาพอากาศ",
-    "fx": "อัตราแลกเปลี่ยน"
+    "fx": "อัตราแลกเปลี่ยน",
+    "ukCrisisMonitor": "ตัวติดตามวิกฤตแบบเรียลไทม์"
   },
   "commands": {
     "prefixes": {
@@ -565,7 +570,8 @@
       "flightMilitaryOnGround": "ทหาร · {{type}} · บนพื้นดิน",
       "flightSearchHint": "กด Enter หรือคลิกเพื่อค้นหาตำแหน่งสด",
       "flightNotFound": "ไม่พบตำแหน่งสดสำหรับ {{callsign}}",
-      "addPanel": "Add"
+      "addPanel": "Add",
+      "resultAnnouncement_one": "{{count}} result for {{query}}"
     },
     "signal": {
       "title": "ผลการตรวจสอบข่าวกรอง",
@@ -1166,7 +1172,8 @@
         "asia": "เอเชีย",
         "latam": "ละตินอเมริกา",
         "africa": "แอฟริกา",
-        "oceania": "โอเชียเนีย"
+        "oceania": "โอเชียเนีย",
+        "uk": "สหราชอาณาจักร"
       },
       "layers": {
         "startupHubs": "ศูนย์กลางสตาร์ทอัพ",
@@ -1217,7 +1224,10 @@
         "radiationSpike": "การเพิ่มขึ้นของรังสี",
         "radiationElevated": "รังสีสูงขึ้น",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "การแจ้งเตือนสดของสหราชอาณาจักร",
+        "ukTwin": "ดิจิทัลทวินของสหราชอาณาจักร"
       },
       "tooltip": {
         "earthquake": "แผ่นดินไหว",
@@ -1420,7 +1430,8 @@
       "provenanceTitle": "ความมาของการครอบคลุม: จำนวนเรื่องข่าวที่นำเข้าและแหล่งข่าวที่แตกต่างกันที่ใช้สำหรับสรุปนี้",
       "compiledFrom": "รวบรวมจาก {{stories}} เรื่องราวจาก {{sources}} แหล่งที่มา",
       "briefFreshness": "สร้างเมื่อ {{minutes}}m ที่แล้ว · แหล่งข้อมูลล่าสุด {{hours}}h เก่า",
-      "briefStoryDetails": "Story details ({{count}})"
+      "briefStoryDetails": "Story details ({{count}})",
+      "sources_one": "{{count}} source"
     },
     "settings": {
       "exportSettings": "ส่งออกการตั้งค่า",
@@ -2035,12 +2046,17 @@
       "time": {
         "justNow": "เมื่อสักครู่",
         "hoursAgo_other": "{{count}}h ที่ผ่านมา",
-        "daysAgo_other": "{{count}}d ที่ผ่านมา"
+        "daysAgo_other": "{{count}}d ที่ผ่านมา",
+        "hoursAgo_one": "{{count}}h ago",
+        "daysAgo_one": "{{count}}d ago"
       },
       "filters": {
         "alert_other": "{{count}} การแจ้งเตือน",
         "warning_other": "{{count}} คำเตือน",
-        "watch_other": "{{count}} การติดตาม"
+        "watch_other": "{{count}} การติดตาม",
+        "alert_one": "{{count}} Alert",
+        "warning_one": "{{count}} Warning",
+        "watch_one": "{{count}} Watch"
       },
       "errors": {
         "noData": "ไม่มีข้อมูลการระบาดที่พร้อมใช้งาน",
@@ -2204,7 +2220,8 @@
       "appliesToNext": "ใช้กับการสร้างสัญญาณ AI ครั้งถัดไป",
       "signals_other": "{{count}} สัญญาณ",
       "disclaimer": "สัญญาณการซื้อขายที่สร้างโดย AI เพื่อวัตถุประสงค์ข้อมูลเท่านั้น ไม่ใช่คำแนะนำการลงทุน ทำการศึกษาวิจัยของคุณเองเสมอ",
-      "unavailable": "ผลกระทบต่อตลาด AI จะสร้างขึ้นหลังจากแต่ละครั้งที่รันการพยากรณ์ กรุณาตรวจสอบอีกครั้งในไม่ช่วงเวลา"
+      "unavailable": "ผลกระทบต่อตลาด AI จะสร้างขึ้นหลังจากแต่ละครั้งที่รันการพยากรณ์ กรุณาตรวจสอบอีกครั้งในไม่ช่วงเวลา",
+      "signals_one": "{{count}} signal"
     },
     "forecast": {
       "infoTooltip": "<strong>AI Forecasts</strong> การประมาณความน่าจะเป็นที่สร้างโดย AI สำหรับเหตุการณ์ทางภูมิศาสตร์การเมืองและเศรษฐกิจ:<ul><li>ครอบคลุมข้ามโดเมน: ความขัดแย้ง ตลาด ห่วงโซ่อุปทาน ไซเบอร์ และการเมือง</li><li>การพยากรณ์แต่ละรายการแสดงความน่าจะเป็นโดยประมาณ ระดับความเชื่อมั่น และขอบเขตเวลา</li><li>ปรับแต่งตามเส้นฐานของตลาดการทำนายเมื่อมี</li></ul>การพยากรณ์จะอัปเดตเมื่อสัญญาณข่าวกรองใหม่มาถึง ใช้ตัวกรองตามโดเมนโดยใช้แท็บด้านบน"
@@ -2437,7 +2454,8 @@
         "unattributed": "ไม่ได้ระบุแหล่งที่มา",
         "program": "โปรแกรม",
         "undated": "ไม่มีวันที่"
-      }
+      },
+      "designations_one": "{{count}} designation"
     },
     "radiationWatch": {
       "title": "ระบบเฝ้าระวังการแผ่รังสี",
@@ -2470,7 +2488,9 @@
       },
       "observed": {
         "hoursAgo_other": "{{count}}h ที่แล้ว",
-        "daysAgo_other": "{{count}}d ที่แล้ว"
+        "daysAgo_other": "{{count}}d ที่แล้ว",
+        "hoursAgo_one": "{{count}}h ago",
+        "daysAgo_one": "{{count}}d ago"
       },
       "confidence": {
         "high": "ความมั่นใจสูง",
@@ -2501,7 +2521,8 @@
       "empty": "ไม่พบการบรรจบกันที่ใช้งานอยู่",
       "signals_other": "{{count}} สัญญาณ",
       "analyzing": "กำลังวิเคราะห์...",
-      "viewOnMap": "ดูบนแผนที่"
+      "viewOnMap": "ดูบนแผนที่",
+      "signals_one": "{{count}} signal"
     },
     "thermalEscalation": {
       "title": "Thermal Escalation",
@@ -2530,8 +2551,13 @@
       "age": {
         "minutesAgo_other": "{{count}}m ที่แล้ว",
         "hoursAgo_other": "{{count}}h ที่แล้ว",
-        "daysAgo_other": "{{count}}d ที่แล้ว"
-      }
+        "daysAgo_other": "{{count}}d ที่แล้ว",
+        "minutesAgo_one": "{{count}}m ago",
+        "hoursAgo_one": "{{count}}h ago",
+        "daysAgo_one": "{{count}}d ago"
+      },
+      "observations_one": "{{count}} obs",
+      "sources_one": "{{count}} src"
     },
     "chokepointStrip": {
       "title": "สถานะจุดคอขวด",
@@ -2646,6 +2672,68 @@
       "rubBase": "ธนาคารกลางรัสเซีย — รูเบิลต่อ 1 หน่วย",
       "rubPerUnit": "รูเบิลต่อหน่วย",
       "sourceCbr": "แหล่งที่มา: ธนาคารกลางรัสเซีย"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "ภัยคุกคามปัจจุบันในสหราชอาณาจักรรวมไว้ในฟีดเดียว: คำเตือนน้ำท่วมจาก Environment Agency คำเตือนสภาพอากาศจาก Met Office คำเตือนระบบไฟฟ้าจาก NESO การหยุดชะงักของสาย TfL และแผ่นดินไหวจาก BGS เรียงตามความรุนแรง ดึงข้อมูลโดยตรงจากแหล่งสาธารณะทุกไม่กี่นาที",
+      "loadError": "ไม่สามารถเชื่อมต่อแหล่งข้อมูลสดของสหราชอาณาจักรได้",
+      "allClear": "ขณะนี้ไม่มีการแจ้งเตือนที่ใช้งานอยู่ในสหราชอาณาจักร",
+      "degraded": "ไม่พร้อมใช้งาน: {{sources}}",
+      "updated": "อัปเดต {{time}}",
+      "grid": "ระบบไฟฟ้า",
+      "carbon": "ความเข้มคาร์บอน",
+      "renewables": "พลังงานหมุนเวียน",
+      "demand": "ความต้องการ",
+      "floods": "คำเตือนน้ำท่วม",
+      "weather": "คำเตือนสภาพอากาศ",
+      "gridWarnings": "คำเตือนระบบไฟฟ้า",
+      "transport": "การหยุดชะงัก TfL",
+      "quakes": "แผ่นดินไหว (7 วัน)",
+      "filterAll": "ทั้งหมด",
+      "showOnMap": "แสดงบนแผนที่"
     }
   },
   "popups": {

@@ -145,3 +145,12 @@ playground-pricing.html
 # compile time — `cargo test` fails on a resource path that does not exist.
 src-tauri/notices/*
 !src-tauri/notices/.gitkeep
+
+# Coastal water-level training artifacts.
+# Model binaries (~900KB each) and the built dataset (~3MB) are BUILD OUTPUT,
+# reproducible from training/build_dataset.py + train_regression.py. Production
+# loads them from REGRESSION_MODEL_DIR / WARNING_MODEL_DIR, which the deploy
+# mounts — they are deliberately not carried in git.
+training/models/*.onnx
+training/data/*.npz
+/tmp/coastal-training/

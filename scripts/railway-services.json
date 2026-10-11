@@ -1606,5 +1606,24 @@
     ],
     "cronSchedule": "7,22,37,52 * * * *",
     "documentedAt": "docs/analytics-collector-operations.md#retention-runner"
+  },
+  {
+    "entry": "scripts/seed-coastal.mjs",
+    "deployMode": "nixpacks-root-scripts",
+    "service": "seed-coastal",
+    "cronSchedule": "*/15 * * * *",
+    "requiredEnv": [
+      "UPSTASH_REDIS_REST_URL",
+      "UPSTASH_REDIS_REST_TOKEN"
+    ],
+    "watchPatterns": [
+      "scripts/_seed-utils.mjs",
+      "scripts/seed-coastal.mjs",
+      "scripts/shared/coastal-features.mjs",
+      "scripts/shared/coastal-models.mjs",
+      "scripts/shared/coastal-providers.mjs",
+      "scripts/shared/coastal-risk.mjs",
+      "scripts/shared/coastal-stations.mjs"
+    ]
   }
 ]

@@ -312,7 +312,9 @@
     "panelCatCommodityEcon": "Οικονομία & Εμπόριο",
     "panelCatHappyNews": "Καλές Ειδήσεις",
     "panelCatHappyPlanet": "Πλανήτης & Δωρεές",
-    "embed": "Ενσωμάτωση"
+    "embed": "Ενσωμάτωση",
+    "uk": "ΗΒ",
+    "panelCatCrisisTwin": "CrisisTwin Ηνωμένο Βασίλειο"
   },
   "panels": {
     "liveNews": "Ζωντανές Ειδήσεις",
@@ -422,7 +424,8 @@
     "fearGreed": "Fear & Greed",
     "marketBreadth": "Market Breadth",
     "climateNews": "Ειδήσεις για το Κλίμα",
-    "fx": "Ισοτιμίες Συναλλάγματος"
+    "fx": "Ισοτιμίες Συναλλάγματος",
+    "ukCrisisMonitor": "Ζωντανή παρακολούθηση κρίσεων"
   },
   "commands": {
     "prefixes": {
@@ -1169,7 +1172,8 @@
         "asia": "Ασία",
         "latam": "Λατινική Αμερική",
         "africa": "Αφρική",
-        "oceania": "Ωκεανία"
+        "oceania": "Ωκεανία",
+        "uk": "Ηνωμένο Βασίλειο"
       },
       "layers": {
         "startupHubs": "Startup Hubs",
@@ -1220,7 +1224,10 @@
         "radiationSpike": "Αιχμή ραδιενέργειας",
         "radiationElevated": "Αυξημένη ραδιενέργεια",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "Ζωντανές ειδοποιήσεις ΗΒ",
+        "ukTwin": "Ψηφιακό δίδυμο ΗΒ"
       },
       "tooltip": {
         "earthquake": "Σεισμός",
@@ -2665,6 +2672,68 @@
       "rubBase": "Τράπεζα της Ρωσίας — ρούβλια ανά 1 μονάδα",
       "rubPerUnit": "Ρούβλια ανά μονάδα",
       "sourceCbr": "Πηγή: Τράπεζα της Ρωσίας"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "Οι τρέχοντες κίνδυνοι στο Ηνωμένο Βασίλειο σε μία ροή: προειδοποιήσεις πλημμύρας της Environment Agency, προειδοποιήσεις καιρού του Met Office, προειδοποιήσεις δικτύου της NESO, διαταραχές γραμμών TfL και σεισμοί από το BGS, ταξινομημένα κατά σοβαρότητα. Λαμβάνονται απευθείας από τις δημόσιες πηγές κάθε λίγα λεπτά.",
+      "loadError": "Δεν ήταν δυνατή η σύνδεση με τις ζωντανές πηγές του ΗΒ.",
+      "allClear": "Δεν υπάρχουν ενεργές ειδοποιήσεις στο ΗΒ αυτή τη στιγμή.",
+      "degraded": "Μη διαθέσιμα: {{sources}}",
+      "updated": "Ενημερώθηκε {{time}}",
+      "grid": "Δίκτυο",
+      "carbon": "Ένταση άνθρακα",
+      "renewables": "Ανανεώσιμες",
+      "demand": "Ζήτηση",
+      "floods": "Προειδοποιήσεις πλημμύρας",
+      "weather": "Προειδοποιήσεις καιρού",
+      "gridWarnings": "Προειδοποιήσεις δικτύου",
+      "transport": "Διαταραχές TfL",
+      "quakes": "Σεισμοί (7 ημ.)",
+      "filterAll": "Όλα",
+      "showOnMap": "Εμφάνιση στον χάρτη"
     }
   },
   "popups": {

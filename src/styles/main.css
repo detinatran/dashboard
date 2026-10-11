@@ -29391,3 +29391,212 @@ body.map-width-resizing {
 @media (prefers-reduced-motion: reduce) {
   :root:not([data-theme="light"]) body::after { animation: none; display: none; }
 }
+
+
+/* ── Coastal water-level prediction ───────────────────────────────────────── */
+/* Risk is carried by icon + text as well as colour (see CoastalStationPanel),
+   so the tokens below reinforce meaning rather than being its only vehicle.
+   Colours come from the existing semantic ladder — no new hexes. */
+
+.coastal-workspace {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(380px, 100%);
+  overflow-y: auto;
+  background: var(--surface);
+  border-left: 1px solid var(--border-strong);
+  padding: 14px;
+  z-index: 5;
+}
+
+.coastal-panel-header { display: flex; flex-direction: column; gap: 4px; }
+
+.coastal-panel-title {
+  margin: 0;
+  font-size: calc(16px * var(--wm-panel-effective-scale, 1));
+  font-weight: 600;
+  color: var(--text);
+}
+
+.coastal-status { display: flex; align-items: center; gap: 6px; font-size: calc(11px * var(--wm-panel-effective-scale, 1)); }
+.coastal-status-text { letter-spacing: 0.08em; text-transform: uppercase; }
+.coastal-status-age { color: var(--text-muted); }
+.coastal-status-live .coastal-status-dot,
+.coastal-status-live .coastal-status-text { color: var(--status-live); }
+.coastal-status-delayed .coastal-status-dot,
+.coastal-status-delayed .coastal-status-text { color: var(--status-cached); }
+.coastal-status-stale .coastal-status-dot,
+.coastal-status-stale .coastal-status-text { color: var(--status-unavailable); }
+.coastal-status-unknown .coastal-status-dot,
+.coastal-status-unknown .coastal-status-text { color: var(--text-muted); }
+
+.coastal-risk {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  font-size: calc(12px * var(--wm-panel-effective-scale, 1));
+}
+.coastal-risk-normal   { border-left-color: var(--semantic-normal); }
+.coastal-risk-advisory { border-left-color: var(--semantic-info); }
+.coastal-risk-watch    { border-left-color: var(--semantic-elevated); }
+.coastal-risk-high     { border-left-color: var(--semantic-high); }
+.coastal-risk-unknown  { border-left-color: var(--border-strong); }
+.coastal-risk-label { font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.coastal-risk-reason { color: var(--text-secondary); }
+/* Never let a model estimate read as an official warning. */
+.coastal-risk-caption {
+  flex-basis: 100%;
+  color: var(--text-muted);
+  font-size: calc(10px * var(--wm-panel-effective-scale, 1));
+}
+
+.coastal-section { margin-bottom: 14px; }
+.coastal-label {
+  color: var(--text-muted);
+  font-size: calc(10px * var(--wm-panel-effective-scale, 1));
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.coastal-value { color: var(--text); font-size: calc(12px * var(--wm-panel-effective-scale, 1)); }
+.coastal-value-lg {
+  color: var(--text);
+  font-size: calc(30px * var(--wm-panel-effective-scale, 1));
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.coastal-trend { color: var(--text-secondary); font-size: calc(12px * var(--wm-panel-effective-scale, 1)); }
+.coastal-subrow { display: flex; justify-content: space-between; margin-top: 4px; }
+
+.coastal-horizon-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+.coastal-horizon { border: 1px solid var(--border); padding: 8px; }
+.coastal-horizon-label {
+  color: var(--text-muted);
+  font-size: calc(10px * var(--wm-panel-effective-scale, 1));
+  letter-spacing: 0.08em;
+}
+.coastal-horizon-value {
+  color: var(--text);
+  font-size: calc(15px * var(--wm-panel-effective-scale, 1));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.coastal-horizon-range {
+  color: var(--text-muted);
+  font-size: calc(10px * var(--wm-panel-effective-scale, 1));
+}
+
+/* Shown when a model is absent or refused — an explanation, not an empty box. */
+.coastal-unavailable {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: calc(12px * var(--wm-panel-effective-scale, 1));
+}
+
+.coastal-chart { position: relative; width: 100%; height: 170px; }
+.coastal-chart-canvas { display: block; width: 100%; height: 100%; }
+
+.coastal-conditions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 6px; }
+.coastal-condition { display: flex; justify-content: space-between; gap: 8px; }
+
+.coastal-technical { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; }
+.coastal-technical-summary {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: calc(11px * var(--wm-panel-effective-scale, 1));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.coastal-tech-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 4px;
+  font-size: calc(11px * var(--wm-panel-effective-scale, 1));
+}
+.coastal-tech-row .coastal-value { word-break: break-all; }
+
+.coastal-panel-loading, .coastal-panel-empty {
+  color: var(--text-muted);
+  font-size: calc(12px * var(--wm-panel-effective-scale, 1));
+}
+
+/* Mobile: a bottom sheet, not a squeezed desktop rail. */
+@media (max-width: 768px) {
+  .coastal-workspace {
+    top: auto;
+    left: 0;
+    width: 100%;
+    max-height: 62%;
+    border-left: none;
+    border-top: 1px solid var(--border-strong);
+  }
+}
+
+
+/* ── CRDT focus mode ──────────────────────────────────────────────────────── */
+/* Crisis Resilience Digital Twin. While active, every other dashboard surface
+   is hidden so the UK map and the water-level panel stand alone. Purely
+   presentational: no panel is destroyed and no layer state is touched, so
+   leaving the mode restores the previous layout exactly. */
+
+.main-content.crdt-focus .panels-grid,
+.main-content.crdt-focus .map-bottom-grid,
+.main-content.crdt-focus .map-width-resize-handle,
+.main-content.crdt-focus .map-resize-handle,
+.main-content.crdt-focus .map-action-group-view,
+.main-content.crdt-focus .aoi-workspace,
+/* The time-range switcher and the map legend belong to the general dashboard;
+   in CRDT the only layer that matters is already on. Selectors measured in the
+   live DOM — an earlier draft guessed `.map-time-range` / `.map-legend`, which
+   match nothing and silently left both on screen. */
+.main-content.crdt-focus .time-slider,
+.main-content.crdt-focus .map-legend,
+.main-content.crdt-focus .layer-toggles {
+  display: none !important;
+}
+
+/* Keep only the CRDT button in the intel group; AOI and CCTV would compete
+   with the mode they were used to enter. */
+.main-content.crdt-focus .map-action-group-intel > *:not(.water-level-toggle) {
+  display: none !important;
+}
+
+/* The map takes the full working area once the panel grid is gone. */
+.main-content.crdt-focus {
+  display: block !important;
+}
+
+.main-content.crdt-focus .map-section {
+  width: 100% !important;
+  max-width: none !important;
+  flex: 1 1 auto !important;
+  /* 96px is the measured height of the site header plus the tab strip above
+     the map. There is no header-offset custom property in this codebase — an
+     earlier draft read one that does not exist, so the fallback was silently
+     doing all the work. */
+  height: calc(100vh - 96px) !important;
+}
+
+.main-content.crdt-focus .map-container {
+  height: 100% !important;
+}
+
+/* The station panel stays docked on the right of the map, unchanged. */
+.main-content.crdt-focus .coastal-workspace {
+  z-index: 6;
+}
+
+/* The active button reads as the mode it represents, not just a pressed tab. */
+.water-level-toggle.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--overlay-light);
+}

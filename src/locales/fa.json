@@ -381,7 +381,9 @@
     "panelCatMining": "Mining & Supply Chain",
     "panelCatCommodityEcon": "Economy & Trade",
     "panelCatHappyNews": "Good News",
-    "panelCatHappyPlanet": "Planet & Giving"
+    "panelCatHappyPlanet": "Planet & Giving",
+    "uk": "بریتانیا",
+    "panelCatCrisisTwin": "CrisisTwin بریتانیا"
   },
   "panels": {
     "liveNews": "Live News",
@@ -491,7 +493,8 @@
     "fearGreed": "Fear & Greed",
     "marketBreadth": "Market Breadth",
     "climateNews": "Climate News",
-    "fx": "نرخ‌های ارز"
+    "fx": "نرخ‌های ارز",
+    "ukCrisisMonitor": "پایش زنده بحران"
   },
   "commands": {
     "prefixes": {
@@ -1310,7 +1313,8 @@
         "asia": "Asia",
         "latam": "Latin America",
         "africa": "Africa",
-        "oceania": "Oceania"
+        "oceania": "Oceania",
+        "uk": "بریتانیا"
       },
       "layers": {
         "startupHubs": "Startup Hubs",
@@ -1361,7 +1365,10 @@
         "speciesRecovery": "Species Recovery",
         "renewableInstallations": "Clean Energy",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "هشدارهای زنده بریتانیا",
+        "ukTwin": "دوقلوی دیجیتال بریتانیا"
       },
       "tooltip": {
         "earthquake": "Earthquake",
@@ -2734,6 +2741,68 @@
       "rubBase": "بانک مرکزی روسیه — روبل به ازای هر ۱ واحد",
       "rubPerUnit": "روبل به ازای هر واحد",
       "sourceCbr": "منبع: بانک مرکزی روسیه"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "خطرات جاری بریتانیا در یک فید: هشدارهای سیل Environment Agency، هشدارهای هواشناسی Met Office، هشدارهای شبکه برق NESO، اختلال خطوط TfL و زلزله‌های BGS، مرتب‌شده بر اساس شدت. هر چند دقیقه مستقیماً از منابع عمومی دریافت می‌شود.",
+      "loadError": "دسترسی به منابع زنده بریتانیا ممکن نشد.",
+      "allClear": "در حال حاضر هشدار فعالی در بریتانیا وجود ندارد.",
+      "degraded": "در دسترس نیست: {{sources}}",
+      "updated": "به‌روزرسانی {{time}}",
+      "grid": "شبکه",
+      "carbon": "شدت کربن",
+      "renewables": "تجدیدپذیر",
+      "demand": "تقاضا",
+      "floods": "هشدارهای سیل",
+      "weather": "هشدارهای هواشناسی",
+      "gridWarnings": "هشدارهای شبکه",
+      "transport": "اختلال TfL",
+      "quakes": "زلزله (۷ روز)",
+      "filterAll": "همه",
+      "showOnMap": "نمایش روی نقشه"
     }
   },
   "popups": {

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package worldmonitor.coastal.v1;
+
+import "sebuf/http/annotations.proto";
+
+message GetHistoryRequest {
+  string station_id = 1 [(sebuf.http.query) = {name: "station_id"}];
+  int32 hours = 2 [(sebuf.http.query) = {name: "hours"}];
+}
+
+message ObservationPoint {
+  int64 timestamp = 1 [(sebuf.http.int64_encoding) = INT64_ENCODING_NUMBER];
+  double water_level = 2;
+}
+
+message GetHistoryResponse {
+  string station_id = 1;
+  repeated ObservationPoint observations = 2;
+  int64 fetched_at = 3 [(sebuf.http.int64_encoding) = INT64_ENCODING_NUMBER];
+  bool data_available = 4;
+}

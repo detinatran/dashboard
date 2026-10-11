@@ -77,6 +77,7 @@ export const WEBMCP_VARIANT_INVENTORIES = Object.freeze({
   happy: variantInventory(false),
   commodity: variantInventory(false),
   energy: variantInventory(false),
+  uk: variantInventory(false),
 }) satisfies Readonly<Record<SiteVariant, WebMcpVariantInventory>>;
 
 /** Shared contract budgets applied uniformly to every imperative SPA tool. */

@@ -562,6 +562,20 @@
       ]
     },
     {
+      "host": "api.carbonintensity.org.uk",
+      "provider": "NESO Carbon Intensity API",
+      "kind": "structured",
+      "observed": true,
+      "license": "CC BY 4.0 (Carbon Intensity API terms, carbonintensity.org.uk)",
+      "attribution": "Carbon Intensity API by the National Energy System Operator (NESO), Environmental Defense Fund Europe and University of Oxford; https://carbonintensity.org.uk/.",
+      "status": "reviewed",
+      "references": [
+        {
+          "path": "src/services/uk/index.ts"
+        }
+      ]
+    },
+    {
       "host": "api.clerk.com",
       "provider": "Clerk identity service",
       "kind": "structured",
@@ -933,6 +947,20 @@
       ]
     },
     {
+      "host": "api.open-meteo.com",
+      "provider": "Open-Meteo",
+      "kind": "structured",
+      "observed": true,
+      "license": "CC BY 4.0 (Open-Meteo API data licence)",
+      "attribution": "Weather data by Open-Meteo.com, licensed under CC BY 4.0; https://open-meteo.com/.",
+      "status": "reviewed",
+      "references": [
+        {
+          "path": "scripts/shared/coastal-providers.mjs"
+        }
+      ]
+    },
+    {
       "host": "api.open511.gov.bc.ca",
       "provider": "BC Open511",
       "kind": "structured",
@@ -1176,6 +1204,12 @@
       "references": [
         {
           "path": "api/cctv/sources/index.ts"
+        },
+        {
+          "path": "src/services/uk/index.ts"
+        },
+        {
+          "path": "src/services/uk/parsers.ts"
         }
       ]
     },
@@ -1555,6 +1589,9 @@
       "references": [
         {
           "path": "scripts/_open-meteo-archive.mjs"
+        },
+        {
+          "path": "scripts/shared/coastal-providers.mjs"
         }
       ]
     },
@@ -1971,6 +2008,20 @@
       ]
     },
     {
+      "host": "bmrs.elexon.co.uk",
+      "provider": "bmrs.elexon.co.uk",
+      "kind": "structured",
+      "observed": true,
+      "license": "Excluded: first-party, control-plane, UI, or rendering transport",
+      "attribution": "Excluded from the external-provider count: not an ingested upstream dataset.",
+      "status": "excluded",
+      "references": [
+        {
+          "path": "src/services/uk/parsers.ts"
+        }
+      ]
+    },
+    {
       "host": "bothsidesofthetable.com",
       "provider": "bothsidesofthetable.com",
       "kind": "structured",
@@ -2335,6 +2386,20 @@
       "references": [
         {
           "path": "src/config/feeds.ts"
+        }
+      ]
+    },
+    {
+      "host": "check-for-flooding.service.gov.uk",
+      "provider": "check-for-flooding.service.gov.uk",
+      "kind": "structured",
+      "observed": true,
+      "license": "Excluded: first-party, control-plane, UI, or rendering transport",
+      "attribution": "Excluded from the external-provider count: not an ingested upstream dataset.",
+      "status": "excluded",
+      "references": [
+        {
+          "path": "src/services/uk/parsers.ts"
         }
       ]
     },
@@ -2885,6 +2950,20 @@
       ]
     },
     {
+      "host": "data.elexon.co.uk",
+      "provider": "Elexon BMRS",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Elexon Balancing Mechanism Reporting Service (BMRS); link to https://bmrs.elexon.co.uk/.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "src/services/uk/index.ts"
+        }
+      ]
+    },
+    {
       "host": "data.humdata.org",
       "provider": "data.humdata.org",
       "kind": "structured",
@@ -3426,6 +3505,20 @@
       ]
     },
     {
+      "host": "earthquakes.bgs.ac.uk",
+      "provider": "British Geological Survey",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "British Geological Survey (UKRI) earthquake bulletins; link to https://earthquakes.bgs.ac.uk/.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "src/services/uk/index.ts"
+        }
+      ]
+    },
+    {
       "host": "ec.europa.eu",
       "provider": "ec.europa.eu",
       "kind": "feed+structured",
@@ -3775,6 +3868,23 @@
         },
         {
           "path": "src/config/feeds.ts"
+        }
+      ]
+    },
+    {
+      "host": "environment.data.gov.uk",
+      "provider": "Environment Agency",
+      "kind": "structured",
+      "observed": true,
+      "license": "Open Government Licence v3.0 (Environment Agency real-time flood-monitoring API)",
+      "attribution": "This uses Environment Agency flood and river level data from the real-time data API (Beta). Contains public sector information licensed under the Open Government Licence v3.0.",
+      "status": "reviewed",
+      "references": [
+        {
+          "path": "scripts/shared/coastal-providers.mjs"
+        },
+        {
+          "path": "src/services/uk/index.ts"
         }
       ]
     },
@@ -4260,6 +4370,20 @@
         {
           "path": "server/worldmonitor/news/v1/_feeds.ts"
         },
+        {
+          "path": "src/config/feeds.ts"
+        }
+      ]
+    },
+    {
+      "host": "feeds.skynews.com",
+      "provider": "Sky News",
+      "kind": "feed",
+      "observed": true,
+      "license": "Provider terms for this feed publisher; verify before redistribution",
+      "attribution": "Credit feeds.skynews.com and link to the original feed publisher.",
+      "status": "terms-review",
+      "references": [
         {
           "path": "src/config/feeds.ts"
         }
@@ -9222,6 +9346,20 @@
       ]
     },
     {
+      "host": "tfl.gov.uk",
+      "provider": "tfl.gov.uk",
+      "kind": "structured",
+      "observed": true,
+      "license": "Excluded: first-party, control-plane, UI, or rendering transport",
+      "attribution": "Excluded from the external-provider count: not an ingested upstream dataset.",
+      "status": "excluded",
+      "references": [
+        {
+          "path": "src/services/uk/parsers.ts"
+        }
+      ]
+    },
+    {
       "host": "th.usembassy.gov",
       "provider": "th.usembassy.gov",
       "kind": "structured",
@@ -9890,6 +10028,20 @@
         },
         {
           "path": "scripts/seed-ucdp-events.mjs"
+        }
+      ]
+    },
+    {
+      "host": "uk.worldmonitor.app",
+      "provider": "uk.worldmonitor.app",
+      "kind": "structured",
+      "observed": true,
+      "license": "Excluded: first-party, control-plane, UI, or rendering transport",
+      "attribution": "Excluded from the external-provider count: not an ingested upstream dataset.",
+      "status": "excluded",
+      "references": [
+        {
+          "path": "src/config/variant-meta.ts"
         }
       ]
     },
@@ -12698,6 +12850,20 @@
       "references": [
         {
           "path": "scripts/seed-fuel-prices.mjs"
+        }
+      ]
+    },
+    {
+      "host": "www.metoffice.gov.uk",
+      "provider": "Met Office",
+      "kind": "structured",
+      "observed": true,
+      "license": "Provider terms for this upstream API/dataset; verify before redistribution",
+      "attribution": "Met Office weather warnings (Crown copyright); link to https://www.metoffice.gov.uk/weather/warnings-and-advice/uk-warnings.",
+      "status": "terms-review",
+      "references": [
+        {
+          "path": "src/services/uk/index.ts"
         }
       ]
     },

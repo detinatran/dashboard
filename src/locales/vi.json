@@ -187,7 +187,9 @@
       "corporateDisclosures": "Công bố doanh nghiệp",
       "corridorConditions": "Điều kiện hành lang",
       "activityNowcast": "Dự báo hoạt động hiện tại",
-      "decisionSignalsUnavailable": "Ảnh chụp nhanh tín hiệu quyết định của Trung Quốc hiện không có sẵn."
+      "decisionSignalsUnavailable": "Ảnh chụp nhanh tín hiệu quyết định của Trung Quốc hiện không có sẵn.",
+      "activeDisruptions_one": "{{count}} active disruption",
+      "activeSignals_one": "{{count}} active signal"
     },
     "foodStocks": "Food stocks",
     "foodStocksHelp": "USDA PSD commodity stocks-to-use by marketing year, with the world ratio alongside for context. FAOSTAT fills production only where PSD has no country coverage.",
@@ -310,7 +312,9 @@
     "panelCatCommodityEcon": "Kinh tế & Thương mại",
     "panelCatHappyNews": "Tin tốt",
     "panelCatHappyPlanet": "Hành tinh & Trao tặng",
-    "embed": "Nhúng"
+    "embed": "Nhúng",
+    "uk": "Anh",
+    "panelCatCrisisTwin": "CrisisTwin Vương quốc Anh"
   },
   "panels": {
     "liveNews": "Tin tức Trực tiếp",
@@ -420,7 +424,8 @@
     "fearGreed": "Sợ hãi & Tham lam",
     "marketBreadth": "Độ rộng Thị trường",
     "climateNews": "Tin tức về Khí hậu",
-    "fx": "Tỷ Giá Ngoại Tệ"
+    "fx": "Tỷ Giá Ngoại Tệ",
+    "ukCrisisMonitor": "Giám sát khủng hoảng trực tiếp"
   },
   "commands": {
     "prefixes": {
@@ -565,7 +570,8 @@
       "flightMilitaryOnGround": "Quân sự · {{type}} · đang đỗ tại sân bay",
       "flightSearchHint": "Nhấn Enter hoặc nhấp để tra cứu vị trí trực tiếp",
       "flightNotFound": "Không tìm thấy vị trí trực tiếp cho {{callsign}}",
-      "addPanel": "Thêm"
+      "addPanel": "Thêm",
+      "resultAnnouncement_one": "{{count}} result for {{query}}"
     },
     "signal": {
       "title": "PHÁT HIỆN TÌNH BÁO",
@@ -1166,7 +1172,8 @@
         "asia": "Châu Á",
         "latam": "Mỹ Latinh",
         "africa": "Châu Phi",
-        "oceania": "Châu Đại Dương"
+        "oceania": "Châu Đại Dương",
+        "uk": "Vương quốc Anh"
       },
       "layers": {
         "startupHubs": "Trung tâm Khởi nghiệp",
@@ -1217,7 +1224,10 @@
         "radiationSpike": "Đột tăng bức xạ",
         "radiationElevated": "Bức xạ tăng cao",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Dự báo mực nước",
+        "ukAlerts": "Cảnh báo trực tiếp tại Anh",
+        "ukTwin": "Bản sao số Vương quốc Anh"
       },
       "tooltip": {
         "earthquake": "Động đất",
@@ -1420,7 +1430,8 @@
       "provenanceTitle": "Nguồn gốc bài viết: số lượng bài viết được nhập và các nguồn riêng biệt mà bài viết này được chọn từ đó",
       "compiledFrom": "Được biên soạn từ {{stories}} câu chuyện trên {{sources}} nguồn",
       "briefFreshness": "Được tạo {{minutes}}m trước · nguồn mới nhất {{hours}}h tuổi",
-      "briefStoryDetails": "Story details ({{count}})"
+      "briefStoryDetails": "Story details ({{count}})",
+      "sources_one": "{{count}} source"
     },
     "settings": {
       "exportSettings": "Xuất cài đặt",
@@ -2035,12 +2046,17 @@
       "time": {
         "justNow": "vừa xong",
         "hoursAgo_other": "{{count}}h trước",
-        "daysAgo_other": "{{count}}d trước"
+        "daysAgo_other": "{{count}}d trước",
+        "hoursAgo_one": "{{count}}h ago",
+        "daysAgo_one": "{{count}}d ago"
       },
       "filters": {
         "alert_other": "{{count}} Cảnh báo",
         "warning_other": "{{count}} Cảnh cáo",
-        "watch_other": "{{count}} Theo dõi"
+        "watch_other": "{{count}} Theo dõi",
+        "alert_one": "{{count}} Alert",
+        "warning_one": "{{count}} Warning",
+        "watch_one": "{{count}} Watch"
       },
       "errors": {
         "noData": "Không có dữ liệu bùng phát",
@@ -2204,7 +2220,8 @@
       "appliesToNext": "Áp dụng cho lần tạo lại AI tiếp theo",
       "signals_other": "{{count}} tín hiệu",
       "disclaimer": "Tín hiệu giao dịch do AI tạo ra cho mục đích thông tin. Không phải lời khuyên đầu tư. Luôn tự nghiên cứu của riêng bạn.",
-      "unavailable": "Ý nghĩa thị trường AI được tạo sau mỗi lần chạy dự báo. Vui lòng kiểm tra lại sớm."
+      "unavailable": "Ý nghĩa thị trường AI được tạo sau mỗi lần chạy dự báo. Vui lòng kiểm tra lại sớm.",
+      "signals_one": "{{count}} signal"
     },
     "forecast": {
       "infoTooltip": "<strong>Dự báo AI</strong> Ước tính xác suất do AI tạo ra cho các sự kiện địa chính trị và kinh tế:<ul><li>Phạm vi đa lĩnh vực: xung đột, thị trường, chuỗi cung ứng, an ninh mạng, chính trị</li><li>Mỗi dự báo hiển thị xác suất ước tính, mức độ tin cậy và thời gian chờ</li><li>Hiệu chỉnh theo so sánh đường cơ sở của thị trường dự đoán nếu có</li></ul>Dự báo cập nhật khi có tín hiệu thông tin mới. Lọc theo lĩnh vực bằng các tab ở trên."
@@ -2437,7 +2454,8 @@
         "unattributed": "Không xác định",
         "program": "Chương trình",
         "undated": "không có ngày tháng"
-      }
+      },
+      "designations_one": "{{count}} designation"
     },
     "radiationWatch": {
       "title": "Theo dõi Bức xạ",
@@ -2470,7 +2488,9 @@
       },
       "observed": {
         "hoursAgo_other": "{{count}}h trước",
-        "daysAgo_other": "{{count}}d trước"
+        "daysAgo_other": "{{count}}d trước",
+        "hoursAgo_one": "{{count}}h ago",
+        "daysAgo_one": "{{count}}d ago"
       },
       "confidence": {
         "high": "độ tin cậy cao",
@@ -2501,7 +2521,8 @@
       "empty": "Không phát hiện sự hội tụ hoạt động",
       "signals_other": "{{count}} tín hiệu",
       "analyzing": "Đang phân tích...",
-      "viewOnMap": "Xem trên bản đồ"
+      "viewOnMap": "Xem trên bản đồ",
+      "signals_one": "{{count}} signal"
     },
     "thermalEscalation": {
       "title": "Tăng cường nhiệt độ",
@@ -2530,8 +2551,13 @@
       "age": {
         "minutesAgo_other": "{{count}}m trước",
         "hoursAgo_other": "{{count}}h trước",
-        "daysAgo_other": "{{count}}d trước"
-      }
+        "daysAgo_other": "{{count}}d trước",
+        "minutesAgo_one": "{{count}}m ago",
+        "hoursAgo_one": "{{count}}h ago",
+        "daysAgo_one": "{{count}}d ago"
+      },
+      "observations_one": "{{count}} obs",
+      "sources_one": "{{count}} src"
     },
     "chokepointStrip": {
       "title": "Tình trạng điểm tắc nghẽn",
@@ -2646,6 +2672,68 @@
       "rubBase": "Ngân hàng Trung ương Nga — rúp cho 1 đơn vị",
       "rubPerUnit": "Rúp trên mỗi đơn vị",
       "sourceCbr": "Nguồn: Ngân hàng Trung ương Nga"
+    },
+    "coastal": {
+      "modeButton": "Dự báo mực nước",
+      "modeButtonShort": "Mực nước",
+      "modeTooltip": "Các trạm dự báo mực nước ven biển Anh Quốc",
+      "panelTitle": "Mực nước ven biển",
+      "currentLevel": "Mực nước hiện tại",
+      "astronomicalTide": "Thuỷ triều thiên văn",
+      "residual": "Phần dư / nước dâng",
+      "forecast": "Dự báo",
+      "expectedRange": "Khoảng dự kiến",
+      "warningOutlook": "Triển vọng cảnh báo",
+      "conditions": "Điều kiện",
+      "technicalDetails": "Chi tiết kỹ thuật",
+      "dataSource": "Nguồn dữ liệu",
+      "latestObservation": "Quan trắc mới nhất",
+      "forecastGenerated": "Thời điểm tạo dự báo",
+      "regressionModel": "Mô hình mực nước",
+      "warningModel": "Mô hình cảnh báo",
+      "stationId": "Mã trạm",
+      "trendRising": "Đang lên",
+      "trendFalling": "Đang xuống",
+      "trendStable": "Ổn định",
+      "trendUnknown": "Chưa rõ xu hướng",
+      "statusLive": "Trực tiếp",
+      "statusDelayed": "Chậm trễ",
+      "statusStale": "Quá hạn",
+      "updatedAgo": "Cập nhật {{minutes}} phút trước",
+      "riskNormal": "Bình thường",
+      "riskAdvisory": "Lưu ý",
+      "riskWatch": "Theo dõi",
+      "riskHigh": "Rủi ro cao",
+      "riskUnknown": "Chưa xác định rủi ro",
+      "riskCaption": "Ước tính rủi ro từ mô hình — không phải cảnh báo lũ chính thức",
+      "forecastUnavailable": "Dự báo tạm thời không khả dụng.",
+      "modelNotConfigured": "Chưa triển khai mô hình dự báo mực nước cho trạm này.",
+      "warningNotConfigured": "Chưa có mô hình cảnh báo cho trạm này.",
+      "insufficientHistory": "Đang chờ đủ dữ liệu lịch sử.",
+      "modelIncompatible": "Mô hình dự báo không tương thích với bộ đặc trưng hiện tại.",
+      "dataDelayed": "Dữ liệu chậm · quan trắc gần nhất {{minutes}} phút trước",
+      "noStations": "Chưa cấu hình trạm dự báo ven biển nào.",
+      "chartObserved": "Quan trắc",
+      "chartForecast": "Dự báo",
+      "chartNow": "BÂY GIỜ"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "Các mối nguy hiện tại ở Vương quốc Anh trong một luồng: cảnh báo lũ của Environment Agency, cảnh báo thời tiết của Met Office, cảnh báo lưới điện của NESO, sự cố trên các tuyến TfL và động đất từ BGS, sắp xếp theo mức độ nghiêm trọng. Được lấy trực tiếp từ các nguồn công khai vài phút một lần.",
+      "loadError": "Không thể kết nối các nguồn trực tiếp của Anh.",
+      "allClear": "Hiện không có cảnh báo nào đang hiệu lực tại Anh.",
+      "degraded": "Không khả dụng: {{sources}}",
+      "updated": "Cập nhật {{time}}",
+      "grid": "Lưới điện",
+      "carbon": "Cường độ carbon",
+      "renewables": "Tái tạo",
+      "demand": "Nhu cầu",
+      "floods": "Cảnh báo lũ",
+      "weather": "Cảnh báo thời tiết",
+      "gridWarnings": "Cảnh báo lưới điện",
+      "transport": "Sự cố TfL",
+      "quakes": "Động đất (7 ngày)",
+      "filterAll": "Tất cả",
+      "showOnMap": "Xem trên bản đồ"
     }
   },
   "popups": {

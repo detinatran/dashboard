@@ -187,7 +187,9 @@
       "corporateDisclosures": "企业披露",
       "corridorConditions": "通道状况",
       "activityNowcast": "活动即时预测",
-      "decisionSignalsUnavailable": "中国决策信号快照当前不可用。"
+      "decisionSignalsUnavailable": "中国决策信号快照当前不可用。",
+      "activeDisruptions_one": "{{count}} active disruption",
+      "activeSignals_one": "{{count}} active signal"
     },
     "foodStocks": "Food stocks",
     "foodStocksHelp": "USDA PSD commodity stocks-to-use by marketing year, with the world ratio alongside for context. FAOSTAT fills production only where PSD has no country coverage.",
@@ -310,7 +312,9 @@
     "panelCatCommodityEcon": "经济与贸易",
     "panelCatHappyNews": "好消息",
     "panelCatHappyPlanet": "地球与慈善",
-    "embed": "嵌入"
+    "embed": "嵌入",
+    "uk": "英国",
+    "panelCatCrisisTwin": "CrisisTwin 英国"
   },
   "panels": {
     "liveNews": "实时新闻",
@@ -420,7 +424,8 @@
     "consumerPrices": "消费者价格",
     "marketBreadth": "市场广度",
     "climateNews": "气候新闻",
-    "fx": "外汇汇率"
+    "fx": "外汇汇率",
+    "ukCrisisMonitor": "实时危机监测"
   },
   "commands": {
     "prefixes": {
@@ -565,7 +570,8 @@
       "flightMilitaryOnGround": "军用 · {{type}} · 地面停靠",
       "flightSearchHint": "按 Enter 或点击查看实时位置",
       "flightNotFound": "未找到 {{callsign}} 的实时位置",
-      "addPanel": "Add"
+      "addPanel": "Add",
+      "resultAnnouncement_one": "{{count}} result for {{query}}"
     },
     "signal": {
       "title": "情报发现",
@@ -1166,7 +1172,8 @@
         "asia": "亚洲",
         "latam": "拉丁美洲",
         "africa": "非洲",
-        "oceania": "大洋洲"
+        "oceania": "大洋洲",
+        "uk": "英国"
       },
       "layers": {
         "startupHubs": "创业中心",
@@ -1217,7 +1224,10 @@
         "radiationSpike": "辐射峰值",
         "radiationElevated": "辐射升高",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "英国实时警报",
+        "ukTwin": "英国数字孪生"
       },
       "tooltip": {
         "earthquake": "地震",
@@ -1420,7 +1430,8 @@
       "compiledFrom": "编译自 {{stories}} 条故事和 {{sources}} 个来源",
       "provenanceTitle": "覆盖来源：此摘要选自多少条摄取的故事和不同的来源",
       "briefFreshness": "生成于 {{minutes}}m 前 · 最新来源 {{hours}}h 前",
-      "briefStoryDetails": "Story details ({{count}})"
+      "briefStoryDetails": "Story details ({{count}})",
+      "sources_one": "{{count}} source"
     },
     "settings": {
       "exportSettings": "导出设置",
@@ -2035,12 +2046,17 @@
       "time": {
         "justNow": "刚才",
         "hoursAgo_other": "{{count}}小时前",
-        "daysAgo_other": "{{count}}天前"
+        "daysAgo_other": "{{count}}天前",
+        "hoursAgo_one": "{{count}}h ago",
+        "daysAgo_one": "{{count}}d ago"
       },
       "filters": {
         "alert_other": "{{count}} 条警报",
         "warning_other": "{{count}} 条警告",
-        "watch_other": "{{count}} 条监测"
+        "watch_other": "{{count}} 条监测",
+        "alert_one": "{{count}} Alert",
+        "warning_one": "{{count}} Warning",
+        "watch_one": "{{count}} Watch"
       },
       "errors": {
         "noData": "无可用的爆发数据",
@@ -2204,7 +2220,8 @@
       "appliesToNext": "适用于下一次AI重新生成",
       "signals_other": "{{count}}个信号",
       "disclaimer": "AI生成的交易信号仅供参考。非投资建议。请自行研究。",
-      "unavailable": "AI市场影响在每次预测运行后生成。请稍后查看。"
+      "unavailable": "AI市场影响在每次预测运行后生成。请稍后查看。",
+      "signals_one": "{{count}} signal"
     },
     "forecast": {
       "infoTooltip": "<strong>AI 预测</strong> AI 生成的地缘政治和经济事件概率估计：<ul><li>跨域覆盖：冲突、市场、供应链、网络安全、政治</li><li>每个预测显示估计概率、置信度和时间范围</li><li>根据预测市场基线进行校准（如可用）</li></ul>预测在新情报信号到达时更新。使用上方标签按域筛选。"
@@ -2437,7 +2454,8 @@
         "unattributed": "未归属",
         "program": "计划",
         "undated": "无日期"
-      }
+      },
+      "designations_one": "{{count}} designation"
     },
     "radiationWatch": {
       "title": "辐射监测",
@@ -2470,7 +2488,9 @@
       },
       "observed": {
         "hoursAgo_other": "{{count}}h 前",
-        "daysAgo_other": "{{count}}d 前"
+        "daysAgo_other": "{{count}}d 前",
+        "hoursAgo_one": "{{count}}h ago",
+        "daysAgo_one": "{{count}}d ago"
       },
       "confidence": {
         "high": "高可信度",
@@ -2501,7 +2521,8 @@
       "empty": "未检测到活跃收敛",
       "signals_other": "{{count}} 个信号",
       "analyzing": "分析中...",
-      "viewOnMap": "在地图上查看"
+      "viewOnMap": "在地图上查看",
+      "signals_one": "{{count}} signal"
     },
     "thermalEscalation": {
       "title": "热异常升级",
@@ -2530,8 +2551,13 @@
       "age": {
         "minutesAgo_other": "{{count}} 分钟前",
         "hoursAgo_other": "{{count}} 小时前",
-        "daysAgo_other": "{{count}} 天前"
-      }
+        "daysAgo_other": "{{count}} 天前",
+        "minutesAgo_one": "{{count}}m ago",
+        "hoursAgo_one": "{{count}}h ago",
+        "daysAgo_one": "{{count}}d ago"
+      },
+      "observations_one": "{{count}} obs",
+      "sources_one": "{{count}} src"
     },
     "chokepointStrip": {
       "title": "瓶颈地点状态",
@@ -2646,6 +2672,68 @@
       "rubBase": "俄罗斯央行 — 每 1 单位卢布",
       "rubPerUnit": "每单位卢布",
       "sourceCbr": "来源：俄罗斯央行"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "英国当前风险汇总于一个信息流：Environment Agency 洪水警报、Met Office 天气预警、NESO 电网警告、TfL 线路中断以及 BGS 地震信息，按严重程度排序。每隔几分钟直接从公开来源获取。",
+      "loadError": "无法连接英国实时数据源。",
+      "allClear": "英国目前没有生效的警报。",
+      "degraded": "不可用：{{sources}}",
+      "updated": "更新于 {{time}}",
+      "grid": "电网",
+      "carbon": "碳强度",
+      "renewables": "可再生能源",
+      "demand": "需求",
+      "floods": "洪水警报",
+      "weather": "天气预警",
+      "gridWarnings": "电网警告",
+      "transport": "TfL 中断",
+      "quakes": "地震（7天）",
+      "filterAll": "全部",
+      "showOnMap": "在地图上显示"
     }
   },
   "popups": {

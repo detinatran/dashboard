@@ -316,7 +316,9 @@
     "panelCatCommodityEcon": "Экономика и торговля",
     "panelCatHappyNews": "Хорошие новости",
     "panelCatHappyPlanet": "Планета и благотворительность",
-    "embed": "Встроить"
+    "embed": "Встроить",
+    "uk": "Великобритания",
+    "panelCatCrisisTwin": "CrisisTwin Великобритания"
   },
   "panels": {
     "liveNews": "Новости в реальном времени",
@@ -426,7 +428,8 @@
     "fearGreed": "Страх и жадность",
     "marketBreadth": "Ширина рынка",
     "climateNews": "Новости климата",
-    "fx": "Курсы валют"
+    "fx": "Курсы валют",
+    "ukCrisisMonitor": "Мониторинг кризисов в реальном времени"
   },
   "commands": {
     "prefixes": {
@@ -1175,7 +1178,8 @@
         "asia": "Азия",
         "latam": "Латинская Америка",
         "africa": "Африка",
-        "oceania": "Океания"
+        "oceania": "Океания",
+        "uk": "Великобритания"
       },
       "layers": {
         "startupHubs": "Хабы стартапов",
@@ -1226,7 +1230,10 @@
         "radiationSpike": "Всплеск радиации",
         "radiationElevated": "Повышенный уровень радиации",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "Оповещения Великобритании в реальном времени",
+        "ukTwin": "Цифровой двойник Великобритании"
       },
       "tooltip": {
         "earthquake": "Землетрясение",
@@ -2703,6 +2710,68 @@
       "rubBase": "Банк России — рублей за 1 единицу",
       "rubPerUnit": "Рублей за единицу",
       "sourceCbr": "Источник: Банк России"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "Текущие угрозы в Великобритании в одной ленте: предупреждения о наводнениях Environment Agency, погодные предупреждения Met Office, предупреждения энергосистемы NESO, сбои на линиях TfL и землетрясения по данным BGS, упорядоченные по серьёзности. Данные загружаются напрямую из открытых источников каждые несколько минут.",
+      "loadError": "Не удалось подключиться к источникам Великобритании.",
+      "allClear": "Сейчас в Великобритании нет активных оповещений.",
+      "degraded": "Недоступно: {{sources}}",
+      "updated": "Обновлено {{time}}",
+      "grid": "Энергосистема",
+      "carbon": "Углеродоёмкость",
+      "renewables": "ВИЭ",
+      "demand": "Потребление",
+      "floods": "Предупреждения о наводнениях",
+      "weather": "Погодные предупреждения",
+      "gridWarnings": "Предупреждения энергосистемы",
+      "transport": "Сбои TfL",
+      "quakes": "Землетрясения (7 дн.)",
+      "filterAll": "Все",
+      "showOnMap": "Показать на карте"
     }
   },
   "popups": {

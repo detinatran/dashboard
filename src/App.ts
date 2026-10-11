@@ -29,6 +29,7 @@ import {
   FREE_MAX_PANELS,
   FREE_MAX_SOURCES,
 } from '@/config';
+import { VARIANT_META } from '@/config/variant-meta';
 import {
   sanitizeLayersForVariant,
   sanitizeLockedLayers,
@@ -94,6 +95,7 @@ import type { EnergyDisruptionsPanel } from '@/components/EnergyDisruptionsPanel
 import type { EnergyRiskOverviewPanel } from '@/components/EnergyRiskOverviewPanel';
 import type { ChokepointStripPanel } from '@/components/ChokepointStripPanel';
 import type { ClimateNewsPanel } from '@/components/ClimateNewsPanel';
+import type { UkCrisisMonitorPanel } from '@/components/UkCrisisMonitorPanel';
 import type { ConsumerPricesPanel } from '@/components/ConsumerPricesPanel';
 import type { DefensePatentsPanel } from '@/components/DefensePatentsPanel';
 import type { MacroTilesPanel } from '@/components/MacroTilesPanel';
@@ -785,6 +787,10 @@ export class App {
     if (shouldPrime('climate-news')) {
       const panel = this.state.panels['climate-news'] as ClimateNewsPanel | undefined;
       if (panel) primeTask('climate-news', () => panel.fetchData());
+    }
+    if (shouldPrime('uk-crisis-monitor')) {
+      const panel = this.state.panels['uk-crisis-monitor'] as UkCrisisMonitorPanel | undefined;
+      if (panel) primeTask('uk-crisis-monitor', () => panel.fetchData());
     }
     if (shouldPrime('consumer-prices')) {
       const panel = this.state.panels['consumer-prices'] as ConsumerPricesPanel | undefined;
@@ -1987,16 +1993,20 @@ export class App {
     // Localize the static index.html shell — <title>, meta description, and
     // the accessible <h1> are baked in English before the app boots; once i18n
     // is ready we swap them to the user's locale.
-    document.title = t('shell.documentTitle');
+    // CrisisTwin UK carries its own product identity rather than the shell copy.
+    const ukMeta = SITE_VARIANT === 'uk' ? VARIANT_META.uk : undefined;
+    const documentTitle = ukMeta?.title ?? t('shell.documentTitle');
+    const metaDescription = ukMeta?.description ?? t('shell.metaDescription');
+    document.title = documentTitle;
     const setMeta = (sel: string, val: string) => {
       const el = document.querySelector(sel);
       if (el) el.setAttribute('content', val);
     };
-    setMeta('meta[name="description"]', t('shell.metaDescription'));
-    setMeta('meta[property="og:title"]', t('shell.documentTitle'));
-    setMeta('meta[property="og:description"]', t('shell.metaDescription'));
-    setMeta('meta[name="twitter:title"]', t('shell.documentTitle'));
-    setMeta('meta[name="twitter:description"]', t('shell.metaDescription'));
+    setMeta('meta[name="description"]', metaDescription);
+    setMeta('meta[property="og:title"]', documentTitle);
+    setMeta('meta[property="og:description"]', metaDescription);
+    setMeta('meta[name="twitter:title"]', documentTitle);
+    setMeta('meta[name="twitter:description"]', metaDescription);
     // Mirror of OG_LOCALE in pro-test/src/i18n.ts. The two packages have
     // separate Vite roots and bundlers and can't share an import — keep the
     // tables aligned by hand when adding a locale here OR there.
@@ -3355,6 +3365,7 @@ export class App {
         { name: 'pipelineRegistries', fn: () => this.dataLoader.loadPipelineRegistries({ refresh: true }), intervalMs: REFRESH_INTERVALS.pipelineStatus, condition: () => !!this.state.mapLayers.pipelines },
         { name: 'storageFacilities', fn: () => this.dataLoader.loadStorageFacilities({ refresh: true }), intervalMs: REFRESH_INTERVALS.storageFacilityMap, condition: () => !!this.state.mapLayers.storageFacilities },
         { name: 'canadaAlerts', fn: () => this.dataLoader.loadCanadaAlerts(), intervalMs: REFRESH_INTERVALS.canadaAlerts, condition: () => !!this.state.mapLayers.canadaAlerts },
+        { name: 'ukAlerts', fn: () => this.dataLoader.loadUkAlerts(), intervalMs: REFRESH_INTERVALS.ukCrisisMonitor, condition: () => !!this.state.mapLayers.ukAlerts },
         { name: 'fred', fn: () => this.dataLoader.loadFredData(), intervalMs: REFRESH_INTERVALS.fred, condition: () => this.isPanelNearViewport('economic') },
         { name: 'spending', fn: () => this.dataLoader.loadGovernmentSpending(), intervalMs: REFRESH_INTERVALS.spending, condition: () => this.isPanelNearViewport('economic') },
         { name: 'global-tenders', fn: () => this.dataLoader.loadGlobalTenders(), intervalMs: REFRESH_INTERVALS.spending, condition: () => hasPremiumAccess() && this.isPanelNearViewport('global-procurement') },
@@ -3620,6 +3631,13 @@ export class App {
       () => (this.state.panels['climate-news'] as ClimateNewsPanel).fetchData(),
       REFRESH_INTERVALS.climateNews,
       () => this.isPanelNearViewport('climate-news')
+    );
+
+    this.refreshScheduler.scheduleRefresh(
+      'uk-crisis-monitor',
+      () => (this.state.panels['uk-crisis-monitor'] as UkCrisisMonitorPanel).fetchData(),
+      REFRESH_INTERVALS.ukCrisisMonitor,
+      () => this.isPanelNearViewport('uk-crisis-monitor')
     );
 
     this.refreshScheduler.scheduleRefresh(

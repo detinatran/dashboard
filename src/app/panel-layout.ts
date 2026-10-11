@@ -201,6 +201,7 @@ export const VARIANT_SWITCHER_DASHBOARD_URLS = {
   commodity: 'https://commodity.worldmonitor.app/dashboard',
   energy: 'https://energy.worldmonitor.app/dashboard',
   happy: 'https://happy.worldmonitor.app/dashboard',
+  uk: 'https://uk.worldmonitor.app/dashboard',
 } as const;
 
 export function variantSwitcherHref(
@@ -981,6 +982,15 @@ export class PanelLayoutManager implements AppModule {
               <span class="variant-label">${t('header.energy')}</span>
             </a>
             <span class="variant-divider"></span>
+            <a href="${vHref('uk')}"
+               class="variant-option ${SITE_VARIANT === 'uk' ? 'active' : ''}"
+               data-variant="uk"
+               ${vTarget('uk')}
+               title="${t('header.uk')}${SITE_VARIANT === 'uk' ? ` ${t('common.currentVariant')}` : ''}">
+              <span class="variant-icon">🇬🇧</span>
+              <span class="variant-label">${t('header.uk')}</span>
+            </a>
+            <span class="variant-divider"></span>
             <a href="${vHref('happy')}"
                class="variant-option ${SITE_VARIANT === 'happy' ? 'active' : ''}"
                data-variant="happy"
@@ -990,7 +1000,7 @@ export class PanelLayoutManager implements AppModule {
               <span class="variant-label">Good News</span>
             </a>`;
       })()}</div>
-          <span class="logo">MONITOR</span><span class="logo-mobile">World Monitor</span><span class="version">v${__APP_VERSION__}</span>${BETA_MODE ? '<span class="beta-badge">BETA</span>' : ''}
+          <span class="logo">${SITE_VARIANT === 'uk' ? 'CRISISTWIN' : 'MONITOR'}</span><span class="logo-mobile">${SITE_VARIANT === 'uk' ? 'CrisisTwin UK' : 'World Monitor'}</span><span class="version">v${__APP_VERSION__}</span>${BETA_MODE ? '<span class="beta-badge">BETA</span>' : ''}
           <a href="https://x.com/eliehabib" target="_blank" rel="noopener" class="credit-link">
             <svg class="x-logo" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
             <span class="credit-text">@eliehabib</span>
@@ -1011,6 +1021,7 @@ export class PanelLayoutManager implements AppModule {
               <option value="america">${t('components.deckgl.views.americas')}</option>
               <option value="mena">${t('components.deckgl.views.mena')}</option>
               <option value="eu">${t('components.deckgl.views.europe')}</option>
+              <option value="uk">${t('components.deckgl.views.uk')}</option>
               <option value="asia">${t('components.deckgl.views.asia')}</option>
               <option value="latam">${t('components.deckgl.views.latam')}</option>
               <option value="africa">${t('components.deckgl.views.africa')}</option>
@@ -1035,7 +1046,7 @@ export class PanelLayoutManager implements AppModule {
       <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
       <nav class="mobile-menu" id="mobileMenu" aria-label="Menu">
         <div class="mobile-menu-header">
-          <span class="mobile-menu-title">WORLD MONITOR</span>
+          <span class="mobile-menu-title">${SITE_VARIANT === 'uk' ? 'CRISISTWIN UK' : 'WORLD MONITOR'}</span>
           <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
@@ -1054,6 +1065,7 @@ export class PanelLayoutManager implements AppModule {
           { key: 'finance', icon: '📈', label: t('header.finance') },
           { key: 'commodity', icon: '⛏️', label: t('header.commodity') },
           { key: 'energy', icon: '⚡', label: t('header.energy') },
+          { key: 'uk', icon: '🇬🇧', label: t('header.uk') },
           { key: 'happy', icon: '☀️', label: 'Good News' },
         ];
         return variants.map(v =>
@@ -1126,13 +1138,14 @@ export class PanelLayoutManager implements AppModule {
               <span class="map-status-orb" aria-hidden="true"></span>
               <span class="map-title-stack">
                 <span class="map-kicker">Command center</span>
-                <span class="panel-title">${SITE_VARIANT === 'tech' ? t('panels.techMap') : SITE_VARIANT === 'happy' ? 'Good News Map' : t('panels.map')}</span>
+                <span class="panel-title">${SITE_VARIANT === 'tech' ? t('panels.techMap') : SITE_VARIANT === 'happy' ? 'Good News Map' : SITE_VARIANT === 'uk' ? 'UK Situation' : t('panels.map')}</span>
               </span>
             </div>
             <span class="header-clock" id="headerClock" translate="no"></span>
             <div class="map-header-actions">
               <div class="map-action-group map-action-group-intel">
               <button class="map-pin-btn aoi-workspace-toggle" id="aoiWorkspaceToggle" title="Area of interest tools" aria-controls="aoiWorkspace" aria-expanded="false" aria-busy="true" disabled>AOI</button>
+              <button class="map-pin-btn water-level-toggle" id="waterLevelToggle" title="Crisis Resilience Digital Twin — UK coastal water level" aria-controls="coastalPanel" aria-pressed="false" aria-busy="true" disabled>CRDT</button>
               <span class="cctv-target-context" id="cctvTargetContext" aria-live="polite" hidden>
                 <span class="cctv-target-icon" aria-hidden="true">⌖</span>
                 <span class="cctv-target-label" id="cctvTargetLabel">TARGET</span>
@@ -1164,6 +1177,7 @@ export class PanelLayoutManager implements AppModule {
           </div>
           <div class="map-container" id="mapContainer"></div>
           <aside class="aoi-workspace" id="aoiWorkspace" aria-label="Area of interest workspace" aria-hidden="true" hidden></aside>
+          <aside class="coastal-workspace" id="coastalPanel" aria-label="Coastal water level" aria-hidden="true" hidden></aside>
           ${SITE_VARIANT === 'happy' ? '<button class="tv-exit-btn" id="tvExitBtn">Exit TV Mode</button>' : ''}
           <div class="map-resize-handle" id="mapResizeHandle"></div>
           <div class="map-bottom-grid" id="mapBottomGrid"></div>
@@ -1190,9 +1204,9 @@ export class PanelLayoutManager implements AppModule {
       </nav>
       <footer class="site-footer">
         <div class="site-footer-brand">
-          <img src="/favico/android-chrome-96x96.png" alt="" width="28" height="28" loading="lazy" decoding="async" class="site-footer-icon" />
+          <img src="/favico/${SITE_VARIANT === 'uk' ? 'uk/' : ''}android-chrome-96x96.png" alt="" width="28" height="28" loading="lazy" decoding="async" class="site-footer-icon" />
           <div class="site-footer-brand-text">
-            <span class="site-footer-name">WORLD MONITOR</span>
+            <span class="site-footer-name">${SITE_VARIANT === 'uk' ? 'CRISISTWIN UK' : 'WORLD MONITOR'}</span>
             <span class="site-footer-sub">v${__APP_VERSION__} &middot; <a href="https://x.com/eliehabib" target="_blank" rel="noopener" class="site-footer-credit">@eliehabib</a></span>
           </div>
         </div>
@@ -2077,6 +2091,141 @@ export class PanelLayoutManager implements AppModule {
     return this.ctx.panels[key]?.getElement() ?? null;
   }
 
+  /**
+   * Water Level Prediction mode.
+   *
+   * Enabling it turns on the `waterLevel` layer, flies to the UK and loads the
+   * configured prediction sites from the backend. Stations are NEVER hardcoded
+   * here — adding London later is a backend/database change, not a frontend one.
+   */
+  private bindWaterLevelToggle(): void {
+    const toggle = document.getElementById('waterLevelToggle') as HTMLButtonElement | null;
+    const mount = document.getElementById('coastalPanel');
+    if (!toggle || !mount) return;
+
+    toggle.disabled = false;
+    toggle.removeAttribute('aria-busy');
+
+    let active = false;
+    /** Layer set before CRDT took over, restored when the mode is left. */
+    let savedLayers: typeof this.ctx.mapLayers | null = null;
+    let panel: import('@/components/CoastalStationPanel').CoastalStationPanel | null = null;
+
+    const closePanel = (): void => {
+      panel?.destroy();
+      panel = null;
+      mount.setAttribute('aria-hidden', 'true');
+      mount.hidden = true;
+    };
+
+    const openStation = async (stationId: string): Promise<void> => {
+      const { CoastalStationPanel } = await import('@/components/CoastalStationPanel');
+      if (this.ctx.isDestroyed) return;
+      panel?.destroy();
+      mount.replaceChildren();
+      mount.hidden = false;
+      mount.setAttribute('aria-hidden', 'false');
+      panel = new CoastalStationPanel(mount);
+      await panel.show(stationId);
+    };
+
+    // Markers dispatch rather than calling in, so the map never imports the panel.
+    window.addEventListener('wm:coastal-station-selected', (event) => {
+      const detail = (event as CustomEvent<{ stationId?: string }>).detail;
+      if (active && detail?.stationId) void openStation(detail.stationId);
+    });
+
+    toggle.addEventListener('click', () => {
+      active = !active;
+      toggle.setAttribute('aria-pressed', String(active));
+      toggle.classList.toggle('active', active);
+
+      // CRDT is a focused mode: while it is on, the rest of the dashboard
+      // chrome is hidden so the UK map and the water-level panel are the only
+      // things on screen. One class on <main> drives it, so turning the mode
+      // off restores the previous layout exactly — no per-element bookkeeping.
+      document.getElementById('main')?.classList.toggle('crdt-focus', active);
+      // Three steps, in this order — the webcam toggle's fallback branch does the
+      // same, and omitting the middle one is silent: applyMapLayerChange updates
+      // ctx.mapLayers and localStorage, but only setLayers() reaches the live
+      // renderer, and buildMapUrl serialises map.getState().layers. Without it
+      // the layer reads as "on" everywhere except where it actually renders.
+      if (active) {
+        // Entering CRDT retires the DATA layers too, not just the chrome. The
+        // first cut only hid the panels and left 12 layers drawing — including
+        // the weather overlay whose diagonal band swept across the UK. Remember
+        // what was on so leaving the mode restores the operator's own setup.
+        savedLayers = { ...this.ctx.mapLayers };
+        // Build the cleared set by walking the existing keys rather than
+        // Object.fromEntries + a cast: fromEntries widens to
+        // `{ [k: string]: boolean }`, which TypeScript rightly refuses to treat
+        // as MapLayers, and casting past that would hide a real key mismatch.
+        const cleared = { ...this.ctx.mapLayers };
+        for (const key of Object.keys(cleared) as Array<keyof typeof cleared>) {
+          cleared[key] = false;
+        }
+        cleared.waterLevel = true;
+        this.ctx.mapLayers = cleared;
+      } else {
+        this.ctx.mapLayers = savedLayers
+          ? { ...savedLayers, waterLevel: false }
+          : { ...this.ctx.mapLayers, waterLevel: false };
+        savedLayers = null;
+      }
+      this.ctx.map?.setLayers(this.ctx.mapLayers);
+      this.callbacks.applyMapLayerChange?.('waterLevel', active, 'programmatic');
+
+      if (!active) {
+        this.ctx.map?.setCoastalStations?.([]);
+        closePanel();
+        return;
+      }
+
+      // Frame the British Isles; the sites are all UK coastal today.
+      //
+      // Twice, in fact: adding `crdt-focus` widens the map from ~946px to the
+      // full 1578px, and MapLibre keeps its left edge rather than its centre
+      // through that resize. Measured on the live app, a single setView left
+      // the camera at lon +1.48 — out in the North Sea — while the URL still
+      // read view=uk. Re-issuing it after the layout settles puts Liverpool
+      // back in the middle, which is where the marker and every click test
+      // expect it.
+      this.ctx.map?.setView?.('uk');
+      window.setTimeout(() => {
+        if (!active || this.ctx.isDestroyed) return;
+        this.ctx.map?.resize?.();
+        this.ctx.map?.setView?.('uk');
+      }, 450);
+
+      void (async () => {
+        const { fetchCoastalStations } = await import('@/services/coastal');
+        const res = await fetchCoastalStations();
+        if (this.ctx.isDestroyed || !active) return;
+        this.ctx.map?.setCoastalStations?.(res.stations.map((st) => ({
+          id: st.id,
+          name: st.name,
+          displayName: st.displayName,
+          lat: st.lat,
+          lon: st.lon,
+          riskLevel: st.riskLevel,
+          dataStatus: st.dataStatus,
+          waterLevel: st.currentWaterLevel,
+          hasCurrent: st.hasCurrent,
+          trend: st.trend,
+        })));
+      })();
+    });
+  }
+
+  /** CrisisTwin UK: the Live Crisis Monitor dispatches rather than importing the map. */
+  private bindUkAlertFocus(): void {
+    window.addEventListener('wm:uk-focus', (event) => {
+      const { lat, lon } = (event as CustomEvent<{ lat?: number; lon?: number }>).detail ?? {};
+      if (this.ctx.isDestroyed || !Number.isFinite(lat) || !Number.isFinite(lon)) return;
+      this.ctx.map?.setCenter(lat as number, lon as number, 9);
+    });
+  }
+
   private getAoiEntityGroups(): AoiEntityGroup[] {
     const cache = this.ctx.intelligenceCache;
     const groups: AoiEntityGroup[] = [];
@@ -2438,6 +2587,7 @@ export class PanelLayoutManager implements AppModule {
     });
 
     this.lazyDefaultPanel('cascade', () => import('@/components/CascadePanel'), 'CascadePanel');
+    this.lazyDefaultPanel('uk-crisis-monitor', () => import('@/components/UkCrisisMonitorPanel'), 'UkCrisisMonitorPanel');
     this.lazyDefaultPanel('satellite-fires', () => import('@/components/SatelliteFiresPanel'), 'SatelliteFiresPanel');
 
     this.lazyDefaultPanel('defense-patents', () => import('@/components/DefensePatentsPanel'), 'DefensePatentsPanel');
@@ -3027,13 +3177,17 @@ export class PanelLayoutManager implements AppModule {
     this.ctx.map = new MapContainer(mapContainer, {
       zoom: this.ctx.isMobile ? 2.5 : 1.0,
       pan: { x: 0, y: 0 },
-      view: this.ctx.isMobile ? this.ctx.resolvedLocation : 'global',
+      // CrisisTwin UK opens framed on the British Isles rather than the globe.
+      view: SITE_VARIANT === 'uk' ? 'uk' : this.ctx.isMobile ? this.ctx.resolvedLocation : 'global',
       layers: this.ctx.mapLayers,
       timeRange: '7d',
     }, preferGlobe, {
       isFreeTierFallbackActive: this.callbacks.isFreeTierFallbackActive,
     });
     this.bindWebcamMapToggle(mapContainer);
+
+    this.bindWaterLevelToggle();
+    this.bindUkAlertFocus();
 
     const { AoiWorkspace } = await import('@/components/AoiWorkspace');
     if (this.ctx.isDestroyed) return;

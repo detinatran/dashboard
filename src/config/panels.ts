@@ -213,6 +213,9 @@ const FULL_MAP_LAYERS: MapLayers = {
   commodityPorts: false,
   webcams: false,
   diseaseOutbreaks: false,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 const FULL_MOBILE_MAP_LAYERS: MapLayers = {
@@ -280,6 +283,9 @@ const FULL_MOBILE_MAP_LAYERS: MapLayers = {
   commodityPorts: false,
   webcams: false,
   diseaseOutbreaks: false,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 // ============================================
@@ -391,6 +397,9 @@ const TECH_MAP_LAYERS: MapLayers = {
   commodityPorts: false,
   webcams: false,
   diseaseOutbreaks: false,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 const TECH_MOBILE_MAP_LAYERS: MapLayers = {
@@ -455,6 +464,9 @@ const TECH_MOBILE_MAP_LAYERS: MapLayers = {
   commodityPorts: false,
   webcams: false,
   diseaseOutbreaks: false,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 // ============================================
@@ -598,6 +610,9 @@ const FINANCE_MAP_LAYERS: MapLayers = {
   commodityPorts: false,
   webcams: false,
   diseaseOutbreaks: false,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 const FINANCE_MOBILE_MAP_LAYERS: MapLayers = {
@@ -662,6 +677,9 @@ const FINANCE_MOBILE_MAP_LAYERS: MapLayers = {
   commodityPorts: false,
   webcams: false,
   diseaseOutbreaks: false,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 // ============================================
@@ -742,6 +760,9 @@ const HAPPY_MAP_LAYERS: MapLayers = {
   commodityPorts: false,
   webcams: false,
   diseaseOutbreaks: false,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 const HAPPY_MOBILE_MAP_LAYERS: MapLayers = {
@@ -806,6 +827,9 @@ const HAPPY_MOBILE_MAP_LAYERS: MapLayers = {
   commodityPorts: false,
   webcams: false,
   diseaseOutbreaks: false,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 // ============================================
@@ -916,6 +940,9 @@ const COMMODITY_MAP_LAYERS: MapLayers = {
   commodityPorts: true,
   webcams: false,
   diseaseOutbreaks: false,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 const COMMODITY_MOBILE_MAP_LAYERS: MapLayers = {
@@ -980,6 +1007,9 @@ const COMMODITY_MOBILE_MAP_LAYERS: MapLayers = {
   commodityPorts: true,
   webcams: false,
   diseaseOutbreaks: false,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 // ============================================
@@ -1087,6 +1117,9 @@ const ENERGY_MAP_LAYERS: MapLayers = {
   storageFacilities: true, // UGS / SPR / LNG / crude hubs (Day 9-10 registry)
   fuelShortages: true,     // Global fuel shortage alerts (Day 11-12 registry)
   liveTankers: true,       // AIS ship type 80-89 inside chokepoint bboxes (parity-push PR 3)
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 const ENERGY_MOBILE_MAP_LAYERS: MapLayers = {
@@ -1147,13 +1180,157 @@ const ENERGY_MOBILE_MAP_LAYERS: MapLayers = {
   storageFacilities: true,
   fuelShortages: true,
   liveTankers: true,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
+};
+
+// ============================================
+// UK variant — CrisisTwin UK
+// Live crisis monitoring, digital twin and cascading-impact simulation for the
+// United Kingdom. UK live sources are fetched in the browser (src/services/uk)
+// so this variant does not depend on Redis seeders.
+// ============================================
+const UK_PANELS: Record<string, PanelConfig> = {
+  map: { name: 'CrisisTwin UK Map', enabled: true, priority: 1 },
+  'uk-crisis-monitor': { name: 'Live Crisis Monitor', enabled: true, priority: 1 },
+  'uk-resilience-news': { name: 'UK Crisis & Resilience News', enabled: true, priority: 1 },
+  'uk-headlines': { name: 'UK Headlines', enabled: true, priority: 1 },
+  'live-news': { name: 'UK Live News', enabled: true, priority: 2 },
+  monitors: { name: 'My Monitors', enabled: true, priority: 3 },
+};
+
+const UK_MAP_LAYERS: MapLayers = {
+  gpsJamming: false,
+  satellites: false,
+  conflicts: false,
+  bases: false,
+  cables: true,
+  pipelines: false,
+  hotspots: false,
+  ais: false,
+  nuclear: true,
+  irradiators: false,
+  sanctions: false,
+  weather: false,
+  canadaRoads: false,
+  canadaAlerts: false,
+  economic: false,
+  waterways: false,
+  outages: false,
+  cyberThreats: false,
+  datacenters: true,
+  protests: false,
+  flights: false,
+  military: false,
+  natural: false,
+  spaceports: false,
+  minerals: false,
+  fires: false,
+  ucdpEvents: false,
+  displacement: false,
+  climate: false,
+  startupHubs: false,
+  cloudRegions: false,
+  accelerators: false,
+  techHQs: false,
+  techEvents: false,
+  stockExchanges: false,
+  financialCenters: false,
+  centralBanks: false,
+  commodityHubs: false,
+  gulfInvestments: false,
+  positiveEvents: false,
+  kindness: false,
+  happiness: false,
+  speciesRecovery: false,
+  renewableInstallations: false,
+  tradeRoutes: false,
+  iranAttacks: false,
+  ciiChoropleth: false,
+  resilienceScore: false,
+  dayNight: false,
+  miningSites: false,
+  processingPlants: false,
+  commodityPorts: false,
+  webcams: false,
+  diseaseOutbreaks: false,
+  storageFacilities: false,
+  fuelShortages: false,
+  liveTankers: false,
+  waterLevel: true,
+  ukAlerts: true,
+  ukTwin: true,
+};
+
+const UK_MOBILE_MAP_LAYERS: MapLayers = {
+  gpsJamming: false,
+  satellites: false,
+  conflicts: false,
+  bases: false,
+  cables: false,
+  pipelines: false,
+  hotspots: false,
+  ais: false,
+  nuclear: false,
+  irradiators: false,
+  sanctions: false,
+  weather: false,
+  canadaRoads: false,
+  canadaAlerts: false,
+  economic: false,
+  waterways: false,
+  outages: false,
+  cyberThreats: false,
+  datacenters: false,
+  protests: false,
+  flights: false,
+  military: false,
+  natural: false,
+  spaceports: false,
+  minerals: false,
+  fires: false,
+  ucdpEvents: false,
+  displacement: false,
+  climate: false,
+  startupHubs: false,
+  cloudRegions: false,
+  accelerators: false,
+  techHQs: false,
+  techEvents: false,
+  stockExchanges: false,
+  financialCenters: false,
+  centralBanks: false,
+  commodityHubs: false,
+  gulfInvestments: false,
+  positiveEvents: false,
+  kindness: false,
+  happiness: false,
+  speciesRecovery: false,
+  renewableInstallations: false,
+  tradeRoutes: false,
+  iranAttacks: false,
+  ciiChoropleth: false,
+  resilienceScore: false,
+  dayNight: false,
+  miningSites: false,
+  processingPlants: false,
+  commodityPorts: false,
+  webcams: false,
+  diseaseOutbreaks: false,
+  storageFacilities: false,
+  fuelShortages: false,
+  liveTankers: false,
+  waterLevel: true,
+  ukAlerts: true,
+  ukTwin: true,
 };
 
 // ============================================
 // UNIFIED PANEL REGISTRY
 // ============================================
 
-type PanelVariant = 'full' | 'tech' | 'finance' | 'commodity' | 'energy' | 'happy';
+type PanelVariant = 'full' | 'tech' | 'finance' | 'commodity' | 'energy' | 'happy' | 'uk';
 
 const VARIANT_PANEL_CONFIGS: Record<PanelVariant, Record<string, PanelConfig>> = {
   full: FULL_PANELS,
@@ -1162,6 +1339,7 @@ const VARIANT_PANEL_CONFIGS: Record<PanelVariant, Record<string, PanelConfig>> =
   commodity: COMMODITY_PANELS,
   energy: ENERGY_PANELS,
   happy: HAPPY_PANELS,
+  uk: UK_PANELS,
 };
 
 function getVariantPanelConfigs(variant: string): Record<string, PanelConfig> | undefined {
@@ -1175,6 +1353,7 @@ export const ALL_PANELS: Record<string, PanelConfig> = {
   ...HAPPY_PANELS,
   ...COMMODITY_PANELS,
   ...ENERGY_PANELS,
+  ...UK_PANELS,
   ...TECH_PANELS,
   ...FINANCE_PANELS,
   ...FULL_PANELS,
@@ -1188,6 +1367,7 @@ export const VARIANT_DEFAULTS: Record<string, string[]> = {
   commodity: Object.keys(VARIANT_PANEL_CONFIGS.commodity),
   energy:    Object.keys(VARIANT_PANEL_CONFIGS.energy),
   happy:     Object.keys(VARIANT_PANEL_CONFIGS.happy),
+  uk:        Object.keys(VARIANT_PANEL_CONFIGS.uk),
 };
 
 /**
@@ -1217,6 +1397,10 @@ export const VARIANT_PANEL_OVERRIDES: Partial<Record<string, Partial<Record<stri
   },
   happy: {
     map:         { name: 'World Map' },
+  },
+  uk: {
+    map:         { name: 'CrisisTwin UK Map' },
+    'live-news': { name: 'UK Live News' },
   },
 };
 
@@ -1483,7 +1667,9 @@ export const DEFAULT_MAP_LAYERS = SITE_VARIANT === 'happy'
         ? COMMODITY_MAP_LAYERS
         : SITE_VARIANT === 'energy'
           ? ENERGY_MAP_LAYERS
-          : FULL_MAP_LAYERS;
+          : SITE_VARIANT === 'uk'
+            ? UK_MAP_LAYERS
+            : FULL_MAP_LAYERS;
 
 export const MOBILE_DEFAULT_MAP_LAYERS = SITE_VARIANT === 'happy'
   ? HAPPY_MOBILE_MAP_LAYERS
@@ -1495,7 +1681,9 @@ export const MOBILE_DEFAULT_MAP_LAYERS = SITE_VARIANT === 'happy'
         ? COMMODITY_MOBILE_MAP_LAYERS
         : SITE_VARIANT === 'energy'
           ? ENERGY_MOBILE_MAP_LAYERS
-          : FULL_MOBILE_MAP_LAYERS;
+          : SITE_VARIANT === 'uk'
+            ? UK_MOBILE_MAP_LAYERS
+            : FULL_MOBILE_MAP_LAYERS;
 
 /** Maps map-layer toggle keys to their data-freshness source IDs (single source of truth). */
 export const LAYER_TO_SOURCE: Partial<Record<keyof MapLayers, DataSourceId[]>> = {
@@ -1520,6 +1708,13 @@ export const LAYER_TO_SOURCE: Partial<Record<keyof MapLayers, DataSourceId[]>> =
 // Maps category keys to panel keys. Only categories with at least one
 // matching panel in the user's active panel settings are shown.
 export const PANEL_CATEGORY_MAP: Record<string, { labelKey: string; panelKeys: string[]; variants?: string[] }> = {
+  // CrisisTwin UK
+  crisisTwin: {
+    labelKey: 'header.panelCatCrisisTwin',
+    panelKeys: ['uk-crisis-monitor', 'uk-resilience-news', 'uk-headlines'],
+    variants: ['uk'],
+  },
+
   // All variants — essential panels
   core: {
     labelKey: 'header.panelCatCore',

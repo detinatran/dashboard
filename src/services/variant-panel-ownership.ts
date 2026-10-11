@@ -125,8 +125,14 @@ export function applyVariantPanelLayoutTransition(
       userSetPanelEnabled(config, false);
     }
   }
+  // Re-seed the new variant's own panels from its defaults, not just the
+  // missing ones. Every variant persists the whole ALL_PANELS map, with the
+  // panels it does not own stored as disabled — so keeping a stored entry here
+  // left a variant's signature panels switched off after arriving from another
+  // variant (full → energy kept only the panels the two share). Nothing the
+  // user chose is lost: leaving the previous variant already disabled them.
   for (const key of options.variantPanelKeys) {
-    if (!(key in next)) next[key] = { ...options.getDefaultPanel(key) };
+    next[key] = { ...options.getDefaultPanel(key) };
   }
 
   try {

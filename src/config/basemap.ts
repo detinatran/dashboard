@@ -81,6 +81,26 @@ const DEFAULT_THEME: Record<MapProvider, string> = {
   carto: 'dark-matter',
 };
 
+// The light counterpart of each provider's default. Without this the basemap
+// stayed dark under the light site theme, so the map read as a black hole in
+// an otherwise white dashboard.
+const DEFAULT_LIGHT_THEME: Record<MapProvider, string> = {
+  pmtiles: 'light',
+  auto: 'light',
+  openfreemap: 'positron',
+  carto: 'positron',
+};
+
+/**
+ * Read the site theme off the document root. Deliberately DOM-only: this
+ * module is pure config (see the header) and must not import theme-manager,
+ * which would pull the whole theme runtime into the preferences bundle.
+ */
+function siteThemeIsLight(): boolean {
+  if (typeof document === 'undefined') return false;
+  return document.documentElement.dataset.theme === 'light';
+}
+
 export function getMapProvider(): MapProvider {
   const stored = readStorageValue(STORAGE_KEY) as MapProvider | null;
   if (stored) {
@@ -99,8 +119,10 @@ export function setMapProvider(provider: MapProvider): void {
 export function getMapTheme(provider: MapProvider): string {
   const stored = readStorageValue(THEME_STORAGE_PREFIX + provider);
   const options = MAP_THEME_OPTIONS[provider];
+  // An explicit pick always wins — someone who chose a dark basemap keeps it
+  // in light mode. Only the unset default follows the site theme.
   if (stored && options.some(o => o.value === stored)) return stored;
-  return DEFAULT_THEME[provider];
+  return siteThemeIsLight() ? DEFAULT_LIGHT_THEME[provider] : DEFAULT_THEME[provider];
 }
 
 export function setMapTheme(provider: MapProvider, theme: string): void {

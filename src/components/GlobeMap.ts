@@ -2966,6 +2966,7 @@ export class GlobeMap {
     america:  { lat: 20,  lng: -90,  altitude: 1.5 },
     mena:     { lat: 25,  lng:  40,  altitude: 1.2 },
     eu:       { lat: 50,  lng:  10,  altitude: 1.2 },
+    uk:       { lat: 54.2, lng: -2.5, altitude: 0.75 },
     asia:     { lat: 35,  lng: 105,  altitude: 1.5 },
     latam:    { lat: -15, lng: -60,  altitude: 1.5 },
     africa:   { lat:  5,  lng:  20,  altitude: 1.5 },

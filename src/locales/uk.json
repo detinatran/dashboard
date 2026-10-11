@@ -385,7 +385,9 @@
     "panelCatMining": "Mining & Supply Chain",
     "panelCatCommodityEcon": "Economy & Trade",
     "panelCatHappyNews": "Good News",
-    "panelCatHappyPlanet": "Planet & Giving"
+    "panelCatHappyPlanet": "Planet & Giving",
+    "uk": "Велика Британія",
+    "panelCatCrisisTwin": "CrisisTwin Велика Британія"
   },
   "panels": {
     "liveNews": "Live News",
@@ -495,7 +497,8 @@
     "fearGreed": "Fear & Greed",
     "marketBreadth": "Market Breadth",
     "climateNews": "Climate News",
-    "fx": "Курси валют"
+    "fx": "Курси валют",
+    "ukCrisisMonitor": "Моніторинг криз у реальному часі"
   },
   "commands": {
     "prefixes": {
@@ -1318,7 +1321,8 @@
         "asia": "Asia",
         "latam": "Latin America",
         "africa": "Africa",
-        "oceania": "Oceania"
+        "oceania": "Oceania",
+        "uk": "Велика Британія"
       },
       "layers": {
         "startupHubs": "Startup Hubs",
@@ -1369,7 +1373,10 @@
         "speciesRecovery": "Species Recovery",
         "renewableInstallations": "Clean Energy",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "Сповіщення Великої Британії в реальному часі",
+        "ukTwin": "Цифровий двійник Великої Британії"
       },
       "tooltip": {
         "earthquake": "Earthquake",
@@ -2772,6 +2779,68 @@
       "rubBase": "Банк Росії — рублів за 1 одиницю",
       "rubPerUnit": "Рублів за одиницю",
       "sourceCbr": "Джерело: Банк Росії"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "Поточні загрози у Великій Британії в одній стрічці: попередження про повені від Environment Agency, погодні попередження Met Office, попередження енергосистеми NESO, збої на лініях TfL і землетруси за даними BGS, упорядковані за серйозністю. Дані завантажуються безпосередньо з відкритих джерел кожні кілька хвилин.",
+      "loadError": "Не вдалося під'єднатися до джерел Великої Британії.",
+      "allClear": "Зараз у Великій Британії немає активних сповіщень.",
+      "degraded": "Недоступно: {{sources}}",
+      "updated": "Оновлено {{time}}",
+      "grid": "Енергосистема",
+      "carbon": "Вуглецева інтенсивність",
+      "renewables": "ВДЕ",
+      "demand": "Споживання",
+      "floods": "Попередження про повені",
+      "weather": "Погодні попередження",
+      "gridWarnings": "Попередження енергосистеми",
+      "transport": "Збої TfL",
+      "quakes": "Землетруси (7 дн.)",
+      "filterAll": "Усі",
+      "showOnMap": "Показати на мапі"
     }
   },
   "popups": {

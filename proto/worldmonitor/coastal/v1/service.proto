@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package worldmonitor.coastal.v1;
+
+import "sebuf/http/annotations.proto";
+import "worldmonitor/coastal/v1/list_stations.proto";
+import "worldmonitor/coastal/v1/get_forecast.proto";
+import "worldmonitor/coastal/v1/get_history.proto";
+
+// Coastal water-level prediction for configured UK monitoring sites.
+//
+// Every RPC reads a cached record published by the coastal seed cron. No
+// external provider is called on the request path, and no model runs here.
+service CoastalService {
+  option (sebuf.http.service_config) = {base_path: "/api/coastal/v1"};
+
+  // ListStations returns only ACTIVE prediction sites, with the capabilities
+  // each one actually has. A station whose model failed to load reports
+  // waterLevelPrediction=false rather than being hidden, so the UI can explain
+  // the gap instead of silently omitting a site.
+  rpc ListStations(ListStationsRequest) returns (ListStationsResponse) {
+    option (sebuf.http.config) = {path: "/list-stations", method: HTTP_METHOD_GET};
+  }
+
+  // GetForecast returns current conditions plus the +1h/+3h/+6h outlook.
+  // water_level_forecast.status is "ready" only when a compatible model
+  // produced the numbers; otherwise it carries model_not_configured,
+  // model_incompatible, insufficient_history or inference_failed and the
+  // horizon list is empty. Callers must branch on status, never on presence.
+  rpc GetForecast(GetForecastRequest) returns (GetForecastResponse) {
+    option (sebuf.http.config) = {path: "/get-forecast", method: HTTP_METHOD_GET};
+  }
+
+  // GetHistory returns the stored observation window for charting.
+  rpc GetHistory(GetHistoryRequest) returns (GetHistoryResponse) {
+    option (sebuf.http.config) = {path: "/get-history", method: HTTP_METHOD_GET};
+  }
+}

@@ -312,7 +312,9 @@
     "panelCatCommodityEcon": "Ekonomi & Ticaret",
     "panelCatHappyNews": "İyi Haberler",
     "panelCatHappyPlanet": "Gezegen & Hayırseverlik",
-    "embed": "Göm"
+    "embed": "Göm",
+    "uk": "Birleşik Krallık",
+    "panelCatCrisisTwin": "CrisisTwin Birleşik Krallık"
   },
   "panels": {
     "liveNews": "Canli Haberler",
@@ -422,7 +424,8 @@
     "fearGreed": "Korku & Açgözlülük",
     "marketBreadth": "Pazar Genişliği",
     "climateNews": "İklim Haberleri",
-    "fx": "Döviz Kurları"
+    "fx": "Döviz Kurları",
+    "ukCrisisMonitor": "Canlı Kriz İzleyici"
   },
   "commands": {
     "prefixes": {
@@ -1169,7 +1172,8 @@
         "asia": "Asya",
         "latam": "Latin Amerika",
         "africa": "Afrika",
-        "oceania": "Okyanusya"
+        "oceania": "Okyanusya",
+        "uk": "Birleşik Krallık"
       },
       "layers": {
         "startupHubs": "Girisim Merkezleri",
@@ -1220,7 +1224,10 @@
         "radiationSpike": "Radyasyon artışı",
         "radiationElevated": "Yükseltilmiş radyasyon",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "Birleşik Krallık Canlı Uyarıları",
+        "ukTwin": "Birleşik Krallık Dijital İkizi"
       },
       "tooltip": {
         "earthquake": "Deprem",
@@ -2665,6 +2672,68 @@
       "rubBase": "Rusya Merkez Bankası — 1 birim için ruble",
       "rubPerUnit": "Birim başına ruble",
       "sourceCbr": "Kaynak: Rusya Merkez Bankası"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "Birleşik Krallık'taki güncel tehlikeler tek akışta: Environment Agency sel uyarıları, Met Office hava durumu uyarıları, NESO şebeke uyarıları, TfL hat aksaklıkları ve BGS depremleri, ciddiyete göre sıralanır. Birkaç dakikada bir doğrudan kamuya açık kaynaklardan alınır.",
+      "loadError": "Birleşik Krallık canlı kaynaklarına ulaşılamadı.",
+      "allClear": "Şu anda Birleşik Krallık'ta etkin uyarı yok.",
+      "degraded": "Kullanılamıyor: {{sources}}",
+      "updated": "Güncellendi {{time}}",
+      "grid": "Şebeke",
+      "carbon": "Karbon yoğunluğu",
+      "renewables": "Yenilenebilir",
+      "demand": "Talep",
+      "floods": "Sel uyarıları",
+      "weather": "Hava durumu uyarıları",
+      "gridWarnings": "Şebeke uyarıları",
+      "transport": "TfL aksaklıkları",
+      "quakes": "Depremler (7 g)",
+      "filterAll": "Tümü",
+      "showOnMap": "Haritada göster"
     }
   },
   "popups": {

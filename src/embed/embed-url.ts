@@ -148,6 +148,9 @@ export function createBlankMapLayers(): MapLayers {
     storageFacilities: false,
     fuelShortages: false,
     liveTankers: false,
+    waterLevel: false,
+    ukAlerts: false,
+    ukTwin: false,
   };
 }
 

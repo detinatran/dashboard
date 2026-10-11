@@ -133,7 +133,7 @@ export interface AppContext {
    * settled, a later in-flight pass still leaves the previous clusters on screen.
    */
   clustersSettled: boolean;
-  resolvedLocation: 'global' | 'america' | 'mena' | 'eu' | 'asia' | 'latam' | 'africa' | 'oceania';
+  resolvedLocation: 'global' | 'america' | 'mena' | 'eu' | 'uk' | 'asia' | 'latam' | 'africa' | 'oceania';
   activeChokepoint: string | null;
 
   initialUrlState: import('@/utils').ParsedMapUrlState | null;

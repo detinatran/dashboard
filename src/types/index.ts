@@ -684,6 +684,10 @@ export interface MapLayers {
   military: boolean;
   natural: boolean;
   spaceports: boolean;
+  /** UK coastal water-level prediction sites. Backed by the coastal RPC domain. */
+  waterLevel: boolean;
+  ukAlerts: boolean;
+  ukTwin: boolean;
   minerals: boolean;
   fires: boolean;
   // Data source layers

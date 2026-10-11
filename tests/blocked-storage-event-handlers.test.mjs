@@ -18,10 +18,14 @@ const panelLayoutSrc = readFileSync(
 
 describe('blocked-storage event handlers', () => {
   it('reloads local variant navigation after a guarded storage write', () => {
-    assert.match(
-      eventHandlersSrc,
-      /if \(this\.ctx\.isDesktopApp \|\| options\.isLocalDev\) \{\s*if \(stageVariantSelection\(SITE_VARIANT, variant, writeStorageValue\)\) \{\s*window\.location\.reload\(\);/,
-    );
+    // Navigation (replace with the map-state query stripped, or a plain reload)
+    // must live inside the guarded branch, never before or outside it.
+    const guarded = eventHandlersSrc.match(
+      /if \(this\.ctx\.isDesktopApp \|\| options\.isLocalDev\) \{\s*if \(stageVariantSelection\(SITE_VARIANT, variant, writeStorageValue\)\) \{([\s\S]*?)\n {6}\}\n/,
+    )?.[1];
+    assert.ok(guarded, 'local variant navigation must be gated on stageVariantSelection');
+    assert.match(guarded, /window\.location\.replace\(url\.href\)/);
+    assert.match(guarded, /window\.location\.reload\(\)/);
   });
 
   it('reloads layout reset after guarded storage removals', () => {

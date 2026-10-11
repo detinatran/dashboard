@@ -381,7 +381,9 @@
     "panelCatCommodityEcon": "अर्थव्यवस्था और व्यापार",
     "panelCatHappyNews": "अच्छी खबरें",
     "panelCatHappyPlanet": "प्लैनेट और दान",
-    "embed": "एम्बेड"
+    "embed": "एम्बेड",
+    "uk": "यूके",
+    "panelCatCrisisTwin": "CrisisTwin यूके"
   },
   "panels": {
     "liveNews": "ताजा खबरें",
@@ -491,7 +493,8 @@
     "fearGreed": "डर और लालच",
     "marketBreadth": "बाजार की पहुंच",
     "climateNews": "जलवायु समाचार",
-    "fx": "FX दरें"
+    "fx": "FX दरें",
+    "ukCrisisMonitor": "लाइव संकट मॉनिटर"
   },
   "commands": {
     "prefixes": {
@@ -1310,7 +1313,8 @@
         "asia": "एशिया",
         "latam": "लैटिन अमेरिका",
         "africa": "अफ्रीका",
-        "oceania": "ओशिनिया"
+        "oceania": "ओशिनिया",
+        "uk": "यूनाइटेड किंगडम"
       },
       "layers": {
         "startupHubs": "स्टार्टअप हब",
@@ -1361,7 +1365,10 @@
         "speciesRecovery": "प्रजाति पुनर्प्राप्ति",
         "renewableInstallations": "स्वच्छ ऊर्जा",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "यूके लाइव अलर्ट",
+        "ukTwin": "यूके डिजिटल ट्विन"
       },
       "tooltip": {
         "earthquake": "भूकंप",
@@ -2734,6 +2741,68 @@
       "rubBase": "बैंक ऑफ रूस — प्रति 1 इकाई रूबल",
       "rubPerUnit": "प्रति इकाई रूबल",
       "sourceCbr": "स्रोत: बैंक ऑफ रूस"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "यूके के मौजूदा खतरे एक ही फ़ीड में: Environment Agency की बाढ़ चेतावनियाँ, Met Office की मौसम चेतावनियाँ, NESO की ग्रिड चेतावनियाँ, TfL लाइनों में व्यवधान और BGS के भूकंप, गंभीरता के क्रम में। हर कुछ मिनट में सीधे सार्वजनिक स्रोतों से प्राप्त।",
+      "loadError": "यूके के लाइव स्रोतों तक नहीं पहुँच सके।",
+      "allClear": "इस समय यूके में कोई सक्रिय अलर्ट नहीं है।",
+      "degraded": "उपलब्ध नहीं: {{sources}}",
+      "updated": "अपडेट किया गया {{time}}",
+      "grid": "ग्रिड",
+      "carbon": "कार्बन तीव्रता",
+      "renewables": "नवीकरणीय",
+      "demand": "मांग",
+      "floods": "बाढ़ चेतावनियाँ",
+      "weather": "मौसम चेतावनियाँ",
+      "gridWarnings": "ग्रिड चेतावनियाँ",
+      "transport": "TfL व्यवधान",
+      "quakes": "भूकंप (7 दिन)",
+      "filterAll": "सभी",
+      "showOnMap": "मानचित्र पर दिखाएँ"
     }
   },
   "popups": {

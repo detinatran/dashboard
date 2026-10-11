@@ -572,6 +572,10 @@ const SEED_META = {
   // churn while still detecting a stopped worker well before leases age out.
   companyMonitoringWorker: { key: 'seed-meta:company-monitoring:worker', maxStaleMin: 5, workerControl: true },
   earthquakes:      { key: 'seed-meta:seismology:earthquakes',  maxStaleMin: 30 },
+  // Coastal water-level ingestion + scheduled inference. Cron is */15;
+  // 60min = 4x cadence, so one or two missed ticks do not alarm while a
+  // genuinely stopped seeder is caught well before the 6h data TTL.
+  coastalPredictions: { key: 'seed-meta:coastal:predictions', maxStaleMin: 60 },
   wildfires:        { key: 'seed-meta:wildfire:fires',          maxStaleMin: 360 }, // FIRMS NRT resets at midnight UTC; new-day data takes 3-6h to accumulate
   wildfiresBootstrap: { key: 'seed-meta:wildfire:fires-bootstrap', maxStaleMin: 360 }, // Compact CDN payload is a distinct publish target; monitor it so canonical fallback cannot hide transform/write failures.
   outages:          { key: 'seed-meta:infra:outages',           maxStaleMin: 30 },

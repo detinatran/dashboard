@@ -215,6 +215,9 @@ const allLayersEnabled: MapLayers = {
   storageFacilities: false,
   fuelShortages: false,
   liveTankers: false,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 const allLayersDisabled: MapLayers = {
@@ -277,6 +280,9 @@ const allLayersDisabled: MapLayers = {
   storageFacilities: false,
   fuelShortages: false,
   liveTankers: false,
+  waterLevel: false,
+  ukAlerts: false,
+  ukTwin: false,
 };
 
 const SEEDED_NEWS_LOCATIONS: Array<{

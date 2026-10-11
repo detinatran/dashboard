@@ -187,7 +187,9 @@
       "corporateDisclosures": "企業開示",
       "corridorConditions": "回廊状況",
       "activityNowcast": "活動ナウキャスト",
-      "decisionSignalsUnavailable": "中国の意思決定シグナルのスナップショットは現在利用できません。"
+      "decisionSignalsUnavailable": "中国の意思決定シグナルのスナップショットは現在利用できません。",
+      "activeDisruptions_one": "{{count}} active disruption",
+      "activeSignals_one": "{{count}} active signal"
     },
     "foodStocks": "Food stocks",
     "foodStocksHelp": "USDA PSD commodity stocks-to-use by marketing year, with the world ratio alongside for context. FAOSTAT fills production only where PSD has no country coverage.",
@@ -310,7 +312,9 @@
     "panelCatCommodityEcon": "経済・貿易",
     "panelCatHappyNews": "ニュース",
     "panelCatHappyPlanet": "地球・社会貢献",
-    "embed": "埋め込む"
+    "embed": "埋め込む",
+    "uk": "英国",
+    "panelCatCrisisTwin": "CrisisTwin 英国"
   },
   "panels": {
     "liveNews": "ライブニュース",
@@ -420,7 +424,8 @@
     "fearGreed": "恐怖と貪欲",
     "marketBreadth": "市場の広がり",
     "climateNews": "気候ニュース",
-    "fx": "為替レート"
+    "fx": "為替レート",
+    "ukCrisisMonitor": "ライブ危機モニター"
   },
   "commands": {
     "prefixes": {
@@ -565,7 +570,8 @@
       "flightMilitaryOnGround": "軍用機 · {{type}} · 地上",
       "flightSearchHint": "Enterキーを押すか、クリックしてライブ位置を検索",
       "flightNotFound": "{{callsign}} のライブ位置が見つかりません",
-      "addPanel": "Add"
+      "addPanel": "Add",
+      "resultAnnouncement_one": "{{count}} result for {{query}}"
     },
     "signal": {
       "title": "インテリジェンス所見",
@@ -1166,7 +1172,8 @@
         "asia": "アジア",
         "latam": "中南米",
         "africa": "アフリカ",
-        "oceania": "オセアニア"
+        "oceania": "オセアニア",
+        "uk": "英国"
       },
       "layers": {
         "startupHubs": "スタートアップハブ",
@@ -1217,7 +1224,10 @@
         "radiationSpike": "放射線スパイク",
         "radiationElevated": "放射線上昇",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "英国ライブアラート",
+        "ukTwin": "英国デジタルツイン"
       },
       "tooltip": {
         "earthquake": "地震",
@@ -1420,7 +1430,8 @@
       "provenanceTitle": "カバレッジプロヴェナンス: このブリーフが選択された取り込まれたストーリーと個別ソースの数",
       "compiledFrom": "{{stories}}件のストーリーから{{sources}}個のソースをコンパイル",
       "briefFreshness": "{{minutes}}m前に生成 · 最新ソース{{hours}}h前",
-      "briefStoryDetails": "Story details ({{count}})"
+      "briefStoryDetails": "Story details ({{count}})",
+      "sources_one": "{{count}} source"
     },
     "settings": {
       "exportSettings": "設定をエクスポート",
@@ -2035,12 +2046,17 @@
       "time": {
         "justNow": "たった今",
         "hoursAgo_other": "{{count}}時間前",
-        "daysAgo_other": "{{count}}日前"
+        "daysAgo_other": "{{count}}日前",
+        "hoursAgo_one": "{{count}}h ago",
+        "daysAgo_one": "{{count}}d ago"
       },
       "filters": {
         "alert_other": "{{count}} アラート",
         "warning_other": "{{count}} 警告",
-        "watch_other": "{{count}} 監視"
+        "watch_other": "{{count}} 監視",
+        "alert_one": "{{count}} Alert",
+        "warning_one": "{{count}} Warning",
+        "watch_one": "{{count}} Watch"
       },
       "errors": {
         "noData": "感染症データはありません",
@@ -2204,7 +2220,8 @@
       "appliesToNext": "次のAI再生成に適用",
       "signals_other": "{{count}}シグナル",
       "disclaimer": "AI生成トレードシグナルは情報提供のみを目的としています。投資助言ではありません。常に独自の調査を行ってください。",
-      "unavailable": "AI市場への影響は各予測実行後に生成されます。しばらくしてからご確認ください。"
+      "unavailable": "AI市場への影響は各予測実行後に生成されます。しばらくしてからご確認ください。",
+      "signals_one": "{{count}} signal"
     },
     "forecast": {
       "infoTooltip": "<strong>AI 予測</strong> 地政学的および経済的イベントの AI 生成確率推定:<ul><li>クロスドメインカバレッジ: 紛争、市場、サプライチェーン、サイバー、政治</li><li>各予測は推定確率、信頼度、時間軸を表示</li><li>利用可能な場合は予測市場ベースラインに対して調整済み</li></ul>新しいインテリジェンスシグナルが到着すると予測が更新されます。上記のタブでドメイン別にフィルタリングしてください。"
@@ -2437,7 +2454,8 @@
         "unattributed": "未帰属",
         "program": "プログラム",
         "undated": "日付なし"
-      }
+      },
+      "designations_one": "{{count}} designation"
     },
     "radiationWatch": {
       "title": "放射能監視",
@@ -2470,7 +2488,9 @@
       },
       "observed": {
         "hoursAgo_other": "{{count}}時間前",
-        "daysAgo_other": "{{count}}日前"
+        "daysAgo_other": "{{count}}日前",
+        "hoursAgo_one": "{{count}}h ago",
+        "daysAgo_one": "{{count}}d ago"
       },
       "confidence": {
         "high": "高信頼度",
@@ -2501,7 +2521,8 @@
       "empty": "アクティブな収束は検出されていません",
       "signals_other": "{{count}} シグナル",
       "analyzing": "分析中...",
-      "viewOnMap": "地図で表示"
+      "viewOnMap": "地図で表示",
+      "signals_one": "{{count}} signal"
     },
     "thermalEscalation": {
       "title": "熱的エスカレーション",
@@ -2530,8 +2551,13 @@
       "age": {
         "minutesAgo_other": "{{count}}m前",
         "hoursAgo_other": "{{count}}h前",
-        "daysAgo_other": "{{count}}d前"
-      }
+        "daysAgo_other": "{{count}}d前",
+        "minutesAgo_one": "{{count}}m ago",
+        "hoursAgo_one": "{{count}}h ago",
+        "daysAgo_one": "{{count}}d ago"
+      },
+      "observations_one": "{{count}} obs",
+      "sources_one": "{{count}} src"
     },
     "chokepointStrip": {
       "title": "チョークポイント状態",
@@ -2646,6 +2672,68 @@
       "rubBase": "ロシア中央銀行 — 1単位あたりのルーブル",
       "rubPerUnit": "単位あたりルーブル",
       "sourceCbr": "出典: ロシア中央銀行"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "英国の現在のハザードを1つのフィードに集約：Environment Agencyの洪水警報、Met Officeの気象警報、NESOの送電網警告、TfL路線の運行障害、BGSの地震情報を深刻度順に表示します。数分ごとに公開ソースから直接取得します。",
+      "loadError": "英国のライブソースに接続できませんでした。",
+      "allClear": "現在、英国で有効なアラートはありません。",
+      "degraded": "利用不可: {{sources}}",
+      "updated": "更新 {{time}}",
+      "grid": "電力網",
+      "carbon": "炭素強度",
+      "renewables": "再生可能",
+      "demand": "需要",
+      "floods": "洪水警報",
+      "weather": "気象警報",
+      "gridWarnings": "送電網警告",
+      "transport": "TfL運行障害",
+      "quakes": "地震（7日間）",
+      "filterAll": "すべて",
+      "showOnMap": "地図で表示"
     }
   },
   "popups": {

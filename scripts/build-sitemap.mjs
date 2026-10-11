@@ -100,6 +100,11 @@ export const STATIC_ROUTE_MANIFEST = Object.freeze([
     ...DASHBOARD_MATERIAL_SOURCES,
     'src/config/variants/energy.ts',
   ]),
+  route('https://uk.worldmonitor.app/dashboard', 'dashboard-variant', [
+    ...DASHBOARD_MATERIAL_SOURCES,
+    'src/services/uk/index.ts',
+    'shared/uk-twin-data.ts',
+  ]),
 ]);
 
 const STATIC_LOCATIONS = new Set(STATIC_ROUTE_MANIFEST.map((entry) => entry.loc));

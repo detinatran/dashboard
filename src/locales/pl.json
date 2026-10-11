@@ -316,7 +316,9 @@
     "panelCatCommodityEcon": "Gospodarka i Handel",
     "panelCatHappyNews": "Dobre Wiadomości",
     "panelCatHappyPlanet": "Planeta i Filantropia",
-    "embed": "Osadź"
+    "embed": "Osadź",
+    "uk": "Wielka Brytania",
+    "panelCatCrisisTwin": "CrisisTwin Wielka Brytania"
   },
   "panels": {
     "liveNews": "Wiadomości na żywo",
@@ -426,7 +428,8 @@
     "fearGreed": "Strach i Chciwość",
     "marketBreadth": "Szerokość Rynku",
     "climateNews": "Wiadomości Klimatyczne",
-    "fx": "Kursy walut"
+    "fx": "Kursy walut",
+    "ukCrisisMonitor": "Monitor kryzysów na żywo"
   },
   "commands": {
     "prefixes": {
@@ -955,7 +958,8 @@
         "mena": "MENA",
         "asia": "Azja",
         "africa": "Afryka",
-        "oceania": "Oceania"
+        "oceania": "Oceania",
+        "uk": "Wielka Brytania"
       },
       "zoomIn": "Powiększ",
       "zoomOut": "Pomniejsz",
@@ -1037,7 +1041,10 @@
         "radiationSpike": "Skok radioaktywności",
         "radiationElevated": "Podwyższona radioaktywność",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "Alerty na żywo – Wielka Brytania",
+        "ukTwin": "Cyfrowy bliźniak Wielkiej Brytanii"
       },
       "layersTitle": "Warstwy",
       "layerSearch": "Szukaj warstw...",
@@ -2703,6 +2710,68 @@
       "rubBase": "Bank Rosji — ruble za 1 jednostkę",
       "rubPerUnit": "Rubli za jednostkę",
       "sourceCbr": "Źródło: Bank Rosji"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "Bieżące zagrożenia w Wielkiej Brytanii w jednym kanale: ostrzeżenia powodziowe Environment Agency, ostrzeżenia pogodowe Met Office, ostrzeżenia sieciowe NESO, utrudnienia na liniach TfL i trzęsienia ziemi z BGS, uszeregowane według powagi. Pobierane bezpośrednio z publicznych źródeł co kilka minut.",
+      "loadError": "Nie udało się połączyć ze źródłami na żywo dla Wielkiej Brytanii.",
+      "allClear": "Obecnie brak aktywnych alertów w Wielkiej Brytanii.",
+      "degraded": "Niedostępne: {{sources}}",
+      "updated": "Zaktualizowano {{time}}",
+      "grid": "Sieć",
+      "carbon": "Intensywność emisji",
+      "renewables": "OZE",
+      "demand": "Zapotrzebowanie",
+      "floods": "Ostrzeżenia powodziowe",
+      "weather": "Ostrzeżenia pogodowe",
+      "gridWarnings": "Ostrzeżenia sieciowe",
+      "transport": "Utrudnienia TfL",
+      "quakes": "Trzęsienia (7 dni)",
+      "filterAll": "Wszystkie",
+      "showOnMap": "Pokaż na mapie"
     }
   },
   "popups": {

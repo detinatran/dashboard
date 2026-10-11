@@ -635,6 +635,9 @@ export class DataLoaderManager implements AppModule {
   }
 
   private async tryFetchDigest(): Promise<SelectedNewsDigest | null> {
+    // The server digest has no `uk` variant (it would fall back to `full`, none
+    // of whose categories a CrisisTwin panel renders), so skip the round-trip.
+    if (SITE_VARIANT === 'uk') return null;
     const now = Date.now();
     // Capture request and persistence scope together. Sampling the language again
     // after the response would let an old-language request populate the new
@@ -819,6 +822,9 @@ export class DataLoaderManager implements AppModule {
     // Desktop: server digest has fewer categories than client FEEDS config.
     // Enable per-feed RSS fallback so missing categories fetch directly.
     if (isDesktopRuntime()) return true;
+    // CrisisTwin UK: its categories are not in the server digest at all
+    // (tryFetchDigest skips it), so direct per-feed fetch is their only path.
+    if (SITE_VARIANT === 'uk') return true;
     return isFeatureEnabled('newsPerFeedFallback');
   }
 
@@ -1101,6 +1107,8 @@ export class DataLoaderManager implements AppModule {
     if (SITE_VARIANT !== 'happy' && this.ctx.mapLayers.pipelines) tasks.push({ name: 'pipelineRegistries', task: () => runGuarded('pipelineRegistries', () => this.loadPipelineRegistries()) });
     if (SITE_VARIANT !== 'happy' && this.ctx.mapLayers.storageFacilities) tasks.push({ name: 'storageFacilities', task: () => runGuarded('storageFacilities', () => this.loadStorageFacilities()) });
     if (SITE_VARIANT !== 'happy' && this.ctx.mapLayers.canadaAlerts) tasks.push({ name: 'canadaAlerts', task: () => runGuarded('canadaAlerts', () => this.loadCanadaAlerts()) });
+    if (this.ctx.mapLayers.ukAlerts) tasks.push({ name: 'ukAlerts', task: () => runGuarded('ukAlerts', () => this.loadUkAlerts()) });
+    if (this.ctx.mapLayers.ukTwin) tasks.push({ name: 'ukTwin', task: () => runGuarded('ukTwin', () => this.loadUkTwin()) });
     if (SITE_VARIANT !== 'happy' && !isDesktopRuntime() && this.ctx.mapLayers.ais) tasks.push({ name: 'ais', task: () => runGuarded('ais', () => this.loadAisSignals()) });
     if (SITE_VARIANT !== 'happy' && this.ctx.mapLayers.cables) tasks.push({ name: 'cables', task: () => runGuarded('cables', () => this.loadCableActivity()) });
     if (SITE_VARIANT !== 'happy' && this.ctx.mapLayers.cables) tasks.push({ name: 'cableHealth', task: () => runGuarded('cableHealth', () => this.loadCableHealth()) });
@@ -1195,6 +1203,12 @@ export class DataLoaderManager implements AppModule {
           break;
         case 'canadaAlerts':
           await this.loadCanadaAlerts();
+          break;
+        case 'ukAlerts':
+          await this.loadUkAlerts();
+          break;
+        case 'ukTwin':
+          await this.loadUkTwin();
           break;
         case 'outages':
           await this.loadOutages();
@@ -3132,6 +3146,31 @@ export class DataLoaderManager implements AppModule {
     } catch (error) {
       this.ctx.map?.setLayerReady('canadaAlerts', false);
       this.ctx.statusPanel?.updateFeed('Canada alerts', { status: 'error' });
+    }
+  }
+
+  /** CrisisTwin UK: shares one fetch round with the Live Crisis Monitor panel. */
+  async loadUkAlerts(): Promise<void> {
+    try {
+      const { fetchUkSituation } = await import('@/services/uk');
+      const situation = await fetchUkSituation();
+      this.ctx.map?.setUkAlerts(situation.alerts);
+      this.ctx.map?.setLayerReady('ukAlerts', situation.alerts.some(a => a.lat != null));
+      this.ctx.statusPanel?.updateFeed('UK alerts', { status: situation.failed.length ? 'warning' : 'ok', itemCount: situation.alerts.length });
+    } catch {
+      this.ctx.map?.setLayerReady('ukAlerts', false);
+      this.ctx.statusPanel?.updateFeed('UK alerts', { status: 'error' });
+    }
+  }
+
+  async loadUkTwin(): Promise<void> {
+    try {
+      const { loadUkTwin } = await import('@/services/uk/twin');
+      const twin = await loadUkTwin();
+      this.ctx.map?.setUkTwin(twin.nodes, twin.edges);
+      this.ctx.map?.setLayerReady('ukTwin', twin.nodes.length > 0);
+    } catch {
+      this.ctx.map?.setLayerReady('ukTwin', false);
     }
   }
 

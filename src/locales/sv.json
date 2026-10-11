@@ -107,7 +107,8 @@
     "fearGreed": "Rädsla & Girighet",
     "marketBreadth": "Marknadsbredd",
     "climateNews": "Klimatnyheter",
-    "fx": "Valutakurser"
+    "fx": "Valutakurser",
+    "ukCrisisMonitor": "Krisövervakning i realtid"
   },
   "commands": {
     "prefixes": {
@@ -515,7 +516,8 @@
         "mena": "MENA",
         "asia": "Asien",
         "africa": "Afrika",
-        "oceania": "Oceanien"
+        "oceania": "Oceanien",
+        "uk": "Storbritannien"
       },
       "zoomIn": "Zooma in",
       "zoomOut": "Zooma ut",
@@ -597,7 +599,10 @@
         "radiationSpike": "Strålningsökning",
         "radiationElevated": "Förhöjd strålning",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "Livevarningar Storbritannien",
+        "ukTwin": "Digital tvilling Storbritannien"
       },
       "layersTitle": "Lager",
       "layerSearch": "Sök lager...",
@@ -2350,6 +2355,68 @@
       "rubBase": "Rysslands centralbank — rubel per 1 enhet",
       "rubPerUnit": "Rubel per enhet",
       "sourceCbr": "Källa: Rysslands centralbank"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "Aktuella risker i Storbritannien i ett flöde: översvämningsvarningar från Environment Agency, vädervarningar från Met Office, nätvarningar från NESO, störningar på TfL:s linjer och jordbävningar från BGS, sorterade efter allvarlighetsgrad. Hämtas direkt från de offentliga källorna med några minuters mellanrum.",
+      "loadError": "Det gick inte att nå de brittiska livekällorna.",
+      "allClear": "Inga aktiva varningar i Storbritannien just nu.",
+      "degraded": "Ej tillgängliga: {{sources}}",
+      "updated": "Uppdaterad {{time}}",
+      "grid": "Elnät",
+      "carbon": "Koldioxidintensitet",
+      "renewables": "Förnybart",
+      "demand": "Efterfrågan",
+      "floods": "Översvämningsvarningar",
+      "weather": "Vädervarningar",
+      "gridWarnings": "Nätvarningar",
+      "transport": "TfL-störningar",
+      "quakes": "Jordbävningar (7 d)",
+      "filterAll": "Alla",
+      "showOnMap": "Visa på kartan"
     }
   },
   "popups": {
@@ -3088,7 +3155,9 @@
     "panelCatCommodityEcon": "Ekonomi & Handel",
     "panelCatHappyNews": "Goda Nyheter",
     "panelCatHappyPlanet": "Planet & Välgörenhet",
-    "embed": "Bädda in"
+    "embed": "Bädda in",
+    "uk": "Storbritannien",
+    "panelCatCrisisTwin": "CrisisTwin Storbritannien"
   },
   "countryBrief": {
     "identifying": "Identifierar land...",

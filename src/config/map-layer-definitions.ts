@@ -10,7 +10,7 @@ import { isDesktopRuntime } from '@/services/runtime';
  * imports this type so the picker, dispatcher, and shell stay in lockstep.
  */
 export type RendererKind = 'svg' | 'deck' | 'globe';
-export type MapVariant = 'full' | 'tech' | 'finance' | 'happy' | 'commodity' | 'energy';
+export type MapVariant = 'full' | 'tech' | 'finance' | 'happy' | 'commodity' | 'energy' | 'uk';
 
 const _desktop = isDesktopRuntime();
 
@@ -67,6 +67,12 @@ export const LAYER_REGISTRY: Record<keyof MapLayers, LayerDefinition> = {
   irradiators:              def('irradiators',              '&#9888;',   'gammaIrradiators',         'Gamma Irradiators'),
   radiationWatch:           def('radiationWatch',           '&#9762;',   'radiationWatch',           'Radiation Watch'),
   spaceports:               def('spaceports',               '&#128640;', 'spaceports',               'Spaceports'),
+  // Deck-only: the prediction panel and its chart are desktop surfaces, and
+  // neither the SVG nor the globe renderer has a marker treatment for it yet.
+  waterLevel:               def('waterLevel',               '&#127754;', 'waterLevel',               'Water Level Prediction', ['deck']),
+  // CrisisTwin UK — deck-only like waterLevel; both are UK-scale overlays.
+  ukAlerts:                 def('ukAlerts',                 '&#128680;', 'ukAlerts',                 'UK Live Alerts', ['deck']),
+  ukTwin:                   def('ukTwin',                   '&#128279;', 'ukTwin',                   'UK Digital Twin', ['deck']),
   satellites:               def('satellites',               '&#128752;', 'satellites',               'Orbital Surveillance', ['svg', 'deck', 'globe']),
 
   cables:                   def('cables',                   '&#128268;', 'underseaCables',           'Undersea Cables'),
@@ -348,6 +354,10 @@ export const LAYER_EXPLANATIONS: Partial<Record<keyof MapLayers, LayerExplanatio
 };
 
 const VARIANT_LAYER_ORDER: Record<MapVariant, Array<keyof MapLayers>> = {
+  uk: [
+    'ukAlerts', 'ukTwin', 'waterLevel', 'cables', 'pipelines', 'nuclear', 'datacenters',
+    'weather', 'natural', 'outages', 'webcams', 'dayNight',
+  ],
   full: [
     'iranAttacks', 'hotspots', 'conflicts',
     'bases', 'nuclear', 'irradiators', 'radiationWatch', 'spaceports',
@@ -357,7 +367,7 @@ const VARIANT_LAYER_ORDER: Record<MapVariant, Array<keyof MapLayers>> = {
     'outages', 'cyberThreats', 'natural', 'fires',
     'waterways', 'economic', 'minerals', 'gpsJamming',
     'satellites', 'ciiChoropleth', 'resilienceScore', 'sanctions', 'dayNight', 'webcams',
-    'diseaseOutbreaks',
+    'diseaseOutbreaks', 'waterLevel',
   ],
   tech: [
     'startupHubs', 'techHQs', 'accelerators', 'cloudRegions',

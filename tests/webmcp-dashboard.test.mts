@@ -22,7 +22,7 @@ import {
 } from '../src/config/panels.ts';
 import type { MapLayers, PanelConfig } from '../src/types/index.ts';
 
-const VARIANTS = ['full', 'tech', 'finance', 'commodity', 'happy', 'energy'] as const;
+const VARIANTS = ['full', 'tech', 'finance', 'commodity', 'happy', 'energy', 'uk'] as const;
 
 it('keeps the advertised pre-ready invocation window at 30 seconds', () => {
   assert.equal(WEBMCP_UI_READY_TIMEOUT_MS, 30_000);
@@ -39,6 +39,7 @@ const EXPECTED_VARIANT_PANEL_SNAPSHOTS: Record<DashboardVariant, {
   commodity: { enabledCount: 33, enabledSha256: 'b534510a2e814392e3966beb211e300e75a2b33f05c283613dd4f6cee50ddfe0' },
   happy: { enabledCount: 10, enabledSha256: 'f62bbf19c2f7ca75fefeb12a7ba32da991a72f494f91e6d310910d5b7a0468ad' },
   energy: { enabledCount: 26, enabledSha256: '4566c4b42ec77521cddce83cccabe91069ffb211ade9441ef0cf115f11a3cd67' },
+  uk: { enabledCount: 6, enabledSha256: '390d98119645b57213fb5e5e7bb254136826151d38fb311eb6f713f7d5e6ef36' },
 };
 
 const EXPECTED_VARIANT_DEFAULT_SNAPSHOTS: Record<DashboardVariant, {
@@ -52,6 +53,7 @@ const EXPECTED_VARIANT_DEFAULT_SNAPSHOTS: Record<DashboardVariant, {
   commodity: { total: 36, enabled: 33, sha256: 'cc9e0b178dec33dff354a1eea95b5b215302fc7ce685b3d92b82a356df6d6bee' },
   happy: { total: 10, enabled: 10, sha256: '197a73a578d8734d49e844e0a83b89204d5a6fc6b973b1ed698272d846a2c308' },
   energy: { total: 28, enabled: 26, sha256: 'c29563083968049da7c1c7c0b6a856143c3797c010b9c21d2424bbbbb3febbc1' },
+  uk: { total: 6, enabled: 6, sha256: '0b5a9208a07500c75faadac0a6ac3e3ecd9403548ad1b45a14ace6fbdeb4aa39' },
 };
 
 function makeContext(
@@ -99,7 +101,7 @@ const applierOptions = {
 };
 
 describe('WebMCP live dashboard bindings', () => {
-  it('locks the canonical panel defaults for all six variants', () => {
+  it('locks the canonical panel defaults for all seven variants', () => {
     assert.deepEqual(Object.keys(VARIANT_DEFAULTS).sort(), [...VARIANTS].sort());
 
     for (const variant of VARIANTS) {
@@ -724,7 +726,7 @@ describe('WebMCP live dashboard bindings', () => {
     assert.match(result.message, /at most 10 layers/);
   });
 
-  it('preserves per-target variant denials across all six variants', async () => {
+  it('preserves per-target variant denials across all seven variants', async () => {
     const cases: Record<DashboardVariant, {
       allowed: keyof MapLayers;
       disallowed: keyof MapLayers;
@@ -735,6 +737,7 @@ describe('WebMCP live dashboard bindings', () => {
       commodity: { allowed: 'tradeRoutes', disallowed: 'conflicts' },
       happy: { allowed: 'positiveEvents', disallowed: 'conflicts' },
       energy: { allowed: 'tradeRoutes', disallowed: 'conflicts' },
+      uk: { allowed: 'cables', disallowed: 'conflicts' },
     };
 
     for (const variant of VARIANTS) {

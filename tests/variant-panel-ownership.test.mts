@@ -156,6 +156,29 @@ describe('variant panel ownership', () => {
     assert.deepEqual(persisted, result);
   });
 
+  it("re-seeds the new variant's own panels that another variant stored as disabled", () => {
+    // Every variant persists the full panel map, so arriving from `full`
+    // carries the target variant's signature panels in as disabled entries.
+    const result = applyVariantPanelLayoutTransition({
+      currentVariant: 'uk',
+      panelSettings: {
+        'uk-crisis-monitor': { name: 'Live Crisis Monitor', enabled: false },
+        'live-news': { name: 'Live News', enabled: false },
+        politics: { name: 'Politics', enabled: true },
+      },
+      variantPanelKeys: new Set(['uk-crisis-monitor', 'live-news']),
+      isDynamicPanel: () => false,
+      getDefaultPanel: (key) => ({ name: key === 'live-news' ? 'UK Live News' : key, enabled: true }),
+      persistPanels: () => {},
+      persistAppliedVariant: () => {},
+    });
+
+    assert.equal(result['uk-crisis-monitor']?.enabled, true);
+    assert.equal(result['live-news']?.enabled, true);
+    assert.equal(result['live-news']?.name, 'UK Live News', 'variant label overrides apply on arrival');
+    assert.equal(result.politics?.enabled, false);
+  });
+
   it('does not advance the applied marker when panel persistence fails', () => {
     const events: string[] = [];
     const result = applyVariantPanelLayoutTransition({

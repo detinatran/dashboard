@@ -27,6 +27,7 @@
     "finance": "FINANCE",
     "commodity": "COMMODITY",
     "energy": "ENERGY",
+    "uk": "UK",
     "panelDisplayCaption": "Choose which panels to show on the dashboard",
     "tabSettings": "Settings",
     "tabPanels": "Panels",
@@ -64,6 +65,7 @@
     "resetLayoutTooltip": "Restore default panel arrangement",
     "unsavedChanges": "You have unsaved panel changes. Discard them?",
     "panelCatCore": "Core",
+    "panelCatCrisisTwin": "CrisisTwin UK",
     "panelCatIntelligence": "Intelligence",
     "panelCatCorrelation": "Correlation",
     "panelCatRegionalNews": "Regional News",
@@ -101,6 +103,7 @@
     "intel": "Intel Feed",
     "gdeltIntel": "Live Intelligence",
     "cascade": "Infrastructure Cascade",
+    "ukCrisisMonitor": "Live Crisis Monitor",
     "politics": "World News",
     "us": "United States",
     "europe": "Europe",
@@ -473,6 +476,7 @@
         "americas": "Americas",
         "mena": "MENA",
         "europe": "Europe",
+        "uk": "United Kingdom",
         "asia": "Asia",
         "latam": "Latin America",
         "africa": "Africa",
@@ -799,6 +803,9 @@
     },
     "webcams": {
       "previewStatus": "Live preview"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "UK flood, weather, grid, TfL and earthquake alerts from official live sources, ranked by severity."
     }
   },
   "modals": {

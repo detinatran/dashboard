@@ -48,6 +48,16 @@ export const LOCAL_SEED_JOBS = Object.freeze([
     timeoutMs: 75_000,
   }),
   Object.freeze({
+    id: 'coastal',
+    script: 'seed-coastal.mjs',
+    // Matches the 15-min upstream cadence of the EA gauge. Opt-in: the job is
+    // useless without model artifacts mounted, and a self-host without them
+    // would just log refusals every quarter hour.
+    optionalEnv: 'LOCAL_SEED_COASTAL_ENABLED',
+    intervalMs: 15 * MINUTE,
+    timeoutMs: 5 * MINUTE,
+  }),
+  Object.freeze({
     id: 'gpsjam',
     script: 'fetch-gpsjam.mjs',
     args: Object.freeze(['--output', GPSJAM_OUTPUT_PATH]),

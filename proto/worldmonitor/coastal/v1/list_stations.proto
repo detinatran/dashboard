@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package worldmonitor.coastal.v1;
+
+import "sebuf/http/annotations.proto";
+
+message ListStationsRequest {}
+
+// What a station can actually do right now, derived from which model artifacts
+// loaded — never a hardcoded capability flag.
+message StationCapabilities {
+  bool water_level_prediction = 1;
+  bool warning_prediction = 2;
+  bool tide = 3;
+}
+
+message CoastalStation {
+  string id = 1;
+  string name = 2;
+  string display_name = 3;
+  string city = 4;
+  string country = 5;
+  double lat = 6;
+  double lon = 7;
+  string timezone = 8;
+  StationCapabilities capabilities = 9;
+  // "live" | "delayed" | "stale" | "unknown" — computed server-side from the
+  // age of the newest observation, not from whether the feature is enabled.
+  string data_status = 10;
+  int32 age_minutes = 11;
+  // "normal" | "advisory" | "watch" | "high" | "unknown". Model risk, not an
+  // official flood warning.
+  string risk_level = 12;
+  double current_water_level = 13;
+  bool has_current = 14;
+  string trend = 15;
+}
+
+message ListStationsResponse {
+  repeated CoastalStation stations = 1;
+  int64 fetched_at = 2 [(sebuf.http.int64_encoding) = INT64_ENCODING_NUMBER];
+  bool data_available = 3;
+}

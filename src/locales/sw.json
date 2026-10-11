@@ -381,7 +381,9 @@
     "panelCatMining": "Mnyororo wa Uchimbaji na Ugavi",
     "panelCatCommodityEcon": "Uchumi na Biashara",
     "panelCatHappyNews": "Habari Njema",
-    "panelCatHappyPlanet": "Sayari & Kutoa"
+    "panelCatHappyPlanet": "Sayari & Kutoa",
+    "uk": "Uingereza",
+    "panelCatCrisisTwin": "CrisisTwin Uingereza"
   },
   "panels": {
     "liveNews": "Habari za Moja kwa Moja",
@@ -491,7 +493,8 @@
     "fearGreed": "Hofu & Uchoyo",
     "marketBreadth": "Upana wa Soko",
     "climateNews": "Habari za Hali ya Hewa",
-    "fx": "FX Rates"
+    "fx": "FX Rates",
+    "ukCrisisMonitor": "Kifuatiliaji cha Migogoro Moja kwa Moja"
   },
   "commands": {
     "prefixes": {
@@ -1310,7 +1313,8 @@
         "asia": "Asia",
         "latam": "Amerika ya Kusini",
         "africa": "Afrika",
-        "oceania": "Oceania"
+        "oceania": "Oceania",
+        "uk": "Uingereza"
       },
       "layers": {
         "startupHubs": "Vituo vya Kuanzisha",
@@ -1361,7 +1365,10 @@
         "speciesRecovery": "Urejeshaji wa Aina",
         "renewableInstallations": "Nishati Safi",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "Arifa za Moja kwa Moja za Uingereza",
+        "ukTwin": "Pacha wa Kidijitali wa Uingereza"
       },
       "tooltip": {
         "earthquake": "Tetemeko la ardhi",
@@ -2734,6 +2741,68 @@
       "rubBase": "Bank of Russia — RUB per 1 unit",
       "rubPerUnit": "RUB per unit",
       "sourceCbr": "Source: Bank of Russia"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "Hatari za sasa nchini Uingereza katika mlisho mmoja: maonyo ya mafuriko ya Environment Agency, maonyo ya hali ya hewa ya Met Office, maonyo ya gridi ya NESO, usumbufu wa njia za TfL na matetemeko ya ardhi kutoka BGS, yakiwa yamepangwa kwa ukali. Yanapatikana moja kwa moja kutoka vyanzo vya umma kila baada ya dakika chache.",
+      "loadError": "Imeshindwa kufikia vyanzo vya moja kwa moja vya Uingereza.",
+      "allClear": "Hakuna arifa zinazoendelea nchini Uingereza kwa sasa.",
+      "degraded": "Hazipatikani: {{sources}}",
+      "updated": "Imesasishwa {{time}}",
+      "grid": "Gridi",
+      "carbon": "Ukali wa kaboni",
+      "renewables": "Nishati mbadala",
+      "demand": "Mahitaji",
+      "floods": "Maonyo ya mafuriko",
+      "weather": "Maonyo ya hali ya hewa",
+      "gridWarnings": "Maonyo ya gridi",
+      "transport": "Usumbufu wa TfL",
+      "quakes": "Matetemeko (siku 7)",
+      "filterAll": "Zote",
+      "showOnMap": "Onyesha kwenye ramani"
     }
   },
   "popups": {

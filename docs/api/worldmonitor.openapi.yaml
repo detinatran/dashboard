@@ -2689,6 +2689,387 @@ paths:
                                 oneOf:
                                     - $ref: '#/components/schemas/Error'
                                     - $ref: '#/components/schemas/GatewayError'
+    /api/coastal/v1/list-stations:
+        get:
+            tags:
+                - CoastalService
+            summary: ListStations
+            description: |-
+                ListStations returns only ACTIVE prediction sites, with the capabilities
+                 each one actually has. A station whose model failed to load reports
+                 waterLevelPrediction=false rather than being hidden, so the UI can explain
+                 the gap instead of silently omitting a site.
+            operationId: ListStations
+            parameters:
+                - name: jmespath
+                  in: query
+                  description: |-
+                    Optional JMESPath expression applied server-side to project or reduce the JSON response before it is returned (mirrors the MCP jmespath argument). Invalid expressions, expressions larger than 1024 UTF-8 bytes, or projections that exceed the 256 KB output cap return HTTP 400 with a {_jmespath_error, original_keys} envelope. Grammar and worked examples: https://www.worldmonitor.app/docs/mcp-jmespath.
+                  required: false
+                  example: "keys(@)"
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: Successful response
+                    content:
+                        application/json:
+                            example:
+                                "dataAvailable": true
+                                "fetchedAt": 1717200000000
+                                "stations":
+                                    - "ageMinutes": 1
+                                      "capabilities":
+                                          "tide": true
+                                          "warningPrediction": true
+                                          "waterLevelPrediction": true
+                                      "city": "example"
+                                      "country": "US"
+                                      "currentWaterLevel": 1.5
+                            schema:
+                                $ref: '#/components/schemas/worldmonitor_coastal_v1_ListStationsResponse'
+                "400":
+                    description: Validation error
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: '#/components/schemas/ValidationError'
+                                    - $ref: '#/components/schemas/JmespathProjectionError'
+                "401":
+                    description: Missing or invalid API key.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UnauthorizedError'
+                "403":
+                    description: API access requires an active subscription (the API key's subscription is inactive or expired).
+                    headers:
+                        X-Billing-Verification:
+                            description: Present when the 403 is a billing-provider-confirmed subscription lapse (value subscription_lapsed, matching the body `code`).
+                            schema:
+                                type: string
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ForbiddenError'
+                "429":
+                    description: Rate limit exceeded.
+                    headers:
+                        X-RateLimit-Limit:
+                            description: Maximum requests allowed in the active rate-limit window.
+                            schema:
+                                type: string
+                        X-RateLimit-Remaining:
+                            description: Requests remaining in the active rate-limit window.
+                            schema:
+                                type: string
+                        X-RateLimit-Reset:
+                            description: Unix epoch milliseconds when the active rate-limit window resets.
+                            schema:
+                                type: string
+                        Retry-After:
+                            description: Seconds to wait before retrying the request.
+                            schema:
+                                type: string
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: '#/components/schemas/Error'
+                                    - $ref: '#/components/schemas/RateLimitError'
+                "503":
+                    description: Service unavailable. Billing-verification responses include code and X-Billing-Verification; other gateway infrastructure failures use the generic GatewayError shape.
+                    headers:
+                        Retry-After:
+                            description: Seconds to wait before retrying (1-60).
+                            schema:
+                                type: string
+                        X-Billing-Verification:
+                            description: Billing-verification state that produced this response (matches the body `code`).
+                            schema:
+                                type: string
+                        X-Validation-Mode:
+                            description: Present with value degraded when user API-key validation is temporarily unavailable.
+                            schema:
+                                type: string
+                        X-RateLimit-Mode:
+                            description: Present with value degraded when a fail-closed rate-limit dependency is unavailable.
+                            schema:
+                                type: string
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: '#/components/schemas/BillingVerificationError'
+                                    - $ref: '#/components/schemas/GatewayError'
+                default:
+                    description: Gateway or handler error response.
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: '#/components/schemas/Error'
+                                    - $ref: '#/components/schemas/GatewayError'
+    /api/coastal/v1/get-forecast:
+        get:
+            tags:
+                - CoastalService
+            summary: GetForecast
+            description: |-
+                GetForecast returns current conditions plus the +1h/+3h/+6h outlook.
+                 water_level_forecast.status is "ready" only when a compatible model
+                 produced the numbers; otherwise it carries model_not_configured,
+                 model_incompatible, insufficient_history or inference_failed and the
+                 horizon list is empty. Callers must branch on status, never on presence.
+            operationId: GetForecast
+            parameters:
+                - name: station_id
+                  in: query
+                  required: false
+                  example: "example-id"
+                  schema:
+                    type: string
+                - name: jmespath
+                  in: query
+                  description: |-
+                    Optional JMESPath expression applied server-side to project or reduce the JSON response before it is returned (mirrors the MCP jmespath argument). Invalid expressions, expressions larger than 1024 UTF-8 bytes, or projections that exceed the 256 KB output cap return HTTP 400 with a {_jmespath_error, original_keys} envelope. Grammar and worked examples: https://www.worldmonitor.app/docs/mcp-jmespath.
+                  required: false
+                  example: "keys(@)"
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: Successful response
+                    content:
+                        application/json:
+                            example:
+                                "baseTimestamp": 1717200000000
+                                "current":
+                                    "datum": "example"
+                                    "hasTide": true
+                                    "predictedTide": 1.5
+                                    "residual": 1.5
+                                    "trend": "example"
+                                "data":
+                                    "ageMinutes": 1
+                                    "featureVersion": "example"
+                                    "latestUpdate": 1
+                                    "status": "example"
+                                    "tideProvider": "worldmonitor"
+                                "dataAvailable": true
+                                "generatedAt": 1717200000000
+                            schema:
+                                $ref: '#/components/schemas/worldmonitor_coastal_v1_GetForecastResponse'
+                "400":
+                    description: Validation error
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: '#/components/schemas/ValidationError'
+                                    - $ref: '#/components/schemas/JmespathProjectionError'
+                "401":
+                    description: Missing or invalid API key.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UnauthorizedError'
+                "403":
+                    description: API access requires an active subscription (the API key's subscription is inactive or expired).
+                    headers:
+                        X-Billing-Verification:
+                            description: Present when the 403 is a billing-provider-confirmed subscription lapse (value subscription_lapsed, matching the body `code`).
+                            schema:
+                                type: string
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ForbiddenError'
+                "429":
+                    description: Rate limit exceeded.
+                    headers:
+                        X-RateLimit-Limit:
+                            description: Maximum requests allowed in the active rate-limit window.
+                            schema:
+                                type: string
+                        X-RateLimit-Remaining:
+                            description: Requests remaining in the active rate-limit window.
+                            schema:
+                                type: string
+                        X-RateLimit-Reset:
+                            description: Unix epoch milliseconds when the active rate-limit window resets.
+                            schema:
+                                type: string
+                        Retry-After:
+                            description: Seconds to wait before retrying the request.
+                            schema:
+                                type: string
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: '#/components/schemas/Error'
+                                    - $ref: '#/components/schemas/RateLimitError'
+                "503":
+                    description: Service unavailable. Billing-verification responses include code and X-Billing-Verification; other gateway infrastructure failures use the generic GatewayError shape.
+                    headers:
+                        Retry-After:
+                            description: Seconds to wait before retrying (1-60).
+                            schema:
+                                type: string
+                        X-Billing-Verification:
+                            description: Billing-verification state that produced this response (matches the body `code`).
+                            schema:
+                                type: string
+                        X-Validation-Mode:
+                            description: Present with value degraded when user API-key validation is temporarily unavailable.
+                            schema:
+                                type: string
+                        X-RateLimit-Mode:
+                            description: Present with value degraded when a fail-closed rate-limit dependency is unavailable.
+                            schema:
+                                type: string
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: '#/components/schemas/BillingVerificationError'
+                                    - $ref: '#/components/schemas/GatewayError'
+                default:
+                    description: Gateway or handler error response.
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: '#/components/schemas/Error'
+                                    - $ref: '#/components/schemas/GatewayError'
+    /api/coastal/v1/get-history:
+        get:
+            tags:
+                - CoastalService
+            summary: GetHistory
+            description: GetHistory returns the stored observation window for charting.
+            operationId: GetHistory
+            parameters:
+                - name: station_id
+                  in: query
+                  required: false
+                  example: "example-id"
+                  schema:
+                    type: string
+                - name: hours
+                  in: query
+                  required: false
+                  example: 1
+                  schema:
+                    type: integer
+                    format: int32
+                - name: jmespath
+                  in: query
+                  description: |-
+                    Optional JMESPath expression applied server-side to project or reduce the JSON response before it is returned (mirrors the MCP jmespath argument). Invalid expressions, expressions larger than 1024 UTF-8 bytes, or projections that exceed the 256 KB output cap return HTTP 400 with a {_jmespath_error, original_keys} envelope. Grammar and worked examples: https://www.worldmonitor.app/docs/mcp-jmespath.
+                  required: false
+                  example: "keys(@)"
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: Successful response
+                    content:
+                        application/json:
+                            example:
+                                "dataAvailable": true
+                                "fetchedAt": 1717200000000
+                                "observations":
+                                    - "timestamp": 1717200000000
+                                      "waterLevel": 1.5
+                                "stationId": "example-id"
+                            schema:
+                                $ref: '#/components/schemas/worldmonitor_coastal_v1_GetHistoryResponse'
+                "400":
+                    description: Validation error
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: '#/components/schemas/ValidationError'
+                                    - $ref: '#/components/schemas/JmespathProjectionError'
+                "401":
+                    description: Missing or invalid API key.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UnauthorizedError'
+                "403":
+                    description: API access requires an active subscription (the API key's subscription is inactive or expired).
+                    headers:
+                        X-Billing-Verification:
+                            description: Present when the 403 is a billing-provider-confirmed subscription lapse (value subscription_lapsed, matching the body `code`).
+                            schema:
+                                type: string
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ForbiddenError'
+                "429":
+                    description: Rate limit exceeded.
+                    headers:
+                        X-RateLimit-Limit:
+                            description: Maximum requests allowed in the active rate-limit window.
+                            schema:
+                                type: string
+                        X-RateLimit-Remaining:
+                            description: Requests remaining in the active rate-limit window.
+                            schema:
+                                type: string
+                        X-RateLimit-Reset:
+                            description: Unix epoch milliseconds when the active rate-limit window resets.
+                            schema:
+                                type: string
+                        Retry-After:
+                            description: Seconds to wait before retrying the request.
+                            schema:
+                                type: string
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: '#/components/schemas/Error'
+                                    - $ref: '#/components/schemas/RateLimitError'
+                "503":
+                    description: Service unavailable. Billing-verification responses include code and X-Billing-Verification; other gateway infrastructure failures use the generic GatewayError shape.
+                    headers:
+                        Retry-After:
+                            description: Seconds to wait before retrying (1-60).
+                            schema:
+                                type: string
+                        X-Billing-Verification:
+                            description: Billing-verification state that produced this response (matches the body `code`).
+                            schema:
+                                type: string
+                        X-Validation-Mode:
+                            description: Present with value degraded when user API-key validation is temporarily unavailable.
+                            schema:
+                                type: string
+                        X-RateLimit-Mode:
+                            description: Present with value degraded when a fail-closed rate-limit dependency is unavailable.
+                            schema:
+                                type: string
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: '#/components/schemas/BillingVerificationError'
+                                    - $ref: '#/components/schemas/GatewayError'
+                default:
+                    description: Gateway or handler error response.
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: '#/components/schemas/Error'
+                                    - $ref: '#/components/schemas/GatewayError'
     /api/company-monitoring/v1/create-monitored-company:
         post:
             parameters:
@@ -36458,6 +36839,301 @@ components:
                     type: string
                     description: Short summary/description (max 300 chars in seed pipeline).
             description: ClimateNewsItem represents a single climate/environment news article.
+        worldmonitor_coastal_v1_ListStationsRequest:
+            type: object
+        worldmonitor_coastal_v1_ListStationsResponse:
+            type: object
+            properties:
+                stations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/worldmonitor_coastal_v1_CoastalStation'
+                fetchedAt:
+                    type: integer
+                    format: int64
+                    description: 'Warning: Values > 2^53 may lose precision in JavaScript'
+                dataAvailable:
+                    type: boolean
+        worldmonitor_coastal_v1_CoastalStation:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                displayName:
+                    type: string
+                city:
+                    type: string
+                country:
+                    type: string
+                lat:
+                    type: number
+                    format: double
+                lon:
+                    type: number
+                    format: double
+                timezone:
+                    type: string
+                capabilities:
+                    $ref: '#/components/schemas/worldmonitor_coastal_v1_StationCapabilities'
+                dataStatus:
+                    type: string
+                    description: |-
+                        "live" | "delayed" | "stale" | "unknown" — computed server-side from the
+                         age of the newest observation, not from whether the feature is enabled.
+                ageMinutes:
+                    type: integer
+                    format: int32
+                riskLevel:
+                    type: string
+                    description: |-
+                        "normal" | "advisory" | "watch" | "high" | "unknown". Model risk, not an
+                         official flood warning.
+                currentWaterLevel:
+                    type: number
+                    format: double
+                hasCurrent:
+                    type: boolean
+                trend:
+                    type: string
+        worldmonitor_coastal_v1_StationCapabilities:
+            type: object
+            properties:
+                waterLevelPrediction:
+                    type: boolean
+                warningPrediction:
+                    type: boolean
+                tide:
+                    type: boolean
+            description: |-
+                What a station can actually do right now, derived from which model artifacts
+                 loaded — never a hardcoded capability flag.
+        worldmonitor_coastal_v1_GetForecastRequest:
+            type: object
+            properties:
+                stationId:
+                    type: string
+        worldmonitor_coastal_v1_GetForecastResponse:
+            type: object
+            properties:
+                station:
+                    $ref: '#/components/schemas/worldmonitor_coastal_v1_CoastalStation'
+                baseTimestamp:
+                    type: integer
+                    format: int64
+                    description: 'Warning: Values > 2^53 may lose precision in JavaScript'
+                generatedAt:
+                    type: integer
+                    format: int64
+                    description: 'Warning: Values > 2^53 may lose precision in JavaScript'
+                hasCurrent:
+                    type: boolean
+                current:
+                    $ref: '#/components/schemas/worldmonitor_coastal_v1_CurrentConditions'
+                weather:
+                    $ref: '#/components/schemas/worldmonitor_coastal_v1_WeatherConditions'
+                waterLevelForecast:
+                    $ref: '#/components/schemas/worldmonitor_coastal_v1_WaterLevelForecast'
+                warningForecast:
+                    $ref: '#/components/schemas/worldmonitor_coastal_v1_WarningForecast'
+                risk:
+                    $ref: '#/components/schemas/worldmonitor_coastal_v1_RiskAssessment'
+                data:
+                    $ref: '#/components/schemas/worldmonitor_coastal_v1_DataProvenance'
+                model:
+                    $ref: '#/components/schemas/worldmonitor_coastal_v1_ModelProvenance'
+                dataAvailable:
+                    type: boolean
+        worldmonitor_coastal_v1_CurrentConditions:
+            type: object
+            properties:
+                waterLevel:
+                    type: number
+                    format: double
+                trend:
+                    type: string
+                datum:
+                    type: string
+                hasTide:
+                    type: boolean
+                    description: |-
+                        Tide and residual are only populated when a real astronomical tide source
+                         is configured. has_tide=false means "unknown", never zero.
+                predictedTide:
+                    type: number
+                    format: double
+                residual:
+                    type: number
+                    format: double
+        worldmonitor_coastal_v1_WeatherConditions:
+            type: object
+            properties:
+                present:
+                    type: boolean
+                pressure:
+                    type: number
+                    format: double
+                windSpeed:
+                    type: number
+                    format: double
+                windDirection:
+                    type: number
+                    format: double
+                windGust:
+                    type: number
+                    format: double
+                precipitation:
+                    type: number
+                    format: double
+                temperature:
+                    type: number
+                    format: double
+        worldmonitor_coastal_v1_WaterLevelForecast:
+            type: object
+            properties:
+                status:
+                    type: string
+                    description: |-
+                        "ready" | "model_not_configured" | "model_incompatible"
+                         | "insufficient_history" | "inference_failed" | "history_stale" | "no_history"
+                reason:
+                    type: string
+                horizons:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/worldmonitor_coastal_v1_WaterLevelHorizon'
+        worldmonitor_coastal_v1_WaterLevelHorizon:
+            type: object
+            properties:
+                horizon:
+                    type: string
+                timestamp:
+                    type: integer
+                    format: int64
+                    description: 'Warning: Values > 2^53 may lose precision in JavaScript'
+                waterLevel:
+                    type: number
+                    format: double
+                hasBounds:
+                    type: boolean
+                    description: |-
+                        Empirical error band from held-out residuals, not a probabilistic
+                         predictive interval. has_bounds=false when the model recorded no sigma.
+                lowerBound:
+                    type: number
+                    format: double
+                upperBound:
+                    type: number
+                    format: double
+                hasTide:
+                    type: boolean
+                    description: |-
+                        Astronomical tide at this horizon, and the implied non-tidal residual
+                         (predicted level minus tide). has_tide=false outside the precomputed tide
+                         coverage window — the fields are then meaningless, not zero.
+                predictedTide:
+                    type: number
+                    format: double
+                predictedResidual:
+                    type: number
+                    format: double
+        worldmonitor_coastal_v1_WarningForecast:
+            type: object
+            properties:
+                status:
+                    type: string
+                reason:
+                    type: string
+                horizons:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/worldmonitor_coastal_v1_WarningHorizon'
+        worldmonitor_coastal_v1_WarningHorizon:
+            type: object
+            properties:
+                horizon:
+                    type: string
+                probability:
+                    type: number
+                    format: double
+                warning:
+                    type: boolean
+                hasThreshold:
+                    type: boolean
+                    description: Per-horizon threshold from model metadata. Never assume 0.5.
+                threshold:
+                    type: number
+                    format: double
+        worldmonitor_coastal_v1_RiskAssessment:
+            type: object
+            properties:
+                level:
+                    type: string
+                reason:
+                    type: string
+                basis:
+                    type: string
+        worldmonitor_coastal_v1_DataProvenance:
+            type: object
+            properties:
+                status:
+                    type: string
+                ageMinutes:
+                    type: integer
+                    format: int32
+                latestUpdate:
+                    type: integer
+                    format: int64
+                    description: 'Warning: Values > 2^53 may lose precision in JavaScript'
+                waterLevelProvider:
+                    type: string
+                weatherProvider:
+                    type: string
+                tideProvider:
+                    type: string
+                featureVersion:
+                    type: string
+        worldmonitor_coastal_v1_ModelProvenance:
+            type: object
+            properties:
+                regressionVersion:
+                    type: string
+                warningVersion:
+                    type: string
+        worldmonitor_coastal_v1_GetHistoryRequest:
+            type: object
+            properties:
+                stationId:
+                    type: string
+                hours:
+                    type: integer
+                    format: int32
+        worldmonitor_coastal_v1_GetHistoryResponse:
+            type: object
+            properties:
+                stationId:
+                    type: string
+                observations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/worldmonitor_coastal_v1_ObservationPoint'
+                fetchedAt:
+                    type: integer
+                    format: int64
+                    description: 'Warning: Values > 2^53 may lose precision in JavaScript'
+                dataAvailable:
+                    type: boolean
+        worldmonitor_coastal_v1_ObservationPoint:
+            type: object
+            properties:
+                timestamp:
+                    type: integer
+                    format: int64
+                    description: 'Warning: Values > 2^53 may lose precision in JavaScript'
+                waterLevel:
+                    type: number
+                    format: double
         worldmonitor_company_monitoring_v1_CreateMonitoredCompanyRequest:
             type: object
             properties:

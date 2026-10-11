@@ -1090,6 +1090,27 @@ const ENERGY_FEEDS: Record<string, Feed[]> = {
   ],
 };
 
+// CrisisTwin UK — national headlines plus a crisis/resilience stream that
+// tracks the hazards the digital twin models (flood, storm, grid, transport,
+// ports, supply chain).
+const UK_FEEDS: Record<string, Feed[]> = {
+  'uk-headlines': [
+    { name: 'BBC News UK',     url: rss('https://feeds.bbci.co.uk/news/uk/rss.xml') },
+    { name: 'Guardian UK',     url: rss('https://www.theguardian.com/uk-news/rss') },
+    { name: 'Sky News UK',     url: rss('https://feeds.skynews.com/feeds/rss/uk.xml') },
+    { name: 'BBC England',     url: rss('https://feeds.bbci.co.uk/news/england/rss.xml') },
+    { name: 'BBC Scotland',    url: rss('https://feeds.bbci.co.uk/news/scotland/rss.xml') },
+    { name: 'BBC Wales',       url: rss('https://feeds.bbci.co.uk/news/wales/rss.xml') },
+  ],
+  'uk-resilience-news': [
+    { name: 'UK Floods & Storms',    url: rss('https://news.google.com/rss/search?q=(flood+OR+storm+OR+"Met+Office"+OR+"flood+warning"+OR+"weather+warning")+(England+OR+Scotland+OR+Wales+OR+%22Northern+Ireland%22+OR+Britain+OR+UK)+when:1d&hl=en-GB&gl=GB&ceid=GB:en') },
+    { name: 'UK Power & Energy',     url: rss('https://news.google.com/rss/search?q=("power+cut"+OR+blackout+OR+"National+Grid"+OR+NESO+OR+Ofgem+OR+"energy+supply")+(England+OR+Scotland+OR+Wales+OR+%22Northern+Ireland%22+OR+Britain+OR+UK)+when:2d&hl=en-GB&gl=GB&ceid=GB:en') },
+    { name: 'UK Transport Disruption', url: rss('https://news.google.com/rss/search?q=("rail+disruption"+OR+"Network+Rail"+OR+"road+closure"+OR+"National+Highways"+OR+"flights+cancelled")+(England+OR+Scotland+OR+Wales+OR+%22Northern+Ireland%22+OR+Britain+OR+UK)+when:1d&hl=en-GB&gl=GB&ceid=GB:en') },
+    { name: 'UK Ports & Supply Chain', url: rss('https://news.google.com/rss/search?q=(Felixstowe+OR+Southampton+OR+Dover+OR+"port+of"+OR+"supply+chain"+OR+shortages)+(England+OR+Scotland+OR+Wales+OR+%22Northern+Ireland%22+OR+Britain+OR+UK)+when:2d&hl=en-GB&gl=GB&ceid=GB:en') },
+    { name: 'UK Emergencies',        url: rss('https://news.google.com/rss/search?q=("major+incident"+OR+"emergency+services"+OR+evacuat+OR+COBR)+(England+OR+Scotland+OR+Wales+OR+%22Northern+Ireland%22+OR+Britain+OR+UK)+when:1d&hl=en-GB&gl=GB&ceid=GB:en') },
+  ],
+};
+
 // Variant-aware exports
 export const FEEDS = SITE_VARIANT === 'tech'
   ? TECH_FEEDS
@@ -1101,7 +1122,9 @@ export const FEEDS = SITE_VARIANT === 'tech'
         ? COMMODITY_FEEDS
         : SITE_VARIANT === 'energy'
           ? ENERGY_FEEDS
-          : FULL_FEEDS;
+          : SITE_VARIANT === 'uk'
+            ? UK_FEEDS
+            : FULL_FEEDS;
 
 // Canonical category→feeds map: the union of every variant's feed set.
 // `FEEDS` (above) is just the active variant's PRESET; users freely customize
@@ -1117,6 +1140,7 @@ export const CANONICAL_FEEDS: Record<string, Feed[]> = mergeCanonicalFeeds([
   COMMODITY_FEEDS,
   ENERGY_FEEDS,
   HAPPY_FEEDS,
+  UK_FEEDS,
 ]);
 
 export const SOURCE_REGION_MAP: Record<string, { labelKey: string; feedKeys: string[] }> = {

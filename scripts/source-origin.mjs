@@ -602,7 +602,9 @@ const PROVIDER_ORIGINS = Object.freeze({
   'Fast Company': 'US',
   'Mexico Energy Regulatory Commission (CRE)': 'MX',
   NDTV: 'IN',
+  'Open-Meteo': 'CH',
   'Our World in Data': 'GB',
+  'Sky News': 'GB',
   'The Hacker News': 'IN',
   'World Health Organization (WHO)': null,
 });

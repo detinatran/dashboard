@@ -107,7 +107,8 @@
     "fearGreed": "Medo e Ganância",
     "marketBreadth": "Amplitude de Mercado",
     "climateNews": "Notícias Climáticas",
-    "fx": "Taxas de Câmbio"
+    "fx": "Taxas de Câmbio",
+    "ukCrisisMonitor": "Monitor de crises ao vivo"
   },
   "commands": {
     "prefixes": {
@@ -516,7 +517,8 @@
         "mena": "MENA",
         "asia": "Ásia",
         "africa": "África",
-        "oceania": "Oceânia"
+        "oceania": "Oceânia",
+        "uk": "Reino Unido"
       },
       "zoomIn": "Ampliar",
       "zoomOut": "Diminuir zoom",
@@ -598,7 +600,10 @@
         "radiationSpike": "Pico de radiação",
         "radiationElevated": "Radiação elevada",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "Alertas ao vivo do Reino Unido",
+        "ukTwin": "Gêmeo digital do Reino Unido"
       },
       "layersTitle": "Camadas",
       "layerSearch": "Pesquisar camadas...",
@@ -2367,6 +2372,68 @@
       "rubBase": "Banco da Rússia — rublos por 1 unidade",
       "rubPerUnit": "Rublos por unidade",
       "sourceCbr": "Fonte: Banco da Rússia"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "Os riscos atuais do Reino Unido em um único feed: alertas de enchente da Environment Agency, avisos meteorológicos do Met Office, avisos da rede da NESO, interrupções nas linhas da TfL e terremotos do BGS, ordenados por gravidade. Obtidos diretamente das fontes públicas a cada poucos minutos.",
+      "loadError": "Não foi possível acessar as fontes ao vivo do Reino Unido.",
+      "allClear": "Nenhum alerta ativo no Reino Unido no momento.",
+      "degraded": "Indisponíveis: {{sources}}",
+      "updated": "Atualizado {{time}}",
+      "grid": "Rede",
+      "carbon": "Intensidade de carbono",
+      "renewables": "Renováveis",
+      "demand": "Demanda",
+      "floods": "Alertas de enchente",
+      "weather": "Avisos meteorológicos",
+      "gridWarnings": "Avisos da rede",
+      "transport": "Interrupções TfL",
+      "quakes": "Terremotos (7 d)",
+      "filterAll": "Todos",
+      "showOnMap": "Ver no mapa"
     }
   },
   "popups": {
@@ -3105,7 +3172,9 @@
     "panelCatCommodityEcon": "Economia & Comércio",
     "panelCatHappyNews": "Boas Notícias",
     "panelCatHappyPlanet": "Planeta & Doações",
-    "embed": "Incorporar"
+    "embed": "Incorporar",
+    "uk": "Reino Unido",
+    "panelCatCrisisTwin": "CrisisTwin Reino Unido"
   },
   "countryBrief": {
     "identifying": "Identificando país...",

@@ -316,7 +316,9 @@
     "panelCatCommodityEcon": "Ekonomika a obchod",
     "panelCatHappyNews": "Dobré zprávy",
     "panelCatHappyPlanet": "Planeta a dárcovství",
-    "embed": "Vložit"
+    "embed": "Vložit",
+    "uk": "Velká Británie",
+    "panelCatCrisisTwin": "CrisisTwin Velká Británie"
   },
   "panels": {
     "liveNews": "Živé zprávy",
@@ -426,7 +428,8 @@
     "fearGreed": "Strach a chamtivost",
     "marketBreadth": "Šíře trhu",
     "climateNews": "Zprávy o klimatu",
-    "fx": "Kurzy měn"
+    "fx": "Kurzy měn",
+    "ukCrisisMonitor": "Živý monitor krizí"
   },
   "commands": {
     "prefixes": {
@@ -1163,7 +1166,8 @@
         "asia": "Asie",
         "latam": "Latinská Amerika",
         "africa": "Afrika",
-        "oceania": "Oceánie"
+        "oceania": "Oceánie",
+        "uk": "Spojené království"
       },
       "layers": {
         "startupHubs": "Startup centra",
@@ -1214,7 +1218,10 @@
         "radiationSpike": "Skokový nárůst radiace",
         "radiationElevated": "Zvýšená radiace",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "Živá upozornění pro Spojené království",
+        "ukTwin": "Digitální dvojče Spojeného království"
       },
       "tooltip": {
         "earthquake": "Zemětřesení",
@@ -2703,6 +2710,68 @@
       "rubBase": "Ruská centrální banka — rubly za 1 jednotku",
       "rubPerUnit": "Rublů za jednotku",
       "sourceCbr": "Zdroj: Ruská centrální banka"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "Aktuální rizika ve Spojeném království v jednom přehledu: povodňová varování Environment Agency, meteorologická varování Met Office, varování soustavy od NESO, omezení linek TfL a zemětřesení z BGS, seřazená podle závažnosti. Načítá se přímo z veřejných zdrojů každých několik minut.",
+      "loadError": "Nepodařilo se spojit se zdroji pro Spojené království.",
+      "allClear": "Momentálně nejsou žádná aktivní upozornění pro Spojené království.",
+      "degraded": "Nedostupné: {{sources}}",
+      "updated": "Aktualizováno {{time}}",
+      "grid": "Soustava",
+      "carbon": "Uhlíková intenzita",
+      "renewables": "Obnovitelné zdroje",
+      "demand": "Spotřeba",
+      "floods": "Povodňová varování",
+      "weather": "Meteorologická varování",
+      "gridWarnings": "Varování soustavy",
+      "transport": "Omezení TfL",
+      "quakes": "Zemětřesení (7 dní)",
+      "filterAll": "Vše",
+      "showOnMap": "Zobrazit na mapě"
     }
   },
   "popups": {

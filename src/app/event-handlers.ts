@@ -1610,7 +1610,13 @@ export class EventHandlerManager implements AppModule {
 
     if (this.ctx.isDesktopApp || options.isLocalDev) {
       if (stageVariantSelection(SITE_VARIANT, variant, writeStorageValue)) {
-        window.location.reload();
+        // Production lands on the target variant's clean URL; mirror that here
+        // so the old variant's view/layers in the query string do not override
+        // the new variant's defaults (e.g. CrisisTwin UK opening on the globe).
+        const url = new URL(window.location.href);
+        for (const key of ['view', 'layers', 'lat', 'lon', 'zoom']) url.searchParams.delete(key);
+        if (url.href !== window.location.href) window.location.replace(url.href);
+        else window.location.reload();
       }
       return;
     }

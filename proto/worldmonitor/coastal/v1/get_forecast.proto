@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package worldmonitor.coastal.v1;
+
+import "sebuf/http/annotations.proto";
+import "worldmonitor/coastal/v1/list_stations.proto";
+
+message GetForecastRequest {
+  string station_id = 1 [(sebuf.http.query) = {name: "station_id"}];
+}
+
+message CurrentConditions {
+  double water_level = 1;
+  string trend = 2;
+  string datum = 3;
+  // Tide and residual are only populated when a real astronomical tide source
+  // is configured. has_tide=false means "unknown", never zero.
+  bool has_tide = 4;
+  double predicted_tide = 5;
+  double residual = 6;
+}
+
+message WeatherConditions {
+  bool present = 1;
+  double pressure = 2;
+  double wind_speed = 3;
+  double wind_direction = 4;
+  double wind_gust = 5;
+  double precipitation = 6;
+  double temperature = 7;
+}
+
+message WaterLevelHorizon {
+  string horizon = 1;             // "1h" | "3h" | "6h"
+  int64 timestamp = 2 [(sebuf.http.int64_encoding) = INT64_ENCODING_NUMBER];
+  double water_level = 3;
+  // Empirical error band from held-out residuals, not a probabilistic
+  // predictive interval. has_bounds=false when the model recorded no sigma.
+  bool has_bounds = 4;
+  double lower_bound = 5;
+  double upper_bound = 6;
+  // Astronomical tide at this horizon, and the implied non-tidal residual
+  // (predicted level minus tide). has_tide=false outside the precomputed tide
+  // coverage window — the fields are then meaningless, not zero.
+  bool has_tide = 7;
+  double predicted_tide = 8;
+  double predicted_residual = 9;
+}
+
+message WaterLevelForecast {
+  // "ready" | "model_not_configured" | "model_incompatible"
+  // | "insufficient_history" | "inference_failed" | "history_stale" | "no_history"
+  string status = 1;
+  string reason = 2;
+  repeated WaterLevelHorizon horizons = 3;
+}
+
+message WarningHorizon {
+  string horizon = 1;
+  double probability = 2;
+  bool warning = 3;
+  // Per-horizon threshold from model metadata. Never assume 0.5.
+  bool has_threshold = 4;
+  double threshold = 5;
+}
+
+message WarningForecast {
+  string status = 1;
+  string reason = 2;
+  repeated WarningHorizon horizons = 3;
+}
+
+message RiskAssessment {
+  string level = 1;
+  string reason = 2;
+  string basis = 3;
+}
+
+message DataProvenance {
+  string status = 1;
+  int32 age_minutes = 2;
+  int64 latest_update = 3 [(sebuf.http.int64_encoding) = INT64_ENCODING_NUMBER];
+  string water_level_provider = 4;
+  string weather_provider = 5;
+  string tide_provider = 6;
+  string feature_version = 7;
+}
+
+message ModelProvenance {
+  string regression_version = 1;
+  string warning_version = 2;
+}
+
+message GetForecastResponse {
+  CoastalStation station = 1;
+  int64 base_timestamp = 2 [(sebuf.http.int64_encoding) = INT64_ENCODING_NUMBER];
+  int64 generated_at = 3 [(sebuf.http.int64_encoding) = INT64_ENCODING_NUMBER];
+  bool has_current = 4;
+  CurrentConditions current = 5;
+  WeatherConditions weather = 6;
+  WaterLevelForecast water_level_forecast = 7;
+  WarningForecast warning_forecast = 8;
+  RiskAssessment risk = 9;
+  DataProvenance data = 10;
+  ModelProvenance model = 11;
+  bool data_available = 12;
+}

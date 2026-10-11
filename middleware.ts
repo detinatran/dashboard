@@ -80,6 +80,7 @@ const VARIANT_HOST_MAP: Record<string, string> = {
   'commodity.worldmonitor.app': 'commodity',
   'happy.worldmonitor.app': 'happy',
   'energy.worldmonitor.app': 'energy',
+  'uk.worldmonitor.app': 'uk',
 };
 
 // Source of truth: src/config/variant-meta.ts — keep in sync when variant metadata changes.
@@ -121,6 +122,13 @@ const VARIANT_OG: Record<string, { name: string; title: string; description: str
     description: 'Real-time global energy atlas tracking oil and gas pipelines, storage facilities, chokepoints, fuel shortages, tanker flows, and disruption events worldwide.',
     image: 'https://energy.worldmonitor.app/favico/energy/og-image.png',
     url: 'https://energy.worldmonitor.app/dashboard',
+  },
+  uk: {
+    name: 'CrisisTwin UK',
+    title: 'CrisisTwin UK - AI Digital Twin for Crisis Monitoring, Prediction and Cascading Impact',
+    description: 'CrisisTwin UK combines live UK hazard feeds, a digital twin of critical infrastructure and supply chains, AI risk prediction and what-if simulation to show what is happening, what will happen, what will be affected and what to do next.',
+    image: 'https://uk.worldmonitor.app/favico/uk/og-image.png',
+    url: 'https://uk.worldmonitor.app/dashboard',
   },
 };
 

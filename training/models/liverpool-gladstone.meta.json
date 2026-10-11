@@ -1,0 +1,222 @@
+{
+  "modelVersion": "liverpool-water-v1",
+  "featureVersion": "coastal-v1",
+  "expectedFeatureCount": 42,
+  "stationId": "liverpool-gladstone",
+  "trainedAt": "2026-09-14T09:09:23.302520+00:00",
+  "horizons": {
+    "1": {
+      "train": {
+        "model": {
+          "mae": 0.0331145871636204,
+          "rmse": 0.051495344235817454,
+          "r2": 0.9994865195056102,
+          "bias": 1.275019433152589e-06,
+          "n": 21804
+        },
+        "persistence": {
+          "mae": 0.992197440947071,
+          "rmse": 1.1516810314516686,
+          "r2": 0.743166040463414,
+          "bias": -0.00021771238913472214,
+          "n": 21804
+        }
+      },
+      "val": {
+        "model": {
+          "mae": 0.05574118459394476,
+          "rmse": 0.07257541411857743,
+          "r2": 0.9989767382497851,
+          "bias": 0.004037812069667233,
+          "n": 4672
+        },
+        "persistence": {
+          "mae": 1.0069488460989031,
+          "rmse": 1.1482667532582502,
+          "r2": 0.743850639367405,
+          "bias": 0.0010524400037853685,
+          "n": 4672
+        }
+      },
+      "test": {
+        "model": {
+          "mae": 0.057835407038592836,
+          "rmse": 0.07367462249156037,
+          "r2": 0.998957590294674,
+          "bias": 0.005458357251518,
+          "n": 4673
+        },
+        "persistence": {
+          "mae": 1.0003854081229175,
+          "rmse": 1.1566940200166387,
+          "r2": 0.7430553446411796,
+          "bias": -0.0015974748371858146,
+          "n": 4673
+        }
+      },
+      "skillVsPersistence": 0.9363058672245054,
+      "residualSigma": 0.07347214666381223
+    },
+    "3": {
+      "train": {
+        "model": {
+          "mae": 0.05968527530099977,
+          "rmse": 0.08858327041736659,
+          "r2": 0.9984815527592691,
+          "bias": 1.8189096072375674e-06,
+          "n": 21766
+        },
+        "persistence": {
+          "mae": 2.72107929933885,
+          "rmse": 3.1338981157668737,
+          "r2": -0.900491945018691,
+          "bias": 0.0010158963789673049,
+          "n": 21766
+        }
+      },
+      "val": {
+        "model": {
+          "mae": 0.11213452223601598,
+          "rmse": 0.14955664034432178,
+          "r2": 0.9956520659819843,
+          "bias": 0.028557406032801675,
+          "n": 4664
+        },
+        "persistence": {
+          "mae": 2.762716121319841,
+          "rmse": 3.1286639019752966,
+          "r2": -0.9027834549623814,
+          "bias": -0.0068713548508557406,
+          "n": 4664
+        }
+      },
+      "test": {
+        "model": {
+          "mae": 0.11600713031557383,
+          "rmse": 0.15023752360928558,
+          "r2": 0.9956732794300994,
+          "bias": 0.027127778526370723,
+          "n": 4665
+        },
+        "persistence": {
+          "mae": 2.7469798530668563,
+          "rmse": 3.1504643223675872,
+          "r2": -0.9026160105373227,
+          "bias": 0.009437298876935136,
+          "n": 4665
+        }
+      },
+      "skillVsPersistence": 0.9523125773738705,
+      "residualSigma": 0.14776805179900973
+    },
+    "6": {
+      "train": {
+        "model": {
+          "mae": 0.05296503572953441,
+          "rmse": 0.07575634239139878,
+          "r2": 0.9988898065134613,
+          "bias": 2.5132127609522125e-06,
+          "n": 21705
+        },
+        "persistence": {
+          "mae": 3.9369981122851727,
+          "rmse": 4.499813917964005,
+          "r2": -2.916965874058106,
+          "bias": -0.0006648235869171487,
+          "n": 21705
+        }
+      },
+      "val": {
+        "model": {
+          "mae": 0.1401904146129664,
+          "rmse": 0.1772242960411281,
+          "r2": 0.9939097993057859,
+          "bias": 0.02771838194934817,
+          "n": 4651
+        },
+        "persistence": {
+          "mae": 3.998630826613181,
+          "rmse": 4.502957393129432,
+          "r2": -2.9317035074806106,
+          "bias": 0.005699420226463526,
+          "n": 4651
+        }
+      },
+      "test": {
+        "model": {
+          "mae": 0.14712067155120162,
+          "rmse": 0.18426683270148858,
+          "r2": 0.9935068028708073,
+          "bias": 0.040336613828217675,
+          "n": 4652
+        },
+        "persistence": {
+          "mae": 3.984033541441579,
+          "rmse": 4.534691191530258,
+          "r2": -2.9324180483895614,
+          "bias": 0.019591143263483088,
+          "n": 4652
+        }
+      },
+      "skillVsPersistence": 0.9593650758301566,
+      "residualSigma": 0.1797977286250069
+    }
+  },
+  "horizonSigma": {
+    "1": 0.07347214666381223,
+    "3": 0.14776805179900973,
+    "6": 0.1797977286250069
+  },
+  "split": {
+    "method": "chronological",
+    "trainFrac": 0.7,
+    "valFrac": 0.15,
+    "testFrac": 0.15
+  },
+  "target": "water_level_direct",
+  "note": "v1 predicts water level directly; no astronomical tide source is configured, so tide/residual are not emitted.",
+  "featureNames": [
+    "level",
+    "level_delta_15m",
+    "level_delta_1h",
+    "level_delta_3h",
+    "level_mean_3h",
+    "level_max_3h",
+    "level_min_3h",
+    "level_std_3h",
+    "level_mean_6h",
+    "level_max_6h",
+    "level_min_6h",
+    "level_std_6h",
+    "level_mean_12h",
+    "level_max_12h",
+    "level_min_12h",
+    "level_std_12h",
+    "level_mean_24h",
+    "level_max_24h",
+    "level_min_24h",
+    "level_std_24h",
+    "level_range_12h",
+    "level_pos_in_range_12h",
+    "hours_since_max_12h",
+    "hours_since_min_12h",
+    "hour_sin",
+    "hour_cos",
+    "doy_sin",
+    "doy_cos",
+    "lunar_sin",
+    "lunar_cos",
+    "pressure",
+    "pressure_delta_3h",
+    "pressure_mean_24h",
+    "wind_speed",
+    "wind_gust",
+    "wind_u",
+    "wind_v",
+    "precip",
+    "precip_sum_6h",
+    "precip_sum_24h",
+    "temp",
+    "weather_present"
+  ]
+}

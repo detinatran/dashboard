@@ -314,7 +314,9 @@
     "panelCatCommodityEcon": "Économie & Commerce",
     "panelCatHappyNews": "Bonnes Nouvelles",
     "panelCatHappyPlanet": "Planète & Solidarité",
-    "embed": "Intégrer"
+    "embed": "Intégrer",
+    "uk": "R.-U.",
+    "panelCatCrisisTwin": "CrisisTwin Royaume-Uni"
   },
   "panels": {
     "liveNews": "Actualités en direct",
@@ -424,7 +426,8 @@
     "fearGreed": "Peur & Avidité",
     "marketBreadth": "Étendue du marché",
     "climateNews": "Actualités climatiques",
-    "fx": "Taux de Change"
+    "fx": "Taux de Change",
+    "ukCrisisMonitor": "Moniteur de crise en direct"
   },
   "commands": {
     "prefixes": {
@@ -1124,7 +1127,8 @@
         "asia": "Asie",
         "latam": "Amérique latine",
         "africa": "Afrique",
-        "oceania": "Océanie"
+        "oceania": "Océanie",
+        "uk": "Royaume-Uni"
       },
       "layers": {
         "startupHubs": "Pôles startups",
@@ -1175,7 +1179,10 @@
         "radiationSpike": "Pic de radiation",
         "radiationElevated": "Radiation élevée",
         "canadaRoads": "Canada Roads",
-        "canadaAlerts": "Canada Alerts (AB + BC + SK)"
+        "canadaAlerts": "Canada Alerts (AB + BC + SK)",
+        "waterLevel": "Water Level Prediction",
+        "ukAlerts": "Alertes en direct (R.-U.)",
+        "ukTwin": "Jumeau numérique du R.-U."
       },
       "tooltip": {
         "earthquake": "Tremblement de terre",
@@ -2684,6 +2691,68 @@
       "rubBase": "Banque de Russie — roubles pour 1 unité",
       "rubPerUnit": "Roubles par unité",
       "sourceCbr": "Source : Banque de Russie"
+    },
+    "coastal": {
+      "modeButton": "Water Level Prediction",
+      "modeButtonShort": "Water Level",
+      "modeTooltip": "UK coastal water-level prediction sites",
+      "panelTitle": "Coastal Water Level",
+      "currentLevel": "Current water level",
+      "astronomicalTide": "Astronomical tide",
+      "residual": "Residual / surge",
+      "forecast": "Forecast",
+      "expectedRange": "Expected range",
+      "warningOutlook": "Warning outlook",
+      "conditions": "Conditions",
+      "technicalDetails": "Technical details",
+      "dataSource": "Data source",
+      "latestObservation": "Latest observation",
+      "forecastGenerated": "Forecast generated",
+      "regressionModel": "Water-level model",
+      "warningModel": "Warning model",
+      "stationId": "Station ID",
+      "trendRising": "Rising",
+      "trendFalling": "Falling",
+      "trendStable": "Stable",
+      "trendUnknown": "Trend unknown",
+      "statusLive": "Live",
+      "statusDelayed": "Delayed",
+      "statusStale": "Stale",
+      "updatedAgo": "Updated {{minutes}} min ago",
+      "riskNormal": "Normal",
+      "riskAdvisory": "Advisory",
+      "riskWatch": "Watch",
+      "riskHigh": "High risk",
+      "riskUnknown": "Risk unknown",
+      "riskCaption": "Model risk estimate — not an official flood warning",
+      "forecastUnavailable": "Forecast temporarily unavailable.",
+      "modelNotConfigured": "Water-level forecast model is not available for this site.",
+      "warningNotConfigured": "Warning model not available for this site.",
+      "insufficientHistory": "Waiting for sufficient historical data.",
+      "modelIncompatible": "Forecast model is incompatible with the current feature set.",
+      "dataDelayed": "Data delayed · last observation {{minutes}} min ago",
+      "noStations": "No coastal prediction sites are configured.",
+      "chartObserved": "Observed",
+      "chartForecast": "Forecast",
+      "chartNow": "NOW"
+    },
+    "ukCrisisMonitor": {
+      "infoTooltip": "Les risques actuels au Royaume-Uni en un seul flux : alertes inondation de l’Environment Agency, vigilances météo du Met Office, alertes réseau de NESO, perturbations des lignes TfL et séismes du BGS, classés par gravité. Récupérés directement auprès des sources publiques toutes les quelques minutes.",
+      "loadError": "Impossible de joindre les sources en direct du Royaume-Uni.",
+      "allClear": "Aucune alerte active au Royaume-Uni pour le moment.",
+      "degraded": "Indisponible : {{sources}}",
+      "updated": "Mis à jour {{time}}",
+      "grid": "Réseau",
+      "carbon": "Intensité carbone",
+      "renewables": "Renouvelables",
+      "demand": "Demande",
+      "floods": "Alertes inondation",
+      "weather": "Vigilances météo",
+      "gridWarnings": "Alertes réseau",
+      "transport": "Perturbations TfL",
+      "quakes": "Séismes (7 j)",
+      "filterAll": "Tout",
+      "showOnMap": "Voir sur la carte"
     }
   },
   "popups": {

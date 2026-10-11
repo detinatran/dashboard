@@ -179,7 +179,7 @@ describe('WebMCP canonical inventories', () => {
     }
   });
 
-  it('snapshots all six fresh-default variant inventories', () => {
+  it('snapshots all seven fresh-default variant inventories', () => {
     assert.deepEqual(Object.keys(WEBMCP_VARIANT_INVENTORIES), SITE_VARIANTS);
     const expectedConditional = {
       full: ['search_procurement'],
@@ -188,6 +188,7 @@ describe('WebMCP canonical inventories', () => {
       happy: [],
       commodity: [],
       energy: [],
+      uk: [],
     };
 
     for (const variant of SITE_VARIANTS) {

@@ -56,6 +56,8 @@ import type { DisplacementFlow } from '@/services/displacement';
 import type { Earthquake } from '@/services/earthquakes';
 import type { ClimateAnomaly } from '@/services/climate';
 import type { RadiationObservation } from '@/services/radiation';
+import type { UkAlert } from '@/services/uk/parsers';
+import { UK_NODE_TYPE_COLORS, UK_NODE_TYPE_LABELS, type UkTwinEdge, type UkTwinNode } from '@/services/uk/twin';
 import { ArcLayer } from '@deck.gl/layers';
 import type { WeatherAlert } from '@/services/weather';
 import type { CanadaRoadRecord } from '@/services/canada-roads';
@@ -78,7 +80,7 @@ import { getCachedFuelShortageRegistry } from '@/shared/fuel-shortage-registry-s
 // country-geometry helpers; don't re-import it here.
 import { tokenizeForMatch, matchKeyword, matchesAnyKeyword, findMatchingKeywords } from '@/utils/keyword-match';
 import { t } from '@/services/i18n';
-import { debounce, rafSchedule, getCurrentTheme } from '@/utils/index';
+import { debounce, rafSchedule, getCurrentTheme, getCSSColor } from '@/utils/index';
 import { isInputPending, scheduleYield } from '@/utils/after-paint';
 import { showLayerWarning } from '@/utils/layer-warning';
 import { localizeMapLabels } from '@/utils/map-locale';
@@ -205,7 +207,7 @@ import {
 maplibregl.setWorkerUrl(maplibreWorkerUrl);
 
 export type TimeRange = '1h' | '6h' | '24h' | '48h' | '7d' | 'all';
-export type DeckMapView = 'global' | 'america' | 'mena' | 'eu' | 'asia' | 'latam' | 'africa' | 'oceania';
+export type DeckMapView = 'global' | 'america' | 'mena' | 'eu' | 'uk' | 'asia' | 'latam' | 'africa' | 'oceania';
 type MapInteractionMode = 'flat' | '3d';
 
 export interface CountryClickPayload {
@@ -250,11 +252,40 @@ const VIEW_PRESETS: Record<DeckMapView, { longitude: number; latitude: number; z
   america: { longitude: -95, latitude: 38, zoom: 3 },
   mena: { longitude: 45, latitude: 28, zoom: 3.5 },
   eu: { longitude: 15, latitude: 50, zoom: 3.5 },
+  // Framed on the British Isles so the coastal prediction sites (Liverpool
+  // on the Irish Sea today, Thames estuary later) are both in view.
+  // Centred on the Irish Sea approach to Liverpool rather than the geographic
+  // middle of the UK: the CRDT mode expands the map to full width, and at 4.8
+  // the station sat in a frame reaching Poland. 5.6 keeps the Welsh and Irish
+  // coastlines for context while making the Gladstone Dock marker unmissable.
+  uk: { longitude: -3.1, latitude: 53.6, zoom: 5.6 },
   asia: { longitude: 105, latitude: 35, zoom: 3 },
   latam: { longitude: -60, latitude: -15, zoom: 3 },
   africa: { longitude: 20, latitude: 5, zoom: 3 },
   oceania: { longitude: 135, latitude: -25, zoom: 3.5 },
 };
+
+/** Marker payload for the coastal water-level layer. */
+export interface CoastalMarker {
+  id: string;
+  name: string;
+  displayName: string;
+  lat: number;
+  lon: number;
+  riskLevel: string;
+  dataStatus: string;
+  waterLevel: number;
+  hasCurrent: boolean;
+  trend: string;
+}
+
+/** `#rrggbb` -> deck.gl rgb triple. Returns null so callers can fall back. */
+function hexToRgb(hex: string | null | undefined): [number, number, number] | null {
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex ?? '').trim());
+  if (!m) return null;
+  const n = parseInt(m[1]!, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
 
 const VIEWPORT_MOVEMENT_EVENT_KEY = 'worldMonitorViewportGeneration';
 
@@ -280,6 +311,9 @@ const LAYER_ZOOM_THRESHOLDS: Partial<Record<keyof MapLayers, { minZoom: number; 
   datacenters: { minZoom: 5 },
   irradiators: { minZoom: 4 },
   spaceports: { minZoom: 3 },
+  waterLevel: { minZoom: 3 },
+  ukAlerts: { minZoom: 3 },
+  ukTwin: { minZoom: 3 },
   gulfInvestments: { minZoom: 2, showLabels: 5 },
 };
 // Export for external use
@@ -877,6 +911,18 @@ export class DeckGLMap {
   private radarIdlePending = false;
   private readonly startupTime = Date.now();
   private basemapSwitchSeq = 0;
+  /** Coastal prediction sites currently rendered. Empty until the layer loads. */
+  private coastalStations: CoastalMarker[] = [];
+  /** Bumped on every set so deck.gl re-evaluates the colour accessors. */
+  private coastalStationsVersion = 0;
+  // CrisisTwin UK overlays. Edges are resolved to their endpoint nodes once,
+  // on set, so the path layer never looks nodes up per frame.
+  private ukAlerts: UkAlert[] = [];
+  private ukTwinNodes: UkTwinNode[] = [];
+  private ukTwinEdges: Array<{ edge: UkTwinEdge; path: [[number, number], [number, number]] }> = [];
+  private ukDataVersion = 0;
+  /** Basemap theme currently rendered, so a site-theme switch can tell whether the basemap must be rebuilt. */
+  private activeMapTheme: string | null = null;
   private lastCableHighlightSignature = '';
   private lastCableHealthSignature = '';
   private lastPipelineHighlightSignature = '';
@@ -941,6 +987,14 @@ export class DeckGLMap {
       }
       const provider = getMapProvider();
       const mapTheme = getMapTheme(provider);
+      // getMapTheme() now follows the site theme when the user has not picked
+      // a basemap explicitly, so a light/dark switch can change which basemap
+      // we should be showing. Reload it when it no longer matches, otherwise a
+      // light dashboard keeps rendering a black map.
+      if (mapTheme !== this.activeMapTheme) {
+        void this.switchBasemap();
+        return;
+      }
       const paintTheme = isLightMapTheme(mapTheme) ? 'light' as const : 'dark' as const;
       this.updateCountryLayerPaint(paintTheme);
       this.render();
@@ -1119,6 +1173,7 @@ export class DeckGLMap {
     }
 
     const { mapTheme: initialMapTheme, style: primaryStyle } = await this.resolveInitialBasemapStyle();
+    this.activeMapTheme = initialMapTheme;
     // The component can be torn down (renderer switch) while the style import
     // above is in flight; bail before constructing a MapLibre map that destroy()
     // can no longer reach — it would orphan a live WebGL context, its listeners
@@ -1401,6 +1456,33 @@ export class DeckGLMap {
         ? await getStyleForProvider(provider, mapTheme)
         : (isLightMapTheme(mapTheme) ? FALLBACK_LIGHT_STYLE : FALLBACK_DARK_STYLE),
     };
+  }
+
+  /** Replace the coastal marker set. Called by MapContainer, not by fetch code. */
+  public setCoastalStations(stations: CoastalMarker[]): void {
+    this.coastalStations = Array.isArray(stations) ? stations : [];
+    this.coastalStationsVersion += 1;
+    this.render();
+  }
+
+  /** CrisisTwin UK: geolocated live alerts (alerts without coordinates are skipped). */
+  public setUkAlerts(alerts: UkAlert[]): void {
+    this.ukAlerts = (Array.isArray(alerts) ? alerts : []).filter(a => a.lat != null && a.lon != null);
+    this.ukDataVersion += 1;
+    this.render();
+  }
+
+  /** CrisisTwin UK: the infrastructure + sample-company dependency graph. */
+  public setUkTwin(nodes: UkTwinNode[], edges: UkTwinEdge[]): void {
+    this.ukTwinNodes = Array.isArray(nodes) ? nodes : [];
+    const byId = new Map(this.ukTwinNodes.map(n => [n.id, n]));
+    this.ukTwinEdges = (Array.isArray(edges) ? edges : []).flatMap((edge) => {
+      const from = byId.get(edge.from);
+      const to = byId.get(edge.to);
+      return from && to ? [{ edge, path: [[from.lon, from.lat], [to.lon, to.lat]] as [[number, number], [number, number]] }] : [];
+    });
+    this.ukDataVersion += 1;
+    this.render();
   }
 
   public resize(): void {
@@ -2023,6 +2105,19 @@ export class DeckGLMap {
     // Spaceports layer — hidden at low zoom
     if (mapLayers.spaceports && this.isLayerVisible('spaceports')) {
       layers.push(this.createSpaceportsLayer());
+    }
+
+    // Coastal water-level prediction sites
+    if (mapLayers.waterLevel && this.isLayerVisible('waterLevel') && this.coastalStations.length > 0) {
+      layers.push(this.createWaterLevelLayer());
+    }
+
+    // CrisisTwin UK — the twin under the live alerts so alerts stay clickable.
+    if (mapLayers.ukTwin && this.isLayerVisible('ukTwin') && this.ukTwinNodes.length > 0) {
+      layers.push(...this.createUkTwinLayers());
+    }
+    if (mapLayers.ukAlerts && this.isLayerVisible('ukAlerts') && this.ukAlerts.length > 0) {
+      layers.push(this.createUkAlertsLayer());
     }
 
     // Hotspots layer (all hotspots including high/breaking, with pulse + ghost)
@@ -3248,6 +3343,113 @@ export class DeckGLMap {
       radiusMinPixels: 5,
       radiusMaxPixels: 12,
       pickable: true,
+    });
+  }
+
+  /**
+   * Coastal water-level prediction sites.
+   *
+   * Colour comes from the semantic risk ladder via CSS tokens so it tracks the
+   * theme and matches the rest of the app; it is never the sole carrier of
+   * meaning — the marker is paired with a text label in the detail panel, and
+   * a stale site is drawn hollow rather than merely recoloured.
+   */
+  private createWaterLevelLayer(): ScatterplotLayer {
+    const riskRgb = (level: string): [number, number, number] => {
+      const token = level === 'high' ? '--semantic-high'
+        : level === 'watch' ? '--semantic-elevated'
+        : level === 'advisory' ? '--semantic-info'
+        : level === 'normal' ? '--semantic-normal'
+        // 'unknown' is the normal state while no warning model is deployed, so
+        // it must read as an active station rather than a greyed-out one.
+        : '--accent';
+      return hexToRgb(getCSSColor(token)) ?? [125, 249, 192];
+    };
+    return new ScatterplotLayer({
+      id: 'water-level-layer',
+      data: this.coastalStations,
+      getPosition: (d: CoastalMarker) => [d.lon, d.lat],
+      getRadius: 9000,
+      // Freshness still modulates the fill, but the faint end is no longer
+      // near-invisible: measured on the live map, a 'delayed' station at alpha
+      // 90 over the dark basemap was indistinguishable from the terrain, and a
+      // 6px hit area could not be clicked even at its exact projected pixel.
+      // The outline carries the station's presence; the fill carries freshness.
+      getFillColor: (d: CoastalMarker) => {
+        const [r, g, b] = riskRgb(d.riskLevel);
+        return [r, g, b, d.dataStatus === 'live' ? 230 : 150] as [number, number, number, number];
+      },
+      getLineColor: (d: CoastalMarker) => {
+        const [r, g, b] = riskRgb(d.riskLevel);
+        return [r, g, b, 255] as [number, number, number, number];
+      },
+      stroked: true,
+      lineWidthMinPixels: 2.5,
+      // This is a dedicated mode with a handful of stations, not a dense layer:
+      // the marker should be unmistakable and comfortably clickable.
+      radiusMinPixels: 11,
+      radiusMaxPixels: 22,
+      pickable: true,
+      updateTriggers: {
+        getFillColor: [this.coastalStationsVersion],
+        getLineColor: [this.coastalStationsVersion],
+      },
+    });
+  }
+
+  private createUkTwinLayers(): Layer[] {
+    return [
+      new PathLayer({
+        id: 'uk-twin-edges-layer',
+        data: this.ukTwinEdges,
+        getPath: (d: { path: [[number, number], [number, number]] }) => d.path,
+        getColor: (d: { edge: UkTwinEdge }) => (d.edge.kind === 'powers' || d.edge.kind === 'supplies_gas'
+          ? [255, 176, 0, 70]
+          : [125, 180, 255, 80]) as [number, number, number, number],
+        getWidth: (d: { edge: UkTwinEdge }) => 0.6 + d.edge.dependency * 1.6,
+        widthUnits: 'pixels',
+        pickable: true,
+        updateTriggers: { getColor: [this.ukDataVersion], getWidth: [this.ukDataVersion] },
+      }),
+      new ScatterplotLayer({
+        id: 'uk-twin-nodes-layer',
+        data: this.ukTwinNodes,
+        getPosition: (d: UkTwinNode) => [d.lon, d.lat],
+        getRadius: (d: UkTwinNode) => 1500 + d.criticality * 900,
+        getFillColor: (d: UkTwinNode) => [...UK_NODE_TYPE_COLORS[d.type], d.owner === 'sample' ? 255 : 210] as [number, number, number, number],
+        getLineColor: (d: UkTwinNode) => (d.owner === 'sample' ? [255, 255, 255, 255] : [10, 14, 12, 200]) as [number, number, number, number],
+        stroked: true,
+        lineWidthMinPixels: 1,
+        radiusMinPixels: 3,
+        radiusMaxPixels: 12,
+        pickable: true,
+        updateTriggers: { getFillColor: [this.ukDataVersion] },
+      }),
+    ];
+  }
+
+  private createUkAlertsLayer(): ScatterplotLayer {
+    const severityRgb = (severity: UkAlert['severity']): [number, number, number] => {
+      const token = severity === 'critical' ? '--semantic-critical'
+        : severity === 'high' ? '--semantic-high'
+        : severity === 'medium' ? '--semantic-elevated'
+        : '--semantic-info';
+      return hexToRgb(getCSSColor(token)) ?? [255, 176, 0];
+    };
+    const radius: Record<UkAlert['severity'], number> = { critical: 14000, high: 11000, medium: 8000, low: 5000 };
+    return new ScatterplotLayer({
+      id: 'uk-alerts-layer',
+      data: this.ukAlerts,
+      getPosition: (d: UkAlert) => [d.lon as number, d.lat as number],
+      getRadius: (d: UkAlert) => radius[d.severity],
+      getFillColor: (d: UkAlert) => [...severityRgb(d.severity), 110] as [number, number, number, number],
+      getLineColor: (d: UkAlert) => [...severityRgb(d.severity), 255] as [number, number, number, number],
+      stroked: true,
+      lineWidthMinPixels: 2,
+      radiusMinPixels: 6,
+      radiusMaxPixels: 26,
+      pickable: true,
+      updateTriggers: { getFillColor: [this.ukDataVersion], getLineColor: [this.ukDataVersion] },
     });
   }
 
@@ -5005,6 +5207,15 @@ export class DeckGLMap {
     const text = (value: unknown): string => escapeHtml(String(value ?? ''));
 
     switch (layerId) {
+      case 'uk-alerts-layer':
+        return { html: `<div class="deckgl-tooltip"><strong>${text(obj.title)}</strong><br/>${text(obj.detail)}</div>` };
+      case 'uk-twin-nodes-layer': {
+        const capacity = obj.capacity ? ` · ${text(obj.capacity.value)} ${text(obj.capacity.unit)}` : '';
+        const owner = obj.owner === 'sample' ? ' · sample company' : '';
+        return { html: `<div class="deckgl-tooltip"><strong>${text(obj.name)}</strong><br/>${text(UK_NODE_TYPE_LABELS[obj.type as UkTwinNode['type']] ?? obj.type)}${capacity}${owner}<br/>Criticality ${text(obj.criticality)}/5 · flood exposure: ${text(obj.floodExposure)}</div>` };
+      }
+      case 'uk-twin-edges-layer':
+        return { html: `<div class="deckgl-tooltip"><strong>${text(obj.edge?.kind?.replace('_', ' '))}</strong><br/>${text(obj.edge?.from)} → ${text(obj.edge?.to)}<br/>Dependency ${Math.round((obj.edge?.dependency ?? 0) * 100)}%</div>` };
       case 'hotspots-layer':
         return { html: `<div class="deckgl-tooltip"><strong>${text(obj.name)}</strong><br/>${text(obj.subtext)}</div>` };
       case 'earthquakes-layer':
@@ -5564,6 +5775,25 @@ export class DeckGLMap {
       'cable-advisories-layer': 'cable-advisory',
       'repair-ships-layer': 'repair-ship',
     };
+
+    // Coastal sites open their own panel rather than a map popup (same
+    // precedent as webcams): the forecast view carries a chart and collapsible
+    // technical details that the shared popup has no shape for.
+    if (layerId === 'uk-twin-nodes-layer') {
+      const node = (info.object ?? null) as UkTwinNode | null;
+      if (node?.id) window.dispatchEvent(new CustomEvent('wm:uk-twin-node-selected', { detail: { nodeId: node.id } }));
+      return;
+    }
+
+    if (layerId === 'water-level-layer') {
+      const marker = (info.object ?? null) as CoastalMarker | null;
+      if (marker?.id) {
+        window.dispatchEvent(new CustomEvent('wm:coastal-station-selected', {
+          detail: { stationId: marker.id },
+        }));
+      }
+      return;
+    }
 
     const popupType = layerToPopupType[layerId];
     if (!popupType) return;
@@ -8174,6 +8404,7 @@ export class DeckGLMap {
     const seq = ++this.basemapSwitchSeq;
     const provider = getMapProvider();
     const mapTheme = getMapTheme(provider);
+    this.activeMapTheme = mapTheme;
     const style = isHappyVariant
       ? (getCurrentTheme() === 'light' ? HAPPY_LIGHT_STYLE : HAPPY_DARK_STYLE)
       : (this.usedFallbackStyle && provider === 'auto')

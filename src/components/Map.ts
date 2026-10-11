@@ -100,7 +100,7 @@ import type {
 
 
 export type TimeRange = '1h' | '6h' | '24h' | '48h' | '7d' | 'all';
-export type MapView = 'global' | 'america' | 'mena' | 'eu' | 'asia' | 'latam' | 'africa' | 'oceania';
+export type MapView = 'global' | 'america' | 'mena' | 'eu' | 'uk' | 'asia' | 'latam' | 'africa' | 'oceania';
 
 export interface MapState {
   zoom: number;
@@ -4279,6 +4279,7 @@ export class MapComponent {
       america: { zoom: 1.8, pan: { x: 180, y: 30 } },
       mena: { zoom: 3.5, pan: { x: -100, y: 50 } },
       eu: { zoom: 2.4, pan: { x: -30, y: 100 } },
+      uk: { zoom: 5.5, pan: { x: 30, y: 330 } },
       asia: { zoom: 2.0, pan: { x: -320, y: 40 } },
       latam: { zoom: 2.0, pan: { x: 120, y: -100 } },
       africa: { zoom: 2.2, pan: { x: -40, y: -30 } },

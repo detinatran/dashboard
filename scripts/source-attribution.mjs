@@ -813,6 +813,38 @@ const PROVIDER_OVERRIDES = {
   },
   'feeds.feedburner.com': { role: 'transport' },
   'news.google.com': { role: 'transport' },
+  // CrisisTwin UK live sources (browser-direct, keyless).
+  'api.carbonintensity.org.uk': {
+    provider: 'NESO Carbon Intensity API',
+    license: 'CC BY 4.0 (Carbon Intensity API terms, carbonintensity.org.uk)',
+    attribution: 'Carbon Intensity API by the National Energy System Operator (NESO), Environmental Defense Fund Europe and University of Oxford; https://carbonintensity.org.uk/.',
+    status: 'reviewed',
+  },
+  'api.open-meteo.com': {
+    provider: 'Open-Meteo',
+    license: 'CC BY 4.0 (Open-Meteo API data licence)',
+    attribution: 'Weather data by Open-Meteo.com, licensed under CC BY 4.0; https://open-meteo.com/.',
+    status: 'reviewed',
+  },
+  'data.elexon.co.uk': {
+    provider: 'Elexon BMRS',
+    attribution: 'Elexon Balancing Mechanism Reporting Service (BMRS); link to https://bmrs.elexon.co.uk/.',
+  },
+  'earthquakes.bgs.ac.uk': {
+    provider: 'British Geological Survey',
+    attribution: 'British Geological Survey (UKRI) earthquake bulletins; link to https://earthquakes.bgs.ac.uk/.',
+  },
+  'environment.data.gov.uk': {
+    provider: 'Environment Agency',
+    license: 'Open Government Licence v3.0 (Environment Agency real-time flood-monitoring API)',
+    attribution: 'This uses Environment Agency flood and river level data from the real-time data API (Beta). Contains public sector information licensed under the Open Government Licence v3.0.',
+    status: 'reviewed',
+  },
+  'feeds.skynews.com': { provider: 'Sky News' },
+  'www.metoffice.gov.uk': {
+    provider: 'Met Office',
+    attribution: 'Met Office weather warnings (Crown copyright); link to https://www.metoffice.gov.uk/weather/warnings-and-advice/uk-warnings.',
+  },
 };
 
 // Provider display identities change rarely and affect attribution, catalog
@@ -820,13 +852,13 @@ const PROVIDER_OVERRIDES = {
 // a provider-bearing override a separate, explicit lifecycle event instead of
 // something `--write` can silently normalize into the manifest.
 export const PROVIDER_IDENTITY_REVIEW = Object.freeze({
-  sha256: 'a7ab631b0e17d681791f6978832fb0a8c4f8567bfa1c90d9e79a747b5a7dfbfe',
-  reason: 'Keep Toronto Police Service C4S live-dispatch on services.arcgis.com distinct from Toronto Police Service Open Data on data.tps.ca and www.tps.ca, so live CAD is not catalogued as Open Data / geopolitics.',
+  sha256: 'b165ad02cd148cc96c2be61f8d751e1453c5305352f638b7079a55afb6239904',
+  reason: 'Name the CrisisTwin UK live sources (Environment Agency, NESO Carbon Intensity API, Elexon BMRS, British Geological Survey, Met Office, Open-Meteo, Sky News) by publisher rather than by bare host. Previous epoch: keep Toronto Police Service C4S live-dispatch on services.arcgis.com distinct from Toronto Police Service Open Data on data.tps.ca and www.tps.ca.',
   // A URL cited here is scanned like any other: this file sits inside
   // SOURCE_ROOTS, so citing a host that is not already a registered source
   // invents a provider row for it. The B.C. catalogue URLs above are safe
   // because that host is itself an observed source; parallel.ai is not.
-  reviewReference: 'Issues #7012 and #6682 Toronto safety sources; plus Issue #7000 publisher-centric source catalog; plus Issue #7001, Issue #6437, Issue #6622, Issue #6659, and PR #6447 identity reviews.',
+  reviewReference: 'CrisisTwin UK variant source onboarding (2026-10-12); Issues #7012 and #6682 Toronto safety sources; plus Issue #7000 publisher-centric source catalog; plus Issue #7001, Issue #6437, Issue #6622, Issue #6659, and PR #6447 identity reviews.',
 });
 
 export function providerIdentityDigest(providerOverrides = PROVIDER_OVERRIDES) {
@@ -864,6 +896,10 @@ const DYNAMIC_HOSTS = [
 
 const EXCLUDED_HOSTS = new Set([
   'test',
+  // CrisisTwin UK: human-facing link-outs from alert rows, not fetched sources.
+  'bmrs.elexon.co.uk',
+  'check-for-flooding.service.gov.uk',
+  'tfl.gov.uk',
   'test.dodopayments.com',
   'live.dodopayments.com',
   'customer.dodopayments.com',

@@ -5,6 +5,9 @@
  * Supports an optional 3D globe mode (globe.gl) selectable from Settings.
  */
 import { isMobileDevice } from '@/utils';
+import type { CoastalMarker } from '@/components/DeckGLMap';
+import type { UkAlert } from '@/services/uk/parsers';
+import type { UkTwinEdge, UkTwinNode } from '@/services/uk/twin';
 import { MapRenderVisibility } from '@/utils/map-render-visibility';
 import { markLcpDebug } from '@/utils/lcp-debug';
 import {
@@ -82,7 +85,7 @@ import {
 export type { ScenarioVisualState, ScenarioResult };
 
 export type TimeRange = '1h' | '6h' | '24h' | '48h' | '7d' | 'all';
-export type MapView = 'global' | 'america' | 'mena' | 'eu' | 'asia' | 'latam' | 'africa' | 'oceania';
+export type MapView = 'global' | 'america' | 'mena' | 'eu' | 'uk' | 'asia' | 'latam' | 'africa' | 'oceania';
 
 type PendingCenter = { lat: number; lon: number; zoom?: number; actionToken?: number };
 type PendingViewportAction =
@@ -233,6 +236,10 @@ export class MapContainer {
     watchedShapeIds: [],
   };
   private cachedAoiDrawMode: AoiDrawMode | null = null;
+  /** Coastal markers, cached so rehydrateActiveMap can re-apply after a swap. */
+  private cachedCoastalStations: CoastalMarker[] = [];
+  private cachedUkAlerts: UkAlert[] = [];
+  private cachedUkTwin: { nodes: UkTwinNode[]; edges: UkTwinEdge[] } | null = null;
   private cachedAoiInteractionHandlers: AoiInteractionHandlers | null = null;
 
   // ─── Data cache (survives map mode switches) ───────────────────────────────
@@ -780,6 +787,9 @@ export class MapContainer {
     if (this.useDeckGL) {
       this.deckGLMap?.setAoiOverlay(this.cachedAoiOverlay);
       this.deckGLMap?.setAoiInteraction(this.cachedAoiDrawMode, this.cachedAoiInteractionHandlers);
+      if (this.cachedCoastalStations.length) this.deckGLMap?.setCoastalStations(this.cachedCoastalStations);
+      if (this.cachedUkAlerts.length) this.deckGLMap?.setUkAlerts(this.cachedUkAlerts);
+      if (this.cachedUkTwin) this.deckGLMap?.setUkTwin(this.cachedUkTwin.nodes, this.cachedUkTwin.edges);
     } else if (!this.useGlobe) {
       this.svgMap?.setAoiOverlay(this.cachedAoiOverlay);
       this.svgMap?.setAoiInteraction(this.cachedAoiDrawMode, this.cachedAoiInteractionHandlers);
@@ -1068,6 +1078,27 @@ export class MapContainer {
     };
     this.deckGLMap?.setAoiOverlay(this.cachedAoiOverlay);
     this.svgMap?.setAoiOverlay(this.cachedAoiOverlay);
+  }
+
+  /**
+   * Replace the coastal prediction markers. Deck-only: the water-level layer
+   * declares `renderers: ['deck']`, so the SVG and globe renderers have no
+   * marker treatment for it and are deliberately not called here.
+   */
+  public setCoastalStations(stations: CoastalMarker[]): void {
+    this.cachedCoastalStations = Array.isArray(stations) ? stations : [];
+    this.deckGLMap?.setCoastalStations(this.cachedCoastalStations);
+  }
+
+  /** CrisisTwin UK overlays — deck-only, cached for renderer swaps like coastal stations. */
+  public setUkAlerts(alerts: UkAlert[]): void {
+    this.cachedUkAlerts = Array.isArray(alerts) ? alerts : [];
+    this.deckGLMap?.setUkAlerts(this.cachedUkAlerts);
+  }
+
+  public setUkTwin(nodes: UkTwinNode[], edges: UkTwinEdge[]): void {
+    this.cachedUkTwin = { nodes, edges };
+    this.deckGLMap?.setUkTwin(nodes, edges);
   }
 
   public setAoiInteraction(mode: AoiDrawMode | null, handlers: AoiInteractionHandlers | null): boolean {

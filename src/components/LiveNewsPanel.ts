@@ -205,7 +205,19 @@ export const OPTIONAL_CHANNEL_REGIONS: { key: string; labelKey: string; channelI
   ..._REGION_ENTRIES,
 ];
 
-const DEFAULT_LIVE_CHANNELS = SITE_VARIANT === 'tech' ? TECH_LIVE_CHANNELS : SITE_VARIANT === 'happy' ? [] : FULL_LIVE_CHANNELS;
+// CrisisTwin UK leads with the national broadcasters, drawn from the optional set.
+const UK_LIVE_CHANNEL_IDS = ['bbc-news', 'sky', 'gb-news'];
+const UK_LIVE_CHANNELS: LiveChannel[] = UK_LIVE_CHANNEL_IDS
+  .map(id => OPTIONAL_LIVE_CHANNELS.find(c => c.id === id))
+  .filter((c): c is LiveChannel => c !== undefined);
+
+const DEFAULT_LIVE_CHANNELS = SITE_VARIANT === 'tech'
+  ? TECH_LIVE_CHANNELS
+  : SITE_VARIANT === 'happy'
+    ? []
+    : SITE_VARIANT === 'uk'
+      ? UK_LIVE_CHANNELS
+      : FULL_LIVE_CHANNELS;
 
 /** Default channel list for the current variant (for restore in channel management). */
 export function getDefaultLiveChannels(): LiveChannel[] {

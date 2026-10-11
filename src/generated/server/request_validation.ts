@@ -2,7 +2,7 @@
 // Source: proto/worldmonitor/**/*.proto buf.validate annotations.
 
 export const GENERATED_PROTO_VALIDATION_RULE_COUNT = 525;
-export const GENERATED_REQUEST_METHOD_COUNT = 160;
+export const GENERATED_REQUEST_METHOD_COUNT = 162;
 
 export const GENERATED_REQUEST_TYPES = {
   "analyzeStock": "worldmonitor.market.v1.AnalyzeStockRequest",
@@ -44,12 +44,14 @@ export const GENERATED_REQUEST_TYPES = {
   "getEnergyPrices": "worldmonitor.economic.v1.GetEnergyPricesRequest",
   "getFlightStatus": "worldmonitor.aviation.v1.GetFlightStatusRequest",
   "getFoodStocks": "worldmonitor.resilience.v1.GetFoodStocksRequest",
+  "getForecast": "worldmonitor.coastal.v1.GetForecastRequest",
   "getForecasts": "worldmonitor.forecast.v1.GetForecastsRequest",
   "getFredSeries": "worldmonitor.economic.v1.GetFredSeriesRequest",
   "getFredSeriesBatch": "worldmonitor.economic.v1.GetFredSeriesBatchRequest",
   "getFuelShortageDetail": "worldmonitor.supply_chain.v1.GetFuelShortageDetailRequest",
   "getGdeltTopicTimeline": "worldmonitor.intelligence.v1.GetGdeltTopicTimelineRequest",
   "getGivingSummary": "worldmonitor.giving.v1.GetGivingSummaryRequest",
+  "getHistory": "worldmonitor.coastal.v1.GetHistoryRequest",
   "getHumanitarianSummary": "worldmonitor.conflict.v1.GetHumanitarianSummaryRequest",
   "getHumanitarianSummaryBatch": "worldmonitor.conflict.v1.GetHumanitarianSummaryBatchRequest",
   "getInsiderTransactions": "worldmonitor.market.v1.GetInsiderTransactionsRequest",
@@ -324,6 +326,12 @@ export const GENERATED_MESSAGE_RULES = {
     "fields": {}
   },
   "worldmonitor.climate.v1.ListClimateDisastersRequest": {
+    "fields": {}
+  },
+  "worldmonitor.coastal.v1.GetForecastRequest": {
+    "fields": {}
+  },
+  "worldmonitor.coastal.v1.GetHistoryRequest": {
     "fields": {}
   },
   "worldmonitor.company_monitoring.v1.CompanyClaimInput": {
