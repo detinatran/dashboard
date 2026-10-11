@@ -153,7 +153,7 @@ export class MobilePrimaryNav {
           this.exitMap();
           this.collapseMap();
           const panel = document.querySelector<HTMLElement>(
-            '#panelsGrid [data-panel="strategic-risk"]:not(.hidden), #panelsGrid [data-panel="oref-sirens"]:not(.hidden), #panelsGrid [data-panel="intel"]:not(.hidden)',
+            '#panelsGrid [data-panel="uk-crisis-monitor"]:not(.hidden), #panelsGrid [data-panel="strategic-risk"]:not(.hidden), #panelsGrid [data-panel="oref-sirens"]:not(.hidden), #panelsGrid [data-panel="intel"]:not(.hidden)',
           );
           if (panel?.dataset.panel) {
             window.dispatchEvent(new CustomEvent('wm:reveal-panel', { detail: { panelId: panel.dataset.panel } }));

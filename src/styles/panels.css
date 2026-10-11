@@ -3885,8 +3885,8 @@ a.hub-top-story {
 }
 .uk-kpi:hover, .uk-kpi.active { background: var(--surface-active); border-color: var(--border-strong); }
 .uk-kpi-icon { font-size: 14px; line-height: 1; }
-.uk-kpi-value { font-size: 18px; font-weight: 700; line-height: 1.2; }
-.uk-kpi-label { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; text-align: center; }
+.uk-kpi-value { font-size: 20px; font-weight: 700; line-height: 1.2; }
+.uk-kpi-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; text-align: center; }
 .uk-kpi.uk-sev-critical { border-top-color: var(--semantic-critical); }
 .uk-kpi.uk-sev-high { border-top-color: var(--semantic-high); }
 .uk-kpi.uk-sev-medium { border-top-color: var(--semantic-elevated); }
@@ -3894,17 +3894,17 @@ a.hub-top-story {
 .uk-kpi.uk-sev-critical .uk-kpi-value { color: var(--semantic-critical); }
 .uk-kpi.uk-sev-high .uk-kpi-value { color: var(--semantic-high); }
 
-.uk-grid { padding: 6px 8px; background: var(--surface); border: 1px solid var(--border); font-size: 11px; }
+.uk-grid { padding: 6px 8px; background: var(--surface); border: 1px solid var(--border); font-size: 12px; }
 .uk-grid-stats { display: flex; flex-wrap: wrap; gap: 4px 12px; color: var(--text-dim); margin-bottom: 5px; }
 .uk-grid-stats b { color: var(--text); }
-.uk-grid-stats em { font-style: normal; text-transform: uppercase; font-size: 9px; padding: 0 4px; border: 1px solid var(--border-strong); }
+.uk-grid-stats em { font-style: normal; text-transform: uppercase; font-size: 10px; padding: 0 4px; border: 1px solid var(--border-strong); }
 .uk-grid-stats .uk-index-very-high, .uk-grid-stats .uk-index-high { color: var(--semantic-high); }
 .uk-grid-stats .uk-index-low, .uk-grid-stats .uk-index-very-low { color: var(--semantic-normal); }
 .uk-mix-bar { display: flex; height: 6px; overflow: hidden; background: var(--border); }
 .uk-mix-seg { display: block; height: 100%; }
 
 .uk-tabs { margin: 0; }
-.uk-degraded { font-size: 10px; color: var(--semantic-high); }
+.uk-degraded { font-size: 11px; color: var(--semantic-high); }
 .uk-alert-list { display: flex; flex-direction: column; }
 .uk-alert {
   display: flex; align-items: flex-start; gap: 8px; padding: 6px 4px 6px 6px;
@@ -3915,15 +3915,27 @@ a.hub-top-story {
 .uk-alert.uk-sev-medium { border-left-color: var(--semantic-elevated); opacity: 0.95; }
 .uk-alert-icon { font-size: 13px; line-height: 1.4; }
 .uk-alert-body { flex: 1; min-width: 0; }
-.uk-alert-title { font-size: 12px; color: var(--text); line-height: 1.35; }
+.uk-alert-title { font-size: 13px; color: var(--text); line-height: 1.4; }
 .uk-alert-title a { color: inherit; text-decoration: none; }
 .uk-alert-title a:hover { color: var(--accent); text-decoration: underline; }
-.uk-alert-detail { font-size: 11px; color: var(--text-dim); margin-top: 2px; overflow-wrap: anywhere; }
-.uk-alert-meta { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.uk-alert-detail { font-size: 12px; color: var(--text-dim); margin-top: 2px; overflow-wrap: anywhere; }
+.uk-alert-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 .uk-locate {
   flex: none; width: 22px; height: 22px; padding: 0; background: transparent;
   border: 1px solid var(--border-strong); color: var(--text-dim); cursor: pointer; font-size: 12px;
 }
+/* The 20px column-resize handle (z-index 100) overlays the panel's right edge
+   on desktop; keep the locate button clear of its hit area. */
+@media (min-width: 769px) {
+  .uk-alert { padding-right: 24px; }
+}
 .uk-locate:hover { color: var(--accent); border-color: var(--accent); }
-.uk-empty { padding: 16px 8px; text-align: center; color: var(--semantic-normal); font-size: 12px; }
-.uk-updated { font-size: 10px; color: var(--text-muted); text-align: right; }
+.uk-empty { padding: 16px 8px; text-align: center; color: var(--semantic-normal); font-size: 13px; }
+.uk-updated { font-size: 11px; color: var(--text-muted); text-align: right; }
+
+/* CrisisTwin UK: keep news rows readable — provenance scoring badges add
+   noise for this audience; the data stays available in other variants. */
+[data-variant="uk"] .credibility-score-badge,
+[data-variant="uk"] .propaganda-badge {
+  display: none;
+}

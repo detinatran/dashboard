@@ -2115,7 +2115,8 @@ export class DataLoaderManager implements AppModule {
     const landed = digestCovered || anyItemsCollected || noCategoriesToLoad;
     if (landed) this.loadedNewsSignature = newsWorkListSignature(categories, disabledAtLoadStart);
     this.ctx.initialLoadComplete = true;
-    mountCommunityWidget();
+    // CrisisTwin UK keeps the first screen free of community prompts.
+    if (SITE_VARIANT !== 'uk') mountCommunityWidget();
 
     this.ctx.map?.updateHotspotActivity(this.ctx.allNews);
 

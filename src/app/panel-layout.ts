@@ -3013,7 +3013,9 @@ export class PanelLayoutManager implements AppModule {
     } else {
       allOrder = [...defaultOrder];
 
-      if (SITE_VARIANT !== 'happy') {
+      // CrisisTwin UK leads with alerts, not the TV wall — keep its declared
+      // order (crisis monitor first, live-news where UK_PANELS puts it).
+      if (SITE_VARIANT !== 'happy' && SITE_VARIANT !== 'uk') {
         const liveNewsIdx = allOrder.indexOf('live-news');
         if (liveNewsIdx > 0) {
           allOrder.splice(liveNewsIdx, 1);
@@ -3175,7 +3177,7 @@ export class PanelLayoutManager implements AppModule {
     if (this.ctx.isDestroyed) return;
     markLcpDebug('wm:map:container-construct');
     this.ctx.map = new MapContainer(mapContainer, {
-      zoom: this.ctx.isMobile ? 2.5 : 1.0,
+      zoom: SITE_VARIANT === 'uk' ? 5.5 : this.ctx.isMobile ? 2.5 : 1.0,
       pan: { x: 0, y: 0 },
       // CrisisTwin UK opens framed on the British Isles rather than the globe.
       view: SITE_VARIANT === 'uk' ? 'uk' : this.ctx.isMobile ? this.ctx.resolvedLocation : 'global',

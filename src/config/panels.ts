@@ -1194,7 +1194,7 @@ const ENERGY_MOBILE_MAP_LAYERS: MapLayers = {
 const UK_PANELS: Record<string, PanelConfig> = {
   map: { name: 'CrisisTwin UK Map', enabled: true, priority: 1 },
   'uk-crisis-monitor': { name: 'Live Crisis Monitor', enabled: true, priority: 1 },
-  'uk-resilience-news': { name: 'UK Crisis & Resilience News', enabled: true, priority: 1 },
+  'uk-resilience-news': { name: 'UK Resilience News', enabled: true, priority: 1 },
   'uk-headlines': { name: 'UK Headlines', enabled: true, priority: 1 },
   'live-news': { name: 'UK Live News', enabled: true, priority: 2 },
   monitors: { name: 'My Monitors', enabled: true, priority: 3 },
@@ -1205,11 +1205,11 @@ const UK_MAP_LAYERS: MapLayers = {
   satellites: false,
   conflicts: false,
   bases: false,
-  cables: true,
+  cables: false,
   pipelines: false,
   hotspots: false,
   ais: false,
-  nuclear: true,
+  nuclear: false,
   irradiators: false,
   sanctions: false,
   weather: false,
@@ -1219,7 +1219,7 @@ const UK_MAP_LAYERS: MapLayers = {
   waterways: false,
   outages: false,
   cyberThreats: false,
-  datacenters: true,
+  datacenters: false,
   protests: false,
   flights: false,
   military: false,
@@ -1323,7 +1323,7 @@ const UK_MOBILE_MAP_LAYERS: MapLayers = {
   liveTankers: false,
   waterLevel: true,
   ukAlerts: true,
-  ukTwin: true,
+  ukTwin: false,
 };
 
 // ============================================

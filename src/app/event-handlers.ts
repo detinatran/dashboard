@@ -849,6 +849,9 @@ export class EventHandlerManager implements AppModule {
 
     const shouldPrompt =
       !this.ctx.isMobile &&
+      // CrisisTwin UK: the global mission workspaces are not this variant's
+      // onboarding, and the auto-opened popover covers the alerts panel.
+      SITE_VARIANT !== 'uk' &&
       !window.location.search &&
       !loadStoredMissionPreset() &&
       !isMissionPresetPromptDismissed();
@@ -2394,7 +2397,26 @@ export class EventHandlerManager implements AppModule {
       const mapSection = document.getElementById('mapSection');
       if (!mapSection) return;
       const sectionWidth = mapSection.offsetWidth;
-      mapSection.classList.toggle('map-col-narrow', sectionWidth > 0 && sectionWidth < 360);
+      let collides = sectionWidth > 0 && sectionWidth < 360;
+      if (!collides && sectionWidth > 0) {
+        // The clock is absolutely centered, so with a long action row (AOI,
+        // CRDT, CCTV, 2D/3D…) it can overlap well above 360px. Measure the
+        // real boxes; the class removes the clock from layout, so measuring
+        // while hidden needs it restored first.
+        const clock = document.getElementById('headerClock');
+        const actions = mapSection.querySelector('.map-header-actions');
+        const title = mapSection.querySelector('.map-title-stack');
+        if (clock && actions) {
+          const wasNarrow = mapSection.classList.contains('map-col-narrow');
+          if (wasNarrow) mapSection.classList.remove('map-col-narrow');
+          const c = clock.getBoundingClientRect();
+          collides = c.right > actions.getBoundingClientRect().left - 8
+            || (title ? c.left < title.getBoundingClientRect().right + 8 : false);
+          if (wasNarrow && !collides) return; // class already removed
+          if (wasNarrow && collides) { mapSection.classList.add('map-col-narrow'); return; }
+        }
+      }
+      mapSection.classList.toggle('map-col-narrow', collides);
     };
     const syncWidthSeparatorAria = () => {
       const current = getCurrentWidthPercent();
