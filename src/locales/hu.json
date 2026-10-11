@@ -2818,7 +2818,19 @@
       "minor": "enyhe",
       "serviceDisruption": "Üzleti kiszolgálás zavara: {{pct}}%",
       "direct": "közvetlen találat",
-      "clickToToggle": "kattintson a kieséshez/helyreállításhoz"
+      "clickToToggle": "kattintson a kieséshez/helyreállításhoz",
+      "tabGraph": "Kaszkád",
+      "tabWhatIf": "„Mi lenne, ha” labor",
+      "planNone": "Nincs intézkedés",
+      "planClose": "{{site}} bezárása",
+      "planReroute": "{{site}} átirányítása → {{target}}",
+      "colNormal": "Normál",
+      "hazard": "Veszély",
+      "metricService": "Üzleti kiszolgálás",
+      "metricDelivery": "Szállítási idő (kézbesített áru)",
+      "metricCost": "Logisztikai költség (normál = 100)",
+      "recommend": "Javasolt: {{plan}}",
+      "assumptions": "14 napos modellbecslés: 3 napos esemény; az elárasztott vállalati telephelyek további 10 nap javítást igényelnek, a közinfrastruktúra az esemény után helyreáll; az elmaradt eladások logisztikai költségük 3-szorosát érik."
     },
     "ukRisk": {
       "about": "72 órás veszélyelőrejelzés minden eszközre az Open-Meteo és a GloFAS előrejelzései, valamint az Environment Agency aktív riasztásai alapján, magyarázható modellel (minden pontszám megadja a tényezőit). Az Ellenálló képesség lap rangsorolja a régiókat.",

@@ -2768,7 +2768,19 @@
       "minor": "lievi",
       "serviceDisruption": "Interruzione del servizio nei negozi: {{pct}}%",
       "direct": "impatto diretto",
-      "clickToToggle": "clic per guastare/ripristinare"
+      "clickToToggle": "clic per guastare/ripristinare",
+      "tabGraph": "Cascata",
+      "tabWhatIf": "Laboratorio «e se»",
+      "planNone": "Nessuna azione",
+      "planClose": "Chiudi {{site}}",
+      "planReroute": "Devia {{site}} → {{target}}",
+      "colNormal": "Normale",
+      "hazard": "Pericolo",
+      "metricService": "Servizio nei negozi",
+      "metricDelivery": "Tempo di consegna (merce consegnata)",
+      "metricCost": "Costo logistico (normale = 100)",
+      "recommend": "Consigliato: {{plan}}",
+      "assumptions": "Stima del modello su 14 giorni: evento di 3 giorni; i siti aziendali allagati richiedono altri 10 giorni di riparazioni, l’infrastruttura pubblica è ripristinata dopo l’evento; le vendite perse valgono 3× il loro costo logistico."
     },
     "ukRisk": {
       "about": "Prospettiva di pericolo a 72 ore per ogni asset dalle previsioni Open-Meteo e GloFAS più le allerte attive dell’Environment Agency, valutata con un modello spiegabile (ogni punteggio elenca i suoi fattori). La scheda Resilienza classifica le regioni.",

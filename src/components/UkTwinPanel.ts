@@ -17,6 +17,13 @@ import {
   type UkCascadeSummary,
   type UkImpactLevel,
 } from '@/services/uk/cascade';
+import {
+  evaluatePlan,
+  normalBaseline,
+  recommendPlan,
+  type UkPlan,
+  type UkPlanResult,
+} from '@/services/uk/whatif';
 
 interface SimNode extends d3.SimulationNodeDatum {
   id: string;
@@ -35,6 +42,22 @@ const LEVEL_COLORS: Record<UkImpactLevel, string> = {
 
 const GRAPH_HEIGHT = 300;
 
+type TwinTab = 'graph' | 'whatif';
+
+/** Plans are carried in <select> values: none | close:<id> | reroute:<id>:<target>. */
+function encodePlan(plan: UkPlan): string {
+  if (plan.kind === 'close') return `close:${plan.node}`;
+  if (plan.kind === 'reroute') return `reroute:${plan.node}:${plan.target}`;
+  return 'none';
+}
+
+function decodePlan(value: string): UkPlan {
+  const [kind, node, target] = value.split(':');
+  if (kind === 'close' && node) return { kind: 'close', node };
+  if (kind === 'reroute' && node && target) return { kind: 'reroute', node, target };
+  return { kind: 'none' };
+}
+
 /**
  * Knowledge graph + cascading-impact simulator over the UK digital twin.
  * Click an asset (or pick a scenario) to fail it; the engine propagates
@@ -51,6 +74,10 @@ export class UkTwinPanel extends Panel {
   private canvas: HTMLCanvasElement | null = null;
   private hovered: SimNode | null = null;
   private resizeObserver: ResizeObserver | null = null;
+  private tab: TwinTab = 'graph';
+  private whatIfHazard = 'humber-surge';
+  private planA: UkPlan = { kind: 'close', node: 'albion-factory-hull' };
+  private planB: UkPlan = { kind: 'reroute', node: 'albion-factory-hull', target: 'albion-factory-burton' };
 
   constructor() {
     super({
@@ -126,8 +153,22 @@ export class UkTwinPanel extends Panel {
   // -------------------------------------------------------------------------
 
   private setupDelegatedListeners(): void {
+    this.content.addEventListener('change', (e: Event) => {
+      const select = (e.target as HTMLElement).closest<HTMLSelectElement>('select[data-uk-whatif]');
+      if (!select) return;
+      if (select.dataset.ukWhatif === 'hazard') this.whatIfHazard = select.value;
+      if (select.dataset.ukWhatif === 'a') this.planA = decodePlan(select.value);
+      if (select.dataset.ukWhatif === 'b') this.planB = decodePlan(select.value);
+      this.render();
+    });
     this.content.addEventListener('click', (e: Event) => {
       const target = e.target as HTMLElement;
+      const tab = target.closest<HTMLElement>('[data-uk-twin-tab]');
+      if (tab) {
+        this.tab = tab.dataset.ukTwinTab as TwinTab;
+        this.render();
+        return;
+      }
       const scenario = target.closest<HTMLElement>('[data-uk-scenario]');
       if (scenario) {
         this.applyScenario(scenario.dataset.ukScenario!);
@@ -150,9 +191,20 @@ export class UkTwinPanel extends Panel {
 
   private render(): void {
     if (!this.twin) return;
+    const tabs = safeHtml`<div class="panel-tabs uk-tabs">
+      <button class="panel-tab ${this.tab === 'graph' ? 'active' : ''}" data-uk-twin-tab="graph">${t('components.ukTwin.tabGraph')}</button>
+      <button class="panel-tab ${this.tab === 'whatif' ? 'active' : ''}" data-uk-twin-tab="whatif">${t('components.ukTwin.tabWhatIf')}</button>
+    </div>`;
+    if (this.tab === 'whatif') {
+      // Leaving the graph: the canvas is detached, so ticks must not draw.
+      this.canvas = null;
+      this.setSafeContent(safeHtml`<div class="uk-twin">${tabs}${this.renderWhatIf()}</div>`);
+      return;
+    }
     const chips = joinSafeHtml(UK_SCENARIOS.map(s =>
       safeHtml`<button class="uk-scenario-chip" data-uk-scenario="${s.id}" title="${s.description}">${s.name}</button>`));
     this.setSafeContent(safeHtml`<div class="uk-twin">
+      ${tabs}
       <div class="uk-scenarios">
         ${chips}
         <button class="uk-scenario-chip uk-scenario-reset" data-uk-reset>${t('components.ukTwin.reset')}</button>
@@ -166,8 +218,89 @@ export class UkTwinPanel extends Panel {
       this.bindCanvas();
       this.renderSidebar();
       if (!this.simulation) this.startSimulation();
-      else this.drawGraph();
+      else {
+        // Back from another tab: a fresh canvas element needs observing.
+        this.resizeObserver?.disconnect();
+        if (this.canvas) this.resizeObserver?.observe(this.canvas.parentElement ?? this.canvas);
+        this.drawGraph();
+      }
     });
+  }
+
+  // -------------------------------------------------------------------------
+  // What-if lab
+  // -------------------------------------------------------------------------
+
+  private planLabel(plan: UkPlan): string {
+    const name = (id: string) => this.twin?.nodes.find(n => n.id === id)?.name.replace(/^Albion Provisions\s*/, '') ?? id;
+    if (plan.kind === 'close') return t('components.ukTwin.planClose', { site: name(plan.node) });
+    if (plan.kind === 'reroute') return t('components.ukTwin.planReroute', { site: name(plan.node), target: name(plan.target) });
+    return t('components.ukTwin.planNone');
+  }
+
+  private planOptions(selected: UkPlan): SafeHtml {
+    const twin = this.twin!;
+    const sites = twin.nodes.filter(n => n.owner === 'sample' && (n.type === 'factory' || n.type === 'distribution_centre'));
+    const plans: UkPlan[] = [{ kind: 'none' }];
+    for (const s of sites) plans.push({ kind: 'close', node: s.id });
+    for (const s of sites) {
+      for (const other of sites) {
+        if (other.id !== s.id && other.type === s.type) plans.push({ kind: 'reroute', node: s.id, target: other.id });
+      }
+    }
+    const current = encodePlan(selected);
+    return joinSafeHtml(plans.map(p => {
+      const value = encodePlan(p);
+      return value === current
+        ? safeHtml`<option value="${value}" selected>${this.planLabel(p)}</option>`
+        : safeHtml`<option value="${value}">${this.planLabel(p)}</option>`;
+    }));
+  }
+
+  private renderWhatIf(): SafeHtml {
+    const twin = this.twin!;
+    const scenario = UK_SCENARIOS.find(s => s.id === this.whatIfHazard) ?? UK_SCENARIOS[0]!;
+    const hazard = scenario.select(twin.nodes);
+    const normal = normalBaseline(twin.nodes, twin.edges);
+    const none = evaluatePlan(twin.nodes, twin.edges, hazard, { kind: 'none' });
+    const a = evaluatePlan(twin.nodes, twin.edges, hazard, this.planA);
+    const b = evaluatePlan(twin.nodes, twin.edges, hazard, this.planB);
+    const best = recommendPlan([none, a, b]);
+
+    const hazardOptions = joinSafeHtml(UK_SCENARIOS.map(sc => sc.id === scenario.id
+      ? safeHtml`<option value="${sc.id}" selected>${sc.name}</option>`
+      : safeHtml`<option value="${sc.id}">${sc.name}</option>`));
+
+    const columns: Array<[string, UkPlanResult, boolean]> = [
+      [t('components.ukTwin.colNormal'), normal, false],
+      [t('components.ukTwin.planNone'), none, best === none],
+      ['A', a, best === a],
+      ['B', b, best === b],
+    ];
+    const head = joinSafeHtml(columns.map(([label, , win]) => safeHtml`<th class="${win ? 'uk-whatif-best' : ''}">${label}</th>`));
+    const row = (label: string, value: (r: UkPlanResult) => string): SafeHtml => safeHtml`<tr>
+      <th scope="row">${label}</th>
+      ${joinSafeHtml(columns.map(([, r, win]) => safeHtml`<td class="${win ? 'uk-whatif-best' : ''}">${value(r)}</td>`))}
+    </tr>`;
+
+    return safeHtml`<div class="uk-whatif">
+      <label class="uk-whatif-field"><span>${t('components.ukTwin.hazard')}</span>
+        <select data-uk-whatif="hazard">${hazardOptions}</select></label>
+      <label class="uk-whatif-field"><span>A</span>
+        <select data-uk-whatif="a">${this.planOptions(this.planA)}</select></label>
+      <label class="uk-whatif-field"><span>B</span>
+        <select data-uk-whatif="b">${this.planOptions(this.planB)}</select></label>
+      <table class="uk-whatif-table">
+        <thead><tr><th></th>${head}</tr></thead>
+        <tbody>
+          ${row(t('components.ukTwin.metricService'), r => `${(r.serviceLevel * 100).toFixed(1)}%`)}
+          ${row(t('components.ukTwin.metricDelivery'), r => `${r.deliveryHours.toFixed(1)} h`)}
+          ${row(t('components.ukTwin.metricCost'), r => r.costIndex.toFixed(0))}
+        </tbody>
+      </table>
+      ${best ? safeHtml`<div class="uk-whatif-recommend">${t('components.ukTwin.recommend', { plan: this.planLabel(best.plan) })}</div>` : safeHtml``}
+      <div class="uk-twin-hint">${t('components.ukTwin.assumptions')}</div>
+    </div>`;
   }
 
   private renderSidebar(): void {

@@ -2844,7 +2844,19 @@
       "minor": "blago",
       "serviceDisruption": "Prekid usluge u trgovinama: {{pct}} %",
       "direct": "izravan pogodak",
-      "clickToToggle": "kliknite za otkaz/obnovu"
+      "clickToToggle": "kliknite za otkaz/obnovu",
+      "tabGraph": "Kaskada",
+      "tabWhatIf": "Laboratorij „što ako”",
+      "planNone": "Bez radnje",
+      "planClose": "Zatvori {{site}}",
+      "planReroute": "Preusmjeri {{site}} → {{target}}",
+      "colNormal": "Normalno",
+      "hazard": "Opasnost",
+      "metricService": "Usluga trgovina",
+      "metricDelivery": "Vrijeme isporuke (isporučena roba)",
+      "metricCost": "Logistički trošak (normalno = 100)",
+      "recommend": "Preporučeno: {{plan}}",
+      "assumptions": "Procjena modela za 14 dana: događaj od 3 dana; poplavljene lokacije tvrtke trebaju još 10 dana popravaka, javna infrastruktura obnavlja se nakon događaja; izgubljena prodaja vrijedi 3× svoj logistički trošak."
     },
     "ukRisk": {
       "about": "Izgledi opasnosti za 72 sata za svaki objekt iz prognoza Open-Meteo i GloFAS te aktivnih upozorenja Environment Agencyja, ocijenjeni objašnjivim modelom (svaka ocjena navodi svoje čimbenike). Kartica Otpornost rangira regije.",

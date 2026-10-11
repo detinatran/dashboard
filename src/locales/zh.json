@@ -2749,7 +2749,19 @@
       "minor": "轻微",
       "serviceDisruption": "门店服务中断：{{pct}}%",
       "direct": "直接受影响",
-      "clickToToggle": "点击使其失效/恢复"
+      "clickToToggle": "点击使其失效/恢复",
+      "tabGraph": "连锁影响",
+      "tabWhatIf": "假设推演实验室",
+      "planNone": "不采取行动",
+      "planClose": "关闭{{site}}",
+      "planReroute": "改道 {{site}} → {{target}}",
+      "colNormal": "正常",
+      "hazard": "灾害",
+      "metricService": "门店服务",
+      "metricDelivery": "配送时间（已送达货物）",
+      "metricCost": "物流成本（正常 = 100）",
+      "recommend": "推荐：{{plan}}",
+      "assumptions": "14 天模型估算：事件持续 3 天；被淹的公司站点还需 10 天修复，公共基础设施在事件后恢复；损失的销售额按其物流成本的 3 倍计。"
     },
     "ukRisk": {
       "about": "基于 Open-Meteo 与 GloFAS 预报以及 Environment Agency 现行预警，对每项资产给出 72 小时灾害展望，采用可解释模型评分（每个分数都列出影响因素）。韧性标签页对各地区排名。",

@@ -2749,7 +2749,19 @@
       "minor": "輕微",
       "serviceDisruption": "門店服務中斷：{{pct}}%",
       "direct": "直接受影響",
-      "clickToToggle": "點選使其失效/恢復"
+      "clickToToggle": "點選使其失效/恢復",
+      "tabGraph": "連鎖影響",
+      "tabWhatIf": "假設推演實驗室",
+      "planNone": "不採取行動",
+      "planClose": "關閉{{site}}",
+      "planReroute": "改道 {{site}} → {{target}}",
+      "colNormal": "正常",
+      "hazard": "災害",
+      "metricService": "門店服務",
+      "metricDelivery": "配送時間（已送達貨物）",
+      "metricCost": "物流成本（正常 = 100）",
+      "recommend": "推薦：{{plan}}",
+      "assumptions": "14 天模型估算：事件持續 3 天；被淹的公司站點還需 10 天修復，公共基礎設施在事件後恢復；損失的銷售額按其物流成本的 3 倍計。"
     },
     "ukRisk": {
       "about": "基於 Open-Meteo 與 GloFAS 預報以及 Environment Agency 現行預警，對每項資產給出 72 小時災害展望，採用可解釋模型評分（每個分數都列出影響因素）。韌性標籤頁對各地區排名。",

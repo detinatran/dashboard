@@ -2818,7 +2818,19 @@
       "minor": "minor",
       "serviceDisruption": "Store service disruption: {{pct}}%",
       "direct": "direct hit",
-      "clickToToggle": "click to fail/restore"
+      "clickToToggle": "click to fail/restore",
+      "tabGraph": "Cascade",
+      "tabWhatIf": "What-if lab",
+      "planNone": "No action",
+      "planClose": "Close {{site}}",
+      "planReroute": "Reroute {{site}} → {{target}}",
+      "colNormal": "Normal",
+      "hazard": "Hazard",
+      "metricService": "Store service",
+      "metricDelivery": "Delivery time (delivered goods)",
+      "metricCost": "Logistics cost (normal = 100)",
+      "recommend": "Recommended: {{plan}}",
+      "assumptions": "Model estimate over 14 days: a 3-day event; flooded company sites need 10 more days of repairs, public infrastructure is restored after the event; lost sales weigh 3× their logistics cost."
     },
     "ukRisk": {
       "about": "72-hour hazard outlook for every twin asset from Open-Meteo and GloFAS forecasts plus live Environment Agency warnings, scored by an explainable model (every score lists its drivers). The Resilience tab ranks UK regions.",

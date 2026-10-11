@@ -2432,7 +2432,19 @@
       "minor": "lindrigt",
       "serviceDisruption": "Avbrott i butiksservice: {{pct}} %",
       "direct": "direkt träff",
-      "clickToToggle": "klicka för att slå ut/återställa"
+      "clickToToggle": "klicka för att slå ut/återställa",
+      "tabGraph": "Kaskad",
+      "tabWhatIf": "Vad händer om-labb",
+      "planNone": "Ingen åtgärd",
+      "planClose": "Stäng {{site}}",
+      "planReroute": "Styr om {{site}} → {{target}}",
+      "colNormal": "Normalt",
+      "hazard": "Fara",
+      "metricService": "Butiksservice",
+      "metricDelivery": "Leveranstid (levererade varor)",
+      "metricCost": "Logistikkostnad (normalt = 100)",
+      "recommend": "Rekommenderas: {{plan}}",
+      "assumptions": "Modelluppskattning över 14 dagar: en händelse på 3 dagar; översvämmade företagsanläggningar behöver 10 dagar till av reparationer, offentlig infrastruktur återställs efter händelsen; förlorad försäljning väger 3× sin logistikkostnad."
     },
     "ukRisk": {
       "about": "72-timmars riskutsikt för varje tillgång utifrån prognoser från Open-Meteo och GloFAS samt aktiva varningar från Environment Agency, bedömd med en förklarbar modell (varje poäng anger sina faktorer). Fliken Motståndskraft rangordnar regionerna.",

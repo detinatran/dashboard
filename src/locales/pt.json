@@ -2449,7 +2449,19 @@
       "minor": "leves",
       "serviceDisruption": "Interrupção do serviço nas lojas: {{pct}}%",
       "direct": "impacto direto",
-      "clickToToggle": "clique para falhar/restaurar"
+      "clickToToggle": "clique para falhar/restaurar",
+      "tabGraph": "Cascata",
+      "tabWhatIf": "Laboratório «e se»",
+      "planNone": "Nenhuma ação",
+      "planClose": "Fechar {{site}}",
+      "planReroute": "Desviar {{site}} → {{target}}",
+      "colNormal": "Normal",
+      "hazard": "Perigo",
+      "metricService": "Serviço nas lojas",
+      "metricDelivery": "Tempo de entrega (mercadorias entregues)",
+      "metricCost": "Custo logístico (normal = 100)",
+      "recommend": "Recomendado: {{plan}}",
+      "assumptions": "Estimativa do modelo em 14 dias: evento de 3 dias; as unidades alagadas da empresa precisam de mais 10 dias de reparo, a infraestrutura pública é restabelecida após o evento; vendas perdidas pesam 3× seu custo logístico."
     },
     "ukRisk": {
       "about": "Perspectiva de perigo de 72 horas para cada ativo a partir das previsões Open-Meteo e GloFAS e dos alertas ativos da Environment Agency, avaliada por um modelo explicável (cada pontuação lista seus fatores). A aba Resiliência classifica as regiões.",

@@ -2749,7 +2749,19 @@
       "minor": "경미",
       "serviceDisruption": "매장 서비스 중단: {{pct}}%",
       "direct": "직접 타격",
-      "clickToToggle": "클릭하여 장애/복구"
+      "clickToToggle": "클릭하여 장애/복구",
+      "tabGraph": "연쇄",
+      "tabWhatIf": "가정 실험실",
+      "planNone": "조치 없음",
+      "planClose": "{{site}} 폐쇄",
+      "planReroute": "{{site}} 우회 → {{target}}",
+      "colNormal": "평상시",
+      "hazard": "위험",
+      "metricService": "매장 서비스",
+      "metricDelivery": "배송 시간(배송된 상품)",
+      "metricCost": "물류 비용(평상시 = 100)",
+      "recommend": "권장: {{plan}}",
+      "assumptions": "14일 모델 추정: 3일간의 사건, 침수된 회사 사업장은 10일 추가 수리 필요, 공공 인프라는 사건 후 복구, 손실 매출은 물류 비용의 3배로 계산."
     },
     "ukRisk": {
       "about": "Open-Meteo·GloFAS 예보와 Environment Agency의 현행 경보를 바탕으로 모든 자산의 72시간 위험 전망을 설명 가능한 모델로 산출합니다(각 점수에 요인 표시). 회복력 탭은 지역 순위를 보여 줍니다.",

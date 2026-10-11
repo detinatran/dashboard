@@ -2787,7 +2787,19 @@
       "minor": "lekko",
       "serviceDisruption": "Zakłócenie obsługi sklepów: {{pct}}%",
       "direct": "bezpośrednie trafienie",
-      "clickToToggle": "kliknij, aby wywołać awarię/przywrócić"
+      "clickToToggle": "kliknij, aby wywołać awarię/przywrócić",
+      "tabGraph": "Kaskada",
+      "tabWhatIf": "Laboratorium „co jeśli”",
+      "planNone": "Brak działań",
+      "planClose": "Zamknij {{site}}",
+      "planReroute": "Przekieruj {{site}} → {{target}}",
+      "colNormal": "Normalnie",
+      "hazard": "Zagrożenie",
+      "metricService": "Obsługa sklepów",
+      "metricDelivery": "Czas dostawy (dostarczone towary)",
+      "metricCost": "Koszt logistyki (normalnie = 100)",
+      "recommend": "Zalecane: {{plan}}",
+      "assumptions": "Szacunek modelu na 14 dni: zdarzenie trwające 3 dni; zalane zakłady firmy potrzebują jeszcze 10 dni napraw, infrastruktura publiczna zostaje przywrócona po zdarzeniu; utracona sprzedaż waży 3× swój koszt logistyki."
     },
     "ukRisk": {
       "about": "72-godzinna perspektywa zagrożeń dla każdego obiektu na podstawie prognoz Open-Meteo i GloFAS oraz aktywnych ostrzeżeń Environment Agency, oceniana modelem wyjaśnialnym (każdy wynik podaje swoje czynniki). Karta Odporność szereguje regiony.",

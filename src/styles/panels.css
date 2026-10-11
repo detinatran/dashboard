@@ -4015,3 +4015,18 @@ a.hub-top-story {
 .uk-res-good-text { color: var(--semantic-normal); }
 .uk-res-fair-text { color: var(--semantic-high); }
 .uk-res-weak-text { color: var(--semantic-critical); }
+
+/* CrisisTwin UK — What-if lab */
+.uk-whatif { display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
+.uk-whatif-field { display: flex; align-items: center; gap: 8px; }
+.uk-whatif-field > span { flex: 0 0 52px; color: var(--text-dim); font-size: 11px; text-transform: uppercase; }
+.uk-whatif-field select {
+  flex: 1; min-width: 0; padding: 4px 6px; font: inherit; font-size: 12px;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border-strong);
+}
+.uk-whatif-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+.uk-whatif-table th, .uk-whatif-table td { padding: 5px 4px; border-bottom: 1px solid var(--border-subtle); text-align: right; }
+.uk-whatif-table thead th { font-size: 11px; color: var(--text-dim); font-weight: 600; }
+.uk-whatif-table tbody th { text-align: left; font-weight: 400; color: var(--text-dim); }
+.uk-whatif-table .uk-whatif-best { color: var(--semantic-normal); font-weight: 700; background: color-mix(in srgb, var(--semantic-normal) 8%, transparent); }
+.uk-whatif-recommend { padding: 6px 8px; border-left: 3px solid var(--semantic-normal); background: var(--surface); font-weight: 600; }

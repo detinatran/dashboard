@@ -2768,7 +2768,19 @@
       "minor": "ușor",
       "serviceDisruption": "Întreruperea serviciului în magazine: {{pct}}%",
       "direct": "lovitură directă",
-      "clickToToggle": "clic pentru scoatere din funcțiune/restabilire"
+      "clickToToggle": "clic pentru scoatere din funcțiune/restabilire",
+      "tabGraph": "Cascadă",
+      "tabWhatIf": "Laborator „ce-ar fi dacă”",
+      "planNone": "Nicio acțiune",
+      "planClose": "Închide {{site}}",
+      "planReroute": "Redirecționează {{site}} → {{target}}",
+      "colNormal": "Normal",
+      "hazard": "Pericol",
+      "metricService": "Serviciul magazinelor",
+      "metricDelivery": "Timp de livrare (mărfuri livrate)",
+      "metricCost": "Cost logistic (normal = 100)",
+      "recommend": "Recomandat: {{plan}}",
+      "assumptions": "Estimare model pe 14 zile: eveniment de 3 zile; siturile inundate ale companiei necesită încă 10 zile de reparații, infrastructura publică este restabilită după eveniment; vânzările pierdute cântăresc de 3 ori costul lor logistic."
     },
     "ukRisk": {
       "about": "Perspectiva pericolului pe 72 de ore pentru fiecare activ din prognozele Open-Meteo și GloFAS plus avertizările active ale Environment Agency, evaluată cu un model explicabil (fiecare scor își listează factorii). Fila Reziliență clasifică regiunile.",

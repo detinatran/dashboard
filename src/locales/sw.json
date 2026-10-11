@@ -2818,7 +2818,19 @@
       "minor": "ndogo",
       "serviceDisruption": "Usumbufu wa huduma madukani: {{pct}}%",
       "direct": "pigo la moja kwa moja",
-      "clickToToggle": "bofya ili kuzima/kurejesha"
+      "clickToToggle": "bofya ili kuzima/kurejesha",
+      "tabGraph": "Mfululizo",
+      "tabWhatIf": "Maabara ya “Itakuwaje kama”",
+      "planNone": "Hakuna hatua",
+      "planClose": "Funga {{site}}",
+      "planReroute": "Elekeza upya {{site}} → {{target}}",
+      "colNormal": "Kawaida",
+      "hazard": "Hatari",
+      "metricService": "Huduma madukani",
+      "metricDelivery": "Muda wa uwasilishaji (bidhaa zilizowasilishwa)",
+      "metricCost": "Gharama ya usafirishaji (kawaida = 100)",
+      "recommend": "Inapendekezwa: {{plan}}",
+      "assumptions": "Makadirio ya modeli kwa siku 14: tukio la siku 3; maeneo ya kampuni yaliyofurika yanahitaji siku 10 zaidi za matengenezo, miundombinu ya umma hurejeshwa baada ya tukio; mauzo yaliyopotea yanapimwa mara 3 ya gharama yake ya usafirishaji."
     },
     "ukRisk": {
       "about": "Mtazamo wa hatari wa saa 72 kwa kila rasilimali kutoka kwa utabiri wa Open-Meteo na GloFAS pamoja na maonyo hai ya Environment Agency, ukipimwa kwa modeli inayoelezeka (kila alama inaonyesha vichocheo vyake). Kichupo cha Ustahimilivu kinapanga maeneo.",

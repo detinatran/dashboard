@@ -2749,7 +2749,19 @@
       "minor": "gering",
       "serviceDisruption": "Ausfall der Filialversorgung: {{pct}} %",
       "direct": "direkter Treffer",
-      "clickToToggle": "klicken zum Ausfallen/Wiederherstellen"
+      "clickToToggle": "klicken zum Ausfallen/Wiederherstellen",
+      "tabGraph": "Kaskade",
+      "tabWhatIf": "Was-wäre-wenn-Labor",
+      "planNone": "Keine Maßnahme",
+      "planClose": "{{site}} schließen",
+      "planReroute": "{{site}} umleiten → {{target}}",
+      "colNormal": "Normal",
+      "hazard": "Gefahr",
+      "metricService": "Filialversorgung",
+      "metricDelivery": "Lieferzeit (gelieferte Ware)",
+      "metricCost": "Logistikkosten (normal = 100)",
+      "recommend": "Empfohlen: {{plan}}",
+      "assumptions": "Modellschätzung über 14 Tage: 3-tägiges Ereignis; überflutete Firmenstandorte brauchen 10 weitere Reparaturtage, öffentliche Infrastruktur ist nach dem Ereignis wiederhergestellt; entgangene Umsätze zählen 3× ihre Logistikkosten."
     },
     "ukRisk": {
       "about": "72-Stunden-Gefahrenausblick für jede Anlage aus Open-Meteo- und GloFAS-Prognosen plus aktuellen Warnungen der Environment Agency, bewertet mit einem erklärbaren Modell (jeder Wert nennt seine Treiber). Der Tab Resilienz rangiert die Regionen.",

@@ -2749,7 +2749,19 @@
       "minor": "hafif",
       "serviceDisruption": "Mağaza hizmet kesintisi: %{{pct}}",
       "direct": "doğrudan isabet",
-      "clickToToggle": "devre dışı bırakmak/geri getirmek için tıklayın"
+      "clickToToggle": "devre dışı bırakmak/geri getirmek için tıklayın",
+      "tabGraph": "Zincirleme",
+      "tabWhatIf": "“Ya olursa” laboratuvarı",
+      "planNone": "Eylem yok",
+      "planClose": "{{site}} kapat",
+      "planReroute": "{{site}} yönlendir → {{target}}",
+      "colNormal": "Normal",
+      "hazard": "Tehlike",
+      "metricService": "Mağaza hizmeti",
+      "metricDelivery": "Teslim süresi (teslim edilen mallar)",
+      "metricCost": "Lojistik maliyeti (normal = 100)",
+      "recommend": "Önerilen: {{plan}}",
+      "assumptions": "14 günlük model tahmini: 3 günlük olay; su basan şirket tesisleri 10 gün daha onarım gerektirir, kamu altyapısı olaydan sonra düzelir; kaybedilen satışlar lojistik maliyetinin 3 katı sayılır."
     },
     "ukRisk": {
       "about": "Open-Meteo ve GloFAS tahminleri ile Environment Agency'nin etkin uyarılarına göre her varlık için 72 saatlik tehlike görünümü, açıklanabilir bir modelle puanlanır (her puan etkenlerini listeler). Dayanıklılık sekmesi bölgeleri sıralar.",

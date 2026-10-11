@@ -2749,7 +2749,19 @@
       "minor": "nhẹ",
       "serviceDisruption": "Gián đoạn dịch vụ cửa hàng: {{pct}}%",
       "direct": "bị ảnh hưởng trực tiếp",
-      "clickToToggle": "bấm để cho ngừng/khôi phục"
+      "clickToToggle": "bấm để cho ngừng/khôi phục",
+      "tabGraph": "Lan truyền",
+      "tabWhatIf": "Phòng thử What-if",
+      "planNone": "Không hành động",
+      "planClose": "Đóng {{site}}",
+      "planReroute": "Đổi tuyến {{site}} → {{target}}",
+      "colNormal": "Bình thường",
+      "hazard": "Hiểm hoạ",
+      "metricService": "Dịch vụ cửa hàng",
+      "metricDelivery": "Thời gian giao (hàng đã giao)",
+      "metricCost": "Chi phí logistics (bình thường = 100)",
+      "recommend": "Khuyến nghị: {{plan}}",
+      "assumptions": "Ước tính của mô hình trong 14 ngày: sự kiện kéo dài 3 ngày; site của công ty bị ngập cần thêm 10 ngày sửa chữa, hạ tầng công cộng được khôi phục sau sự kiện; doanh số mất được tính gấp 3 lần chi phí logistics."
     },
     "ukRisk": {
       "about": "Triển vọng nguy cơ 72 giờ cho mọi tài sản, dựa trên dự báo Open-Meteo và GloFAS cùng cảnh báo hiện hành của Environment Agency, chấm bằng mô hình giải thích được (mỗi điểm số đều nêu yếu tố đóng góp). Tab Khả năng chống chịu xếp hạng các vùng.",

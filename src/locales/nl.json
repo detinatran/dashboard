@@ -2432,7 +2432,19 @@
       "minor": "licht",
       "serviceDisruption": "Verstoring winkelservice: {{pct}}%",
       "direct": "directe treffer",
-      "clickToToggle": "klik om uit te laten vallen/herstellen"
+      "clickToToggle": "klik om uit te laten vallen/herstellen",
+      "tabGraph": "Cascade",
+      "tabWhatIf": "Wat-als-lab",
+      "planNone": "Geen actie",
+      "planClose": "{{site}} sluiten",
+      "planReroute": "{{site}} omleiden → {{target}}",
+      "colNormal": "Normaal",
+      "hazard": "Gevaar",
+      "metricService": "Winkelservice",
+      "metricDelivery": "Levertijd (geleverde goederen)",
+      "metricCost": "Logistieke kosten (normaal = 100)",
+      "recommend": "Aanbevolen: {{plan}}",
+      "assumptions": "Modelschatting over 14 dagen: gebeurtenis van 3 dagen; overstroomde bedrijfslocaties hebben 10 extra dagen herstel nodig, publieke infrastructuur is na de gebeurtenis hersteld; gemiste omzet weegt 3× de logistieke kosten."
     },
     "ukRisk": {
       "about": "72-uurs gevarenvooruitzicht voor elk object op basis van Open-Meteo- en GloFAS-voorspellingen plus actieve waarschuwingen van de Environment Agency, beoordeeld met een uitlegbaar model (elke score noemt zijn factoren). Het tabblad Veerkracht rangschikt de regio’s.",

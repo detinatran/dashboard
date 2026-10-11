@@ -2787,7 +2787,19 @@
       "minor": "mírně",
       "serviceDisruption": "Výpadek služeb prodejen: {{pct}} %",
       "direct": "přímý zásah",
-      "clickToToggle": "kliknutím vyřadit/obnovit"
+      "clickToToggle": "kliknutím vyřadit/obnovit",
+      "tabGraph": "Kaskáda",
+      "tabWhatIf": "Laboratoř „co kdyby“",
+      "planNone": "Bez opatření",
+      "planClose": "Zavřít {{site}}",
+      "planReroute": "Přesměrovat {{site}} → {{target}}",
+      "colNormal": "Normál",
+      "hazard": "Ohrožení",
+      "metricService": "Obsluha prodejen",
+      "metricDelivery": "Doba dodání (doručené zboží)",
+      "metricCost": "Logistické náklady (normál = 100)",
+      "recommend": "Doporučeno: {{plan}}",
+      "assumptions": "Modelový odhad na 14 dní: 3denní událost; zaplavená místa firmy potřebují dalších 10 dní oprav, veřejná infrastruktura se obnoví po události; ušlé tržby váží 3× své logistické náklady."
     },
     "ukRisk": {
       "about": "72hodinový výhled ohrožení pro každé aktivum z předpovědí Open-Meteo a GloFAS a aktuálních varování Environment Agency, hodnocený vysvětlitelným modelem (každé skóre uvádí své faktory). Karta Odolnost řadí regiony.",

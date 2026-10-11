@@ -2749,7 +2749,19 @@
       "minor": "軽微",
       "serviceDisruption": "店舗サービスの途絶: {{pct}}%",
       "direct": "直撃",
-      "clickToToggle": "クリックで停止/復旧"
+      "clickToToggle": "クリックで停止/復旧",
+      "tabGraph": "連鎖",
+      "tabWhatIf": "もしもラボ",
+      "planNone": "対応なし",
+      "planClose": "{{site}}を閉鎖",
+      "planReroute": "{{site}}を迂回 → {{target}}",
+      "colNormal": "平常",
+      "hazard": "ハザード",
+      "metricService": "店舗サービス",
+      "metricDelivery": "配送時間（配送済み商品）",
+      "metricCost": "物流コスト（平常 = 100）",
+      "recommend": "推奨: {{plan}}",
+      "assumptions": "14日間のモデル推定：3日間の事象。浸水した自社拠点はさらに10日の修理が必要、公共インフラは事象後に復旧。逸失売上は物流コストの3倍で評価。"
     },
     "ukRisk": {
       "about": "Open-Meteo と GloFAS の予報および Environment Agency の現行警報から、各資産の72時間ハザード見通しを説明可能なモデルで評価します（各スコアに要因を表示）。レジリエンスタブでは地域を順位付けします。",

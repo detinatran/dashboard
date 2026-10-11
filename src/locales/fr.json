@@ -2768,7 +2768,19 @@
       "minor": "mineurs",
       "serviceDisruption": "Perturbation du service en magasin : {{pct}} %",
       "direct": "impact direct",
-      "clickToToggle": "cliquer pour mettre en panne/rétablir"
+      "clickToToggle": "cliquer pour mettre en panne/rétablir",
+      "tabGraph": "Cascade",
+      "tabWhatIf": "Labo « et si »",
+      "planNone": "Aucune action",
+      "planClose": "Fermer {{site}}",
+      "planReroute": "Dérouter {{site}} → {{target}}",
+      "colNormal": "Normal",
+      "hazard": "Aléa",
+      "metricService": "Service en magasin",
+      "metricDelivery": "Délai de livraison (marchandises livrées)",
+      "metricCost": "Coût logistique (normal = 100)",
+      "recommend": "Recommandé : {{plan}}",
+      "assumptions": "Estimation du modèle sur 14 jours : événement de 3 jours ; les sites inondés de l’entreprise demandent 10 jours de réparation supplémentaires, l’infrastructure publique est rétablie après l’événement ; les ventes perdues pèsent 3× leur coût logistique."
     },
     "ukRisk": {
       "about": "Perspective de danger à 72 heures pour chaque actif à partir des prévisions Open-Meteo et GloFAS et des alertes actives de l’Environment Agency, évaluée par un modèle explicable (chaque score liste ses facteurs). L’onglet Résilience classe les régions.",
