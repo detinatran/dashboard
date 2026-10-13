@@ -104,6 +104,12 @@ export const PROVIDER_IDENTITY_GROUPS = Object.freeze({
     reason: 'The B.C. catalogue record supplies the licence for the ArcGIS evacuation dataset.',
     reviewReference: 'Issue #6659 source-rights probe',
   }),
+  'open-meteo': Object.freeze({
+    provider: 'Open-Meteo',
+    memberHosts: Object.freeze(['api.open-meteo.com', 'flood-api.open-meteo.com']),
+    reason: 'The forecast and GloFAS flood endpoints are two APIs of the one Open-Meteo service.',
+    reviewReference: 'CrisisTwin UK source review 2026-10-13 (risk outlook, commit 6a5eeca8c)',
+  }),
   interfax: Object.freeze({
     provider: 'Interfax',
     memberHosts: Object.freeze(['interfax.com', 'www.interfax.ru']),
@@ -820,8 +826,16 @@ const PROVIDER_OVERRIDES = {
     attribution: 'Carbon Intensity API by the National Energy System Operator (NESO), Environmental Defense Fund Europe and University of Oxford; https://carbonintensity.org.uk/.',
     status: 'reviewed',
   },
+  'flood-api.open-meteo.com': {
+    provider: 'Open-Meteo',
+    identityGroup: 'open-meteo',
+    license: 'CC BY 4.0 (Open-Meteo API data licence; GloFAS river discharge from Copernicus Emergency Management Service)',
+    attribution: 'Flood data by Open-Meteo.com (GloFAS, Copernicus Emergency Management Service), licensed under CC BY 4.0; https://open-meteo.com/.',
+    status: 'reviewed',
+  },
   'api.open-meteo.com': {
     provider: 'Open-Meteo',
+    identityGroup: 'open-meteo',
     license: 'CC BY 4.0 (Open-Meteo API data licence)',
     attribution: 'Weather data by Open-Meteo.com, licensed under CC BY 4.0; https://open-meteo.com/.',
     status: 'reviewed',
@@ -852,8 +866,8 @@ const PROVIDER_OVERRIDES = {
 // a provider-bearing override a separate, explicit lifecycle event instead of
 // something `--write` can silently normalize into the manifest.
 export const PROVIDER_IDENTITY_REVIEW = Object.freeze({
-  sha256: 'b165ad02cd148cc96c2be61f8d751e1453c5305352f638b7079a55afb6239904',
-  reason: 'Name the CrisisTwin UK live sources (Environment Agency, NESO Carbon Intensity API, Elexon BMRS, British Geological Survey, Met Office, Open-Meteo, Sky News) by publisher rather than by bare host. Previous epoch: keep Toronto Police Service C4S live-dispatch on services.arcgis.com distinct from Toronto Police Service Open Data on data.tps.ca and www.tps.ca.',
+  sha256: '9ad2f54989dc0851353fad4cc8d50136d0a0447d8973d7e87a8a485cf5f523a4',
+  reason: 'Group the GloFAS flood endpoint (flood-api.open-meteo.com) under the existing Open-Meteo provider. Before that: name the CrisisTwin UK live sources (Environment Agency, NESO Carbon Intensity API, Elexon BMRS, British Geological Survey, Met Office, Open-Meteo, Sky News) by publisher rather than by bare host. Previous epoch: keep Toronto Police Service C4S live-dispatch on services.arcgis.com distinct from Toronto Police Service Open Data on data.tps.ca and www.tps.ca.',
   // A URL cited here is scanned like any other: this file sits inside
   // SOURCE_ROOTS, so citing a host that is not already a registered source
   // invents a provider row for it. The B.C. catalogue URLs above are safe

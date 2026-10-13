@@ -957,6 +957,9 @@
       "references": [
         {
           "path": "scripts/shared/coastal-providers.mjs"
+        },
+        {
+          "path": "src/services/uk/risk.ts"
         }
       ]
     },
@@ -4540,6 +4543,20 @@
       "references": [
         {
           "path": "scripts/seed-fire-detections.mjs"
+        }
+      ]
+    },
+    {
+      "host": "flood-api.open-meteo.com",
+      "provider": "Open-Meteo",
+      "kind": "structured",
+      "observed": true,
+      "license": "CC BY 4.0 (Open-Meteo API data licence; GloFAS river discharge from Copernicus Emergency Management Service)",
+      "attribution": "Flood data by Open-Meteo.com (GloFAS, Copernicus Emergency Management Service), licensed under CC BY 4.0; https://open-meteo.com/.",
+      "status": "reviewed",
+      "references": [
+        {
+          "path": "src/services/uk/risk.ts"
         }
       ]
     },
