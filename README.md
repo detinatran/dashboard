@@ -26,6 +26,8 @@
 <p align="center">
   <a href="#the-mission"><strong>Overview</strong></a>
   &nbsp;&bull;&nbsp;
+  <a href="#crisistwin-uk"><strong>CrisisTwin UK</strong></a>
+  &nbsp;&bull;&nbsp;
   <a href="#interface-showcase"><strong>Showcase</strong></a>
   &nbsp;&bull;&nbsp;
   <a href="#system-architecture"><strong>Architecture</strong></a>
@@ -62,6 +64,38 @@ and the evidence that still needs verification.
   and refresh it through bounded background collectors.
 - **Fail honestly.** Optional integrations stay dormant when credentials or
   licensing are unavailable instead of producing noisy errors or fake data.
+
+## CrisisTwin UK
+
+CrisisTwin UK is the `uk` edition of the dashboard: a digital twin for UK
+crisis monitoring, prediction and cascading-impact simulation. It answers four
+questions about one country instead of watching the whole world.
+
+<p align="center">
+  <a href="docs/images/showcase/crisistwin-uk.webp">
+    <img src="docs/images/showcase/crisistwin-uk.webp" width="100%" alt="CrisisTwin UK: UK map with the infrastructure digital twin recolored by a Humber storm-surge cascade, the Live Crisis Monitor, the Risk Outlook and the What-if lab comparing response plans.">
+  </a>
+</p>
+
+| Question | Panel | What it does |
+| --- | --- | --- |
+| What is happening? | **Live Crisis Monitor** | Environment Agency flood warnings, Met Office warnings, NESO grid warnings, TfL disruption and BGS earthquakes ranked by severity, plus carbon intensity, renewables and demand |
+| What will happen? | **Risk Outlook** | A 72-hour hazard score for every twin asset from Open-Meteo and GloFAS forecasts and nearby EA warnings. The model is explainable: each score lists its drivers |
+| What will be affected? | **Digital Twin & Cascade** | A knowledge graph of 112 UK assets (ports, power, interconnectors, gas/LNG, rail, hospitals, water, data centres and a sample company). Failing an asset propagates capacity loss along its 178 dependencies; the map mirrors the result |
+| What if we…? | **What-if lab** | Compares response plans (close a site, or reroute its flows) against no action over 14 days on store service, delivery time and logistics cost, and recommends one |
+
+The Risk Outlook also ranks the 12 UK regions on a resilience index (0–100)
+built from redundancy, flood exposure of critical assets, single-point
+dependency and this week's forecast.
+
+Every UK source is keyless and fetched by the browser, so the edition runs
+without Redis or background collectors. The roadmap, model assumptions and
+remaining work (an AI decision copilot) are in
+[CRISISTWIN-PLAN.md](CRISISTWIN-PLAN.md).
+
+```bash
+npm run dev:uk        # or pick 🇬🇧 UK in the header variant switcher
+```
 
 ## Interface Showcase
 
@@ -114,6 +148,7 @@ and the evidence that still needs verification.
 | Environment | Weather, fires, earthquakes, GPS interference, provincial alerts | Keyless or public feeds where possible |
 | Economic | Markets, commodities, energy, trade, supply-chain pressure | Combined with physical transmission paths |
 | Analysis | Correlation, scenarios, briefs, and country intelligence | Premium RPCs run only with valid credentials |
+| UK crisis twin | UK hazards, forecast risk, dependency cascades, response plans | Browser-only, keyless public sources (CrisisTwin UK) |
 
 ## What Makes This Edition Different
 
@@ -128,6 +163,9 @@ and the evidence that still needs verification.
 - ADSB.lol as the primary military source; automated OpenSky fallback remains
   off unless the operator has confirmed the appropriate licence.
 - Repeatable production QA across real APIs and desktop/mobile interface flows.
+- CrisisTwin UK: a `uk` edition with live UK hazards, a 112-asset digital
+  twin, cascade simulation, a 72-hour risk outlook, a regional resilience
+  index and a what-if lab for response plans.
 
 ## System Architecture
 
@@ -170,6 +208,9 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000). The core interface starts
 without provider keys; credential-backed features remain unavailable until they
 are configured.
 
+Run `npm run dev:uk` instead to open the CrisisTwin UK edition. Its UK panels
+need no keys and no local Redis.
+
 ### Complete local system
 
 1. Copy `.env.example` to `.env`.
@@ -194,6 +235,28 @@ and provider options are documented in [SELF_HOSTING.md](SELF_HOSTING.md).
 | Disabled by default | Automated OpenSky fallback, non-commercial ADS-B gap fill, browser-time bulk crawling |
 
 ## Verified Quality
+
+### CrisisTwin UK
+
+The full `npm run test:data` suite was last run on commit
+[`89e1f5d7a`](https://github.com/detinatran/dashboard/commit/89e1f5d7a) plus this README update:
+27,490 tests, 27,452 passed and 15 failed, none of them in the UK edition:
+
+- the in-progress coastal water-level API (OpenAPI descriptions, cache tier,
+  MCP parity, seeder watch paths);
+- Railway deploy-drift checks that need the live Railway account;
+- the locale-freshness gate, which clears once `scripts/translate-locales.mjs`
+  is run with an Anthropic API key;
+- one timing-sensitive regex benchmark (`china-policy-events`) that fails
+  intermittently on a busy machine.
+
+The UK edition has its own focused suites:
+
+```bash
+npx tsx --test tests/uk-*.test.mts   # sources, twin data, cascade, risk, what-if
+```
+
+### Docker baseline
 
 Application baseline verified on commit
 [`e6fba9f9c`](https://github.com/detinatran/dashboard/commit/e6fba9f9cfb115f0bc58efcad6b636c45755d335)
@@ -256,6 +319,8 @@ credit and licence notices when publishing a modified distribution.
 
 ```text
 src/                         Browser application and intelligence UI
+src/services/uk/             CrisisTwin UK sources, cascade, risk and what-if engines
+shared/uk-twin-data.ts       CrisisTwin UK digital-twin assets and dependencies
 server/ and api/             API handlers and service boundaries
 scripts/                     Collectors, seeders, QA, and build tooling
 shared/                      Shared contracts and source metadata
@@ -273,6 +338,7 @@ npm run lint
 npm run lint:boundaries
 npm run test:dom
 npm run test:sidecar
+npx tsx --test tests/uk-*.test.mts
 ```
 
 Contributions and focused improvements are welcome. Read
