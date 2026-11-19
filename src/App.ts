@@ -3104,6 +3104,8 @@ export class App {
   }
 
   private async initFindingsBadge(): Promise<void> {
+    // CrisisTwin UK: monitors/intel findings are not part of the UK preset.
+    if (SITE_VARIANT === 'uk') return;
     try {
       const { IntelligenceGapBadge } = await import('@/components/IntelligenceGapBadge');
       if (this.state.isDestroyed) return;

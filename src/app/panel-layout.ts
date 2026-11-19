@@ -1017,7 +1017,7 @@ export class PanelLayoutManager implements AppModule {
             <span class="status-dot"></span>
             <span>${t('header.live')}</span>
           </div>
-          <div class="region-selector">
+          ${SITE_VARIANT === 'uk' ? '' : `<div class="region-selector">
             <select id="regionSelect" class="region-select" aria-label="${t('header.selectRegion')}">
               <option value="global">${t('components.deckgl.views.global')}</option>
               <option value="america">${t('components.deckgl.views.americas')}</option>
@@ -1029,7 +1029,7 @@ export class PanelLayoutManager implements AppModule {
               <option value="africa">${t('components.deckgl.views.africa')}</option>
               <option value="oceania">${t('components.deckgl.views.oceania')}</option>
             </select>
-          </div>
+          </div>`}
           <span id="missionPresetMount" class="mission-preset-mount"></span>
           <button class="mobile-search-btn" id="mobileSearchBtn" aria-label="${t('header.search')}">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1037,8 +1037,9 @@ export class PanelLayoutManager implements AppModule {
         </div>
         <div class="header-right">
           <button class="search-btn" id="searchBtn"><kbd>⌘K</kbd> ${t('header.search')}</button>
-          ${this.ctx.isDesktopApp ? '' : `<button class="copy-link-btn" id="copyLinkBtn">${t('header.copyLink')}</button>`}
-          ${this.ctx.isDesktopApp ? '' : `<button class="copy-link-btn embed-link-btn" id="embedLinkBtn">${t('header.embed')}</button>`}
+          ${SITE_VARIANT === 'uk' ? `<button class="copy-link-btn uk-tour-btn" id="ukTourBtn">✦ ${t('header.tour')}</button>` : ''}
+          ${this.ctx.isDesktopApp || SITE_VARIANT === 'uk' ? '' : `<button class="copy-link-btn" id="copyLinkBtn">${t('header.copyLink')}</button>`}
+          ${this.ctx.isDesktopApp || SITE_VARIANT === 'uk' ? '' : `<button class="copy-link-btn embed-link-btn" id="embedLinkBtn">${t('header.embed')}</button>`}
           ${this.ctx.isDesktopApp ? '' : `<button class="fullscreen-btn" id="fullscreenBtn" title="${t('header.fullscreen')}" aria-label="${t('header.fullscreen')}">⛶</button>`}
           ${SITE_VARIANT === 'happy' ? `<button class="tv-mode-btn" id="tvModeBtn" title="TV Mode (Shift+T)" aria-label="TV Mode"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></button>` : ''}
           <span id="unifiedSettingsMount"></span>
@@ -1079,11 +1080,11 @@ export class PanelLayoutManager implements AppModule {
         ).join('');
       })()}
         <div class="mobile-menu-divider"></div>
-        <button class="mobile-menu-item" id="mobileMenuRegion">
+        ${SITE_VARIANT === 'uk' ? '' : `<button class="mobile-menu-item" id="mobileMenuRegion">
           <span class="mobile-menu-item-icon">🌐</span>
           <span class="mobile-menu-item-label">${t('components.deckgl.views.global')}</span>
           <span class="mobile-menu-chevron">▸</span>
-        </button>
+        </button>`}
         <button class="mobile-menu-item" id="mobileMenuMission">
           <span class="mobile-menu-item-icon">◎</span>
           <span class="mobile-menu-item-label">Mission</span>
@@ -1146,23 +1147,23 @@ export class PanelLayoutManager implements AppModule {
             <span class="header-clock" id="headerClock" translate="no"></span>
             <div class="map-header-actions">
               <div class="map-action-group map-action-group-intel">
-              <button class="map-pin-btn aoi-workspace-toggle" id="aoiWorkspaceToggle" title="Area of interest tools" aria-controls="aoiWorkspace" aria-expanded="false" aria-busy="true" disabled>AOI</button>
+              ${SITE_VARIANT === 'uk' ? '' : `<button class="map-pin-btn aoi-workspace-toggle" id="aoiWorkspaceToggle" title="Area of interest tools" aria-controls="aoiWorkspace" aria-expanded="false" aria-busy="true" disabled>AOI</button>`}
               <button class="map-pin-btn water-level-toggle" id="waterLevelToggle" title="Crisis Resilience Digital Twin — UK coastal water level" aria-controls="coastalPanel" aria-pressed="false" aria-busy="true" disabled>CRDT</button>
               <span class="cctv-target-context" id="cctvTargetContext" aria-live="polite" hidden>
                 <span class="cctv-target-icon" aria-hidden="true">⌖</span>
                 <span class="cctv-target-label" id="cctvTargetLabel">TARGET</span>
               </span>
-              <button class="map-pin-btn webcam-map-toggle" id="webcamMapToggle" title="Show CCTV cameras" aria-pressed="false" aria-busy="true" disabled>
+              ${SITE_VARIANT === 'uk' ? '' : `<button class="map-pin-btn webcam-map-toggle" id="webcamMapToggle" title="Show CCTV cameras" aria-pressed="false" aria-busy="true" disabled>
                 <span class="webcam-map-toggle-icon" aria-hidden="true"></span>
                 <span>CCTV</span>
                 <span class="webcam-map-toggle-state" aria-hidden="true"></span>
-              </button>
+              </button>`}
               </div>
               <div class="map-action-group map-action-group-view">
-              <div class="map-dimension-toggle" id="mapDimensionToggle">
+              ${SITE_VARIANT === 'uk' ? '' : `<div class="map-dimension-toggle" id="mapDimensionToggle">
                 <button class="map-dim-btn${isGlobeMode ? '' : ' active'}" data-mode="flat" title="2D Map">2D</button>
                 <button class="map-dim-btn${isGlobeMode ? ' active' : ''}" data-mode="globe" title="3D Globe">3D</button>
-              </div>
+              </div>`}
               <button class="map-pin-btn map-side-btn" id="mapSideBtn" title="Move map to the right side">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></svg>
               </button>
@@ -1213,7 +1214,7 @@ export class PanelLayoutManager implements AppModule {
           </div>
         </div>
         <nav aria-label="World Monitor references">
-          ${referenceLinksHtml}
+          ${SITE_VARIANT === 'uk' ? `<a href="https://github.com/detinatran/dashboard" target="_blank" rel="noopener">GitHub</a>` : `${referenceLinksHtml}
           <a href="${this.ctx.isDesktopApp ? 'https://www.worldmonitor.app/pro#pricing' : '/pro#pricing'}" target="_blank" rel="noopener">Pricing</a>
           <a href="${this.ctx.isDesktopApp ? 'https://worldmonitor.app/blog/' : 'https://www.worldmonitor.app/blog/'}" target="_blank" rel="noopener">Blog</a>
           <a href="${this.ctx.isDesktopApp ? 'https://worldmonitor.app/docs' : 'https://www.worldmonitor.app/docs'}" target="_blank" rel="noopener">Docs</a>
@@ -1221,7 +1222,7 @@ export class PanelLayoutManager implements AppModule {
           <a href="https://github.com/koala73/worldmonitor" target="_blank" rel="noopener">GitHub</a>
           <a href="https://discord.gg/re63kWKxaz" target="_blank" rel="noopener">Discord</a>
           <a href="https://x.com/worldmonitorai" target="_blank" rel="noopener">X</a>
-          ${this.ctx.isDesktopApp ? '' : `<span id="footerDownloadMount"></span>`}
+          ${this.ctx.isDesktopApp ? '' : `<span id="footerDownloadMount"></span>`}`}
         </nav>
         <span class="site-footer-copy">&copy; ${new Date().getFullYear()} World Monitor</span>
       </footer>
@@ -3200,12 +3201,15 @@ export class PanelLayoutManager implements AppModule {
     this.bindWaterLevelToggle();
     this.bindUkAlertFocus();
 
-    const { AoiWorkspace } = await import('@/components/AoiWorkspace');
-    if (this.ctx.isDestroyed) return;
-    this.aoiWorkspace = new AoiWorkspace({
-      map: this.ctx.map,
-      getEntityGroups: () => this.getAoiEntityGroups(),
-    });
+    // CrisisTwin UK renders no AOI toggle, and the workspace throws without it.
+    if (SITE_VARIANT !== 'uk') {
+      const { AoiWorkspace } = await import('@/components/AoiWorkspace');
+      if (this.ctx.isDestroyed) return;
+      this.aoiWorkspace = new AoiWorkspace({
+        map: this.ctx.map,
+        getEntityGroups: () => this.getAoiEntityGroups(),
+      });
+    }
 
     const eagerSupplyChainPanel = this.ctx.panels['supply-chain'] as SupplyChainPanel | undefined;
     if (eagerSupplyChainPanel) {

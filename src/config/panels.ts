@@ -1199,7 +1199,6 @@ const UK_PANELS: Record<string, PanelConfig> = {
   'uk-resilience-news': { name: 'UK Resilience News', enabled: true, priority: 1 },
   'uk-headlines': { name: 'UK Headlines', enabled: true, priority: 1 },
   'live-news': { name: 'UK Live News', enabled: true, priority: 2 },
-  monitors: { name: 'My Monitors', enabled: true, priority: 3 },
 };
 
 const UK_MAP_LAYERS: MapLayers = {

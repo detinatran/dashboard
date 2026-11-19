@@ -34,6 +34,7 @@ import { UNDERSEA_CABLES, NUCLEAR_FACILITIES } from '@/config/geo-map';
 import { PIPELINES } from '@/config/pipelines';
 import { AI_DATA_CENTERS } from '@/config/ai-datacenters';
 import { GAMMA_IRRADIATORS } from '@/config/irradiators';
+import { anyPointInUkBounds, inUkBounds } from '@/config/uk-bounds';
 import { TECH_COMPANIES } from '@/config/tech-companies';
 import { AI_RESEARCH_LABS } from '@/config/ai-research-labs';
 import { STARTUP_ECOSYSTEMS } from '@/config/startup-ecosystems';
@@ -368,60 +369,71 @@ export class SearchManager implements AppModule {
         data: a,
       })));
     } else {
-      this.ctx.searchModal.registerSource('hotspot', INTEL_HOTSPOTS.map(h => ({
-        id: h.id,
-        title: h.name,
-        subtitle: h.subtext || 'Intelligence hotspot',
-        searchText: `${h.keywords?.join(' ') || ''} ${h.description || ''}`.trim(),
-        data: h,
-      })));
+      // CrisisTwin UK is single-country: no global hotspot/conflict/irradiator
+      // entities, and the infrastructure indexes are clipped to the UK box.
+      const ukOnly = SITE_VARIANT === 'uk';
+      if (!ukOnly) {
+        this.ctx.searchModal.registerSource('hotspot', INTEL_HOTSPOTS.map(h => ({
+          id: h.id,
+          title: h.name,
+          subtitle: h.subtext || 'Intelligence hotspot',
+          searchText: `${h.keywords?.join(' ') || ''} ${h.description || ''}`.trim(),
+          data: h,
+        })));
 
-      this.ctx.searchModal.registerSource('conflict', CONFLICT_ZONES.map(c => ({
-        id: c.id,
-        title: c.name,
-        subtitle: c.parties?.join(' ') || 'Conflict zone',
-        searchText: `${c.keywords?.join(' ') || ''} ${c.description || ''}`.trim(),
-        data: c,
-      })));
+        this.ctx.searchModal.registerSource('conflict', CONFLICT_ZONES.map(c => ({
+          id: c.id,
+          title: c.name,
+          subtitle: c.parties?.join(' ') || 'Conflict zone',
+          searchText: `${c.keywords?.join(' ') || ''} ${c.description || ''}`.trim(),
+          data: c,
+        })));
+      }
 
       if (getAllowedLayerKeys((SITE_VARIANT || 'full') as MapVariant).has('bases')) {
         this.searchIndexReady = this.registerBaseSearchSource();
       }
 
-      this.ctx.searchModal.registerSource('pipeline', PIPELINES.map(p => ({
+      const pipelines = ukOnly ? PIPELINES.filter(p => anyPointInUkBounds(p.points)) : PIPELINES;
+      this.ctx.searchModal.registerSource('pipeline', pipelines.map(p => ({
         id: p.id,
         title: p.name,
         subtitle: `${p.type} ${p.operator || ''} ${p.countries?.join(' ') || ''}`.trim(),
         data: p,
       })));
 
-      this.ctx.searchModal.registerSource('cable', UNDERSEA_CABLES.map(c => ({
+      const cables = ukOnly ? UNDERSEA_CABLES.filter(c => anyPointInUkBounds(c.points)) : UNDERSEA_CABLES;
+      this.ctx.searchModal.registerSource('cable', cables.map(c => ({
         id: c.id,
         title: c.name,
         subtitle: c.major ? 'Major cable' : '',
         data: c,
       })));
 
-      this.ctx.searchModal.registerSource('datacenter', AI_DATA_CENTERS.map(d => ({
+      const datacenters = ukOnly ? AI_DATA_CENTERS.filter(d => inUkBounds(d.lat, d.lon)) : AI_DATA_CENTERS;
+      this.ctx.searchModal.registerSource('datacenter', datacenters.map(d => ({
         id: d.id,
         title: d.name,
         subtitle: `${d.owner} ${d.chipType || ''}`.trim(),
         data: d,
       })));
 
-      this.ctx.searchModal.registerSource('nuclear', NUCLEAR_FACILITIES.map(n => ({
+      const nuclear = ukOnly ? NUCLEAR_FACILITIES.filter(n => inUkBounds(n.lat, n.lon)) : NUCLEAR_FACILITIES;
+      this.ctx.searchModal.registerSource('nuclear', nuclear.map(n => ({
         id: n.id,
         title: n.name,
         subtitle: `${n.type} ${n.operator || ''}`.trim(),
         data: n,
       })));
 
-      this.ctx.searchModal.registerSource('irradiator', GAMMA_IRRADIATORS.map(g => ({
-        id: g.id,
-        title: `${g.city}, ${g.country}`,
-        subtitle: g.organization || '',
-        data: g,
-      })));
+      if (!ukOnly) {
+        this.ctx.searchModal.registerSource('irradiator', GAMMA_IRRADIATORS.map(g => ({
+          id: g.id,
+          title: `${g.city}, ${g.country}`,
+          subtitle: g.organization || '',
+          data: g,
+        })));
+      }
     }
 
     if (SITE_VARIANT === 'finance') {
@@ -986,7 +998,10 @@ export class SearchManager implements AppModule {
       ? cachedScores
       : panelScores;
     const ciiByCode = new Map(scores.map((score) => [score.code, score]));
-    return Object.entries(TIER1_COUNTRIES).map(([code, name]) => {
+    // CrisisTwin UK is single-country: only the GB brief is searchable.
+    return Object.entries(TIER1_COUNTRIES)
+      .filter(([code]) => SITE_VARIANT !== 'uk' || code === 'GB')
+      .map(([code, name]) => {
       const score = ciiByCode.get(code);
       return {
         id: code,

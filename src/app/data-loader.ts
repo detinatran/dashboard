@@ -2115,8 +2115,14 @@ export class DataLoaderManager implements AppModule {
     const landed = digestCovered || anyItemsCollected || noCategoriesToLoad;
     if (landed) this.loadedNewsSignature = newsWorkListSignature(categories, disabledAtLoadStart);
     this.ctx.initialLoadComplete = true;
-    // CrisisTwin UK keeps the first screen free of community prompts.
+    // CrisisTwin UK keeps the first screen free of community prompts and gets
+    // the feature guide tour instead (auto-runs once, replayable from ✦ Tour).
     if (SITE_VARIANT !== 'uk') mountCommunityWidget();
+    else {
+      void import('@/components/UkGuideTour')
+        .then(m => m.initUkGuideTour())
+        .catch(err => console.warn('[uk] guide tour unavailable:', err));
+    }
 
     this.ctx.map?.updateHotspotActivity(this.ctx.allNews);
 

@@ -5,6 +5,7 @@ import {
   fetchUkSituation,
   getLastUkSituation,
   SEVERITY_RANK,
+  UK_CRISIS_CATEGORY_ORDER,
   type UkAlert,
   type UkAlertCategory,
   type UkAlertSeverity,
@@ -13,12 +14,22 @@ import {
 
 type CategoryFilter = 'all' | UkAlertCategory;
 
-const CATEGORY_ICON: Record<UkAlertCategory, string> = {
-  flood: '🌊',
-  weather: '🌧️',
-  grid: '⚡',
-  transport: '🚇',
-  seismic: '📈',
+// Generated duotone set (public/uk-icons/*.png, transparent) — not the emoji
+// subset, so the tiles render identically across platforms and themes.
+const categoryIcon = (c: UkAlertCategory, cls: string): SafeHtml =>
+  safeHtml`<img class="${cls}" src="/uk-icons/${c}.png" alt="" width="20" height="20" loading="lazy" decoding="async">`;
+
+const CATEGORY_LABEL_KEY: Record<UkAlertCategory, string> = {
+  flood: 'components.ukCrisisMonitor.floods',
+  weather: 'components.ukCrisisMonitor.weather',
+  grid: 'components.ukCrisisMonitor.gridWarnings',
+  transport: 'components.ukCrisisMonitor.transport',
+  seismic: 'components.ukCrisisMonitor.quakes',
+  accident: 'components.ukCrisisMonitor.accidents',
+  disorder: 'components.ukCrisisMonitor.disorder',
+  strike: 'components.ukCrisisMonitor.strikes',
+  infrastructure: 'components.ukCrisisMonitor.infrastructure',
+  cyber: 'components.ukCrisisMonitor.cyber',
 };
 
 const SOURCE_LABEL: Record<UkAlert['source'], string> = {
@@ -27,6 +38,8 @@ const SOURCE_LABEL: Record<UkAlert['source'], string> = {
   'neso-grid': 'NESO',
   tfl: 'TfL',
   bgs: 'BGS',
+  ncsc: 'NCSC',
+  'uk-news': 'UK news signal',
 };
 
 const MIX_COLORS: Record<string, string> = {
@@ -122,19 +135,13 @@ export class UkCrisisMonitorPanel extends Panel {
       const list = byCategory(category);
       const worst = worstSeverity(list) ?? 'none';
       return safeHtml`<button class="uk-kpi uk-sev-${worst} ${this.filter === category ? 'active' : ''}" data-uk-filter="${category}">
-        <span class="uk-kpi-icon">${CATEGORY_ICON[category]}</span>
+        ${categoryIcon(category, 'uk-kpi-icon')}
         <span class="uk-kpi-value">${list.length}</span>
         <span class="uk-kpi-label">${label}</span>
       </button>`;
     };
 
-    const kpis = joinSafeHtml([
-      kpi('flood', t('components.ukCrisisMonitor.floods')),
-      kpi('weather', t('components.ukCrisisMonitor.weather')),
-      kpi('grid', t('components.ukCrisisMonitor.gridWarnings')),
-      kpi('transport', t('components.ukCrisisMonitor.transport')),
-      kpi('seismic', t('components.ukCrisisMonitor.quakes')),
-    ]);
+    const kpis = joinSafeHtml(UK_CRISIS_CATEGORY_ORDER.map(c => kpi(c, t(CATEGORY_LABEL_KEY[c]))));
 
     const visible = (this.filter === 'all' ? active : byCategory(this.filter)).slice(0, MAX_ROWS);
     const rows = visible.length
@@ -187,11 +194,11 @@ export class UkCrisisMonitorPanel extends Panel {
       ? safeHtml`<button class="uk-locate" data-uk-lat="${a.lat}" data-uk-lon="${a.lon}" title="${t('components.ukCrisisMonitor.showOnMap')}">◎</button>`
       : safeHtml``;
     return safeHtml`<div class="uk-alert uk-sev-${a.severity}">
-      <span class="uk-alert-icon">${CATEGORY_ICON[a.category]}</span>
+      ${categoryIcon(a.category, 'uk-alert-icon')}
       <div class="uk-alert-body">
         <div class="uk-alert-title">${title}</div>
         ${a.detail ? safeHtml`<div class="uk-alert-detail">${a.detail}</div>` : safeHtml``}
-        <div class="uk-alert-meta">${SOURCE_LABEL[a.source]} · ${timeAgo(a.time)}</div>
+        <div class="uk-alert-meta"><span class="uk-alert-source">${SOURCE_LABEL[a.source]}</span><span class="uk-alert-time">${timeAgo(a.time)}</span></div>
       </div>
       ${locate}
     </div>`;

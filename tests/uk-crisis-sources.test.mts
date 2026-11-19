@@ -13,6 +13,13 @@ import {
   renewableShare,
   type UkAlert,
 } from '../src/services/uk/parsers.ts';
+import {
+  classifyUkCrisisText,
+  isNewsSignalCandidate,
+  isUkRelevant,
+  parseNcscAlerts,
+  parseNewsSignals,
+} from '../src/services/uk/ontology.ts';
 
 describe('EA flood warnings', () => {
   const items = [
@@ -118,5 +125,72 @@ describe('alert ordering and grid helpers', () => {
       { fuel: 'gas', perc: 41.7 }, { fuel: 'wind', perc: 6.3 }, { fuel: 'solar', perc: 1.4 },
       { fuel: 'biomass', perc: 11.1 }, { fuel: 'nuclear', perc: 14.9 }, { fuel: 'hydro', perc: 0.2 },
     ]), 19);
+  });
+});
+
+describe('crisis ontology', () => {
+  it('classifies the taxonomy categories from headlines', () => {
+    const cases: Array<[string, string | null]> = [
+      ['RMT announces fresh strikes across England rail network', 'strike'],
+      ['Riot police deployed after unrest in Leeds city centre', 'disorder'],
+      ['Major incident declared after explosion at Manchester depot', 'accident'],
+      ['Thousands without power after substation fire in Kent', 'infrastructure'],
+      ['Cyber attack takes NHS booking systems offline', 'cyber'],
+      ['Flights cancelled at Heathrow as fog grounds planes', 'transport'],
+      ['Flood warnings issued along the Severn', 'flood'],
+      ['Storm Bram brings 90mph gusts to Scotland', 'weather'],
+      ['Chancellor unveils UK budget plans', null],
+    ];
+    for (const [text, expected] of cases) {
+      assert.equal(classifyUkCrisisText(text), expected, text);
+    }
+  });
+
+  it('does not classify military strikes as industrial action', () => {
+    assert.notEqual(classifyUkCrisisText('UK backs air strikes on Houthi targets'), 'strike');
+    assert.equal(classifyUkCrisisText('Nurses strike over pay in England'), 'strike');
+  });
+
+  it('requires a UK marker in the headline and keeps New York out', () => {
+    assert.ok(isUkRelevant('Power cut hits central Manchester'));
+    assert.ok(!isUkRelevant('Hundreds of flights cancelled as typhoon shuts Taiwan'));
+    assert.ok(!isUkRelevant('New York subway riders stranded'));
+    assert.ok(isUkRelevant('York station closed by flooding'));
+  });
+
+  it('drops metaphorical, finance, sport and foreign-place headlines', () => {
+    assert.ok(!isNewsSignalCandidate("European stocks close lower amid 'extraordinary collapse' in UK consumer confidence"));
+    assert.ok(!isNewsSignalCandidate('England captain laments ODI batting collapse against Pakistan'));
+    assert.ok(!isNewsSignalCandidate('What about the Londoners living in riot-torn Paris?'));
+    assert.equal(classifyUkCrisisText("Britain's fishing fleet on the brink of collapse"), null);
+    assert.ok(isNewsSignalCandidate('Two killed in M6 lorry crash near Preston'));
+    assert.ok(isNewsSignalCandidate('Roof collapse shuts Leeds shopping centre'));
+  });
+
+  it('parses news signals: window, UK filter, classification, dedupe', () => {
+    const now = Date.parse('2026-10-23T12:00:00Z');
+    const xml = `<rss><channel>
+      <item><title>Major incident declared after explosion in Hull - BBC News</title><link>https://example.com/1</link><pubDate>Thu, 23 Oct 2026 09:00:00 GMT</pubDate></item>
+      <item><title>Major incident declared after explosion in Hull - Sky News</title><link>https://example.com/2</link><pubDate>Thu, 23 Oct 2026 10:00:00 GMT</pubDate></item>
+      <item><title>Typhoon shuts airports across Taiwan - Reuters</title><link>https://example.com/3</link><pubDate>Thu, 23 Oct 2026 09:30:00 GMT</pubDate></item>
+      <item><title>Week-old strike in Cardiff resolved - BBC</title><link>https://example.com/4</link><pubDate>Mon, 13 Oct 2026 09:00:00 GMT</pubDate></item>
+    </channel></rss>`;
+    const alerts = parseNewsSignals(xml, now);
+    assert.equal(alerts.length, 1);
+    assert.equal(alerts[0]!.category, 'accident');
+    assert.equal(alerts[0]!.severity, 'high');
+    assert.equal(alerts[0]!.title, 'Major incident declared after explosion in Hull');
+    assert.equal(alerts[0]!.source, 'uk-news');
+  });
+
+  it('parses NCSC items as cyber and escalates incident language', () => {
+    const now = Date.parse('2026-10-23T12:00:00Z');
+    const xml = `<rss><channel>
+      <item><title>Alert: ransomware actively exploited in the wild</title><description>Act now</description><link>https://www.ncsc.gov.uk/a</link><pubDate>Wed, 22 Oct 2026 09:00:00 GMT</pubDate></item>
+      <item><title>Guidance on passkeys</title><description>General advice</description><link>https://www.ncsc.gov.uk/b</link><pubDate>Wed, 22 Oct 2026 08:00:00 GMT</pubDate></item>
+      <item><title>Old advisory</title><description>stale</description><link>https://www.ncsc.gov.uk/c</link><pubDate>Mon, 01 Sep 2026 08:00:00 GMT</pubDate></item>
+    </channel></rss>`;
+    const alerts = parseNcscAlerts(xml, now);
+    assert.deepEqual(alerts.map(a => [a.category, a.severity]), [['cyber', 'medium'], ['cyber', 'low']]);
   });
 });

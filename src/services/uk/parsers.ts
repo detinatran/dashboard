@@ -1,8 +1,10 @@
 // Pure parsers for the CrisisTwin UK live sources. Kept free of fetch/DOM so
 // tests/uk-crisis-sources.test.mts can exercise them under plain Node.
 
-export type UkAlertSource = 'ea-floods' | 'met-office' | 'neso-grid' | 'tfl' | 'bgs';
-export type UkAlertCategory = 'flood' | 'weather' | 'grid' | 'transport' | 'seismic';
+export type UkAlertSource = 'ea-floods' | 'met-office' | 'neso-grid' | 'tfl' | 'bgs' | 'ncsc' | 'uk-news';
+export type UkAlertCategory =
+  | 'flood' | 'weather' | 'grid' | 'transport' | 'seismic'
+  | 'accident' | 'disorder' | 'strike' | 'infrastructure' | 'cyber';
 export type UkAlertSeverity = 'critical' | 'high' | 'medium' | 'low';
 
 export interface UkAlert {
@@ -25,12 +27,12 @@ export function compareAlerts(a: UkAlert, b: UkAlert): number {
   return SEVERITY_RANK[b.severity] - SEVERITY_RANK[a.severity] || b.time - a.time;
 }
 
-function toMs(value: unknown): number {
+export function toMs(value: unknown): number {
   const ms = typeof value === 'string' ? Date.parse(value) : NaN;
   return Number.isFinite(ms) ? ms : 0;
 }
 
-function clip(text: string, max = 280): string {
+export function clip(text: string, max = 280): string {
   const flat = text.replace(/\s+/g, ' ').trim();
   return flat.length <= max ? flat : `${flat.slice(0, max).replace(/\s+\S*$/, '')}…`;
 }

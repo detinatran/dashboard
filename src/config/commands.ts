@@ -2,6 +2,7 @@ import type { MapLayers } from '@/types';
 import { CURATED_COUNTRIES } from '@/config/countries';
 // boundary-ignore: commands are built lazily at runtime via getAllCommands()
 import { getCurrentLanguage, getCurrentLanguageTag, t } from '@/services/i18n';
+import { SITE_VARIANT } from '@/config/variant';
 import { toFlagEmoji } from '@/utils/country-flag';
 
 export interface Command {
@@ -363,7 +364,9 @@ function buildCountryCommands(): Command[] {
 
   const displayNames = new Intl.DisplayNames([lang], { type: 'region' });
 
-  const result = ISO_CODES.flatMap(code => {
+  // CrisisTwin UK is single-country: no map jumps or briefs for other countries.
+  const codes = SITE_VARIANT === 'uk' ? ISO_CODES.filter(code => code === 'GB') : ISO_CODES;
+  const result = codes.flatMap(code => {
     const curated = CURATED_COUNTRIES[code];
     const name = displayNames.of(code) || curated?.name || code;
     const keywords = curated
@@ -389,7 +392,9 @@ function buildCountryCommands(): Command[] {
 
   _cachedLang = lang;
   _cachedCountryCommands = result;
-  _cachedAllCommands = [...injectLocalizedKeywords(COMMANDS), ...result];
+  // The uk map is pinned to the UK, so the region-jump commands go too.
+  const base = SITE_VARIANT === 'uk' ? COMMANDS.filter(c => !c.id.startsWith('nav:')) : COMMANDS;
+  _cachedAllCommands = [...injectLocalizedKeywords(base), ...result];
   return result;
 }
 

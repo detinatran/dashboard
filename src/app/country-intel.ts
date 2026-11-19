@@ -41,6 +41,7 @@ import { hasPremiumAccess, hasPremiumApiAccess } from '@/services/panel-gating';
 import { getAuthState, subscribeAuthState } from '@/services/auth-state';
 import { showMapContextMenu } from '@/components/MapContextMenu';
 import { BETA_MODE } from '@/config/beta';
+import { SITE_VARIANT } from '@/config/variant';
 import { mlWorker } from '@/services/ml-worker';
 import { isHeadlineMemoryEnabled } from '@/services/ai-flow-settings';
 import { t, getCurrentLanguage } from '@/services/i18n';
@@ -219,6 +220,9 @@ export class CountryIntelManager implements AppModule {
   private async setupCountryIntel(): Promise<void> {
     if (!this.ctx.map) return;
     this.ctx.map.onCountryClicked((countryClick) => {
+      // CrisisTwin UK is single-country: clicking any other country (or an
+      // unresolved location) must not open the global country brief.
+      if (SITE_VARIANT === 'uk' && countryClick.code !== 'GB') return;
       if (countryClick.code && countryClick.name) {
         trackCountrySelected(countryClick.code, countryClick.name, 'map');
         void this.openCountryBriefByCode(countryClick.code, countryClick.name)
@@ -231,7 +235,9 @@ export class CountryIntelManager implements AppModule {
 
     this.ctx.map.onMapContextMenu((payload) => {
       const items = [];
-      if (payload.countryCode && payload.countryName) {
+      // Same single-country rule as the click path above.
+      const briefAllowed = SITE_VARIANT !== 'uk' || payload.countryCode === 'GB';
+      if (briefAllowed && payload.countryCode && payload.countryName) {
         items.push({
           label: t('contextMenu.openCountryBrief'),
           action: () => {
@@ -239,7 +245,7 @@ export class CountryIntelManager implements AppModule {
               .catch((err) => this.handleCountryBriefOpenError(err));
           },
         });
-      } else {
+      } else if (briefAllowed) {
         items.push({
           label: t('contextMenu.openCountryBrief'),
           action: () => {

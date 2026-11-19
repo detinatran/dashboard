@@ -354,9 +354,12 @@ export const LAYER_EXPLANATIONS: Partial<Record<keyof MapLayers, LayerExplanatio
 };
 
 const VARIANT_LAYER_ORDER: Record<MapVariant, Array<keyof MapLayers>> = {
+  // England-first: only UK layers plus static infrastructure context. The
+  // global event layers (NWS/ECCC weather, EONET natural events, internet
+  // disruptions, webcams) stay out of the CrisisTwin menu.
   uk: [
     'ukAlerts', 'ukTwin', 'waterLevel', 'cables', 'pipelines', 'nuclear', 'datacenters',
-    'weather', 'natural', 'outages', 'webcams', 'dayNight',
+    'dayNight',
   ],
   full: [
     'iranAttacks', 'hotspots', 'conflicts',

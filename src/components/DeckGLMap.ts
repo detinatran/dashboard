@@ -5,7 +5,7 @@
  */
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import type { Layer, LayersList, PickingInfo } from '@deck.gl/core';
-import { GeoJsonLayer, ScatterplotLayer, PathLayer, IconLayer, TextLayer, PolygonLayer } from '@deck.gl/layers';
+import { GeoJsonLayer, ScatterplotLayer, PathLayer, IconLayer, TextLayer, PolygonLayer, ColumnLayer } from '@deck.gl/layers';
 import * as maplibregl from 'maplibre-gl';
 import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import type { StyleSpecification } from 'maplibre-gl';
@@ -122,6 +122,7 @@ import {
 // off the eager @/config barrel and load only with this lazy renderer (#4404).
 import { STARTUP_HUBS, ACCELERATORS, TECH_HQS, CLOUD_REGIONS } from '@/config/tech-geo';
 import { AI_DATA_CENTERS } from '@/config/ai-datacenters';
+import { anyPointInUkBounds, inUkBounds } from '@/config/uk-bounds';
 import { UNDERSEA_CABLES, NUCLEAR_FACILITIES, ECONOMIC_CENTERS, SPACEPORTS, CRITICAL_MINERALS, SANCTIONED_COUNTRIES_ALPHA2 } from '@/config/geo-map';
 import type { GulfInvestment } from '@/types';
 import { resolveTradeRouteSegments, TRADE_ROUTES as TRADE_ROUTES_LIST, type TradeRouteSegment, type TradeRouteStatus } from '@/config/trade-routes';
@@ -299,6 +300,13 @@ const MAP_INTERACTION_MODE: MapInteractionMode =
 const HAPPY_DARK_STYLE = '/map-styles/happy-dark.json';
 const HAPPY_LIGHT_STYLE = '/map-styles/happy-light.json';
 const isHappyVariant = SITE_VARIANT === 'happy';
+
+// CrisisTwin UK renders only the infrastructure that touches the UK box; the
+// other variants keep the global datasets untouched.
+const MAP_UNDERSEA_CABLES = SITE_VARIANT === 'uk' ? UNDERSEA_CABLES.filter(c => anyPointInUkBounds(c.points)) : UNDERSEA_CABLES;
+const MAP_PIPELINES = SITE_VARIANT === 'uk' ? PIPELINES.filter(p => anyPointInUkBounds(p.points)) : PIPELINES;
+const MAP_NUCLEAR_FACILITIES = SITE_VARIANT === 'uk' ? NUCLEAR_FACILITIES.filter(n => inUkBounds(n.lat, n.lon)) : NUCLEAR_FACILITIES;
+const MAP_AI_DATA_CENTERS = SITE_VARIANT === 'uk' ? AI_DATA_CENTERS.filter(d => inUkBounds(d.lat, d.lon)) : AI_DATA_CENTERS;
 
 // Zoom thresholds for layer visibility and labels (matches old Map.ts)
 // Zoom-dependent layer visibility and labels
@@ -1723,7 +1731,7 @@ export class DeckGLMap {
   }
 
   private rebuildDatacenterSupercluster(): void {
-    const activeDCs = AI_DATA_CENTERS.filter(dc => dc.status !== 'decommissioned');
+    const activeDCs = MAP_AI_DATA_CENTERS.filter(dc => dc.status !== 'decommissioned');
     this.datacenterSCSource = activeDCs;
     const points = activeDCs.map((dc, i) => ({
       type: 'Feature' as const,
@@ -2629,7 +2637,7 @@ export class DeckGLMap {
     const health = this.healthByCableId;
     const layer = new PathLayer({
       id: cacheKey,
-      data: UNDERSEA_CABLES,
+      data: MAP_UNDERSEA_CABLES,
       getPath: (d) => d.points,
       getColor: (d) => {
         if (highlightedCables.has(d.id)) return COLORS.cableHighlight;
@@ -2666,7 +2674,7 @@ export class DeckGLMap {
 
     const layer = new PathLayer({
       id: cacheKey,
-      data: PIPELINES,
+      data: MAP_PIPELINES,
       getPath: (d) => d.points,
       getColor: (d) => {
         if (highlightedPipelines.has(d.id)) {
@@ -3301,7 +3309,7 @@ export class DeckGLMap {
 
   private createNuclearLayer(): IconLayer {
     const highlightedNuclear = this.highlightedAssets.nuclear;
-    const data = NUCLEAR_FACILITIES.filter(f => f.status !== 'decommissioned');
+    const data = MAP_NUCLEAR_FACILITIES.filter(f => f.status !== 'decommissioned');
 
     // Nuclear: HEXAGON icons - yellow/orange color, semi-transparent
     return new IconLayer({
@@ -3406,7 +3414,29 @@ export class DeckGLMap {
   }
 
   private createUkTwinLayers(): Layer[] {
+    // Cascade timeline: extruded columns grow and redden with each hour's
+    // capacity loss (visible in 3D; reads as a disc halo in 2D).
+    const lossColumns = this.ukTwinNodes.filter(n => (this.ukTwinLosses[n.id] ?? 0) >= 0.05);
+    const columnLayers: Layer[] = lossColumns.length === 0 ? [] : [
+      new ColumnLayer({
+        id: 'uk-twin-loss-columns',
+        data: lossColumns,
+        getPosition: (d: UkTwinNode) => [d.lon, d.lat],
+        diskResolution: 10,
+        radius: 2600,
+        extruded: true,
+        getElevation: (d: UkTwinNode) => 3000 + (this.ukTwinLosses[d.id] ?? 0) * 55000,
+        getFillColor: (d: UkTwinNode) => {
+          const loss = Math.min(1, this.ukTwinLosses[d.id] ?? 0);
+          // Amber at first losses, alarm red as the node approaches failure.
+          return [240, Math.round(176 - loss * 130), Math.round(60 - loss * 50), 185] as [number, number, number, number];
+        },
+        pickable: false,
+        updateTriggers: { getElevation: [this.ukDataVersion], getFillColor: [this.ukDataVersion] },
+      }),
+    ];
     return [
+      ...columnLayers,
       new PathLayer({
         id: 'uk-twin-edges-layer',
         data: this.ukTwinEdges,
@@ -3589,7 +3619,7 @@ export class DeckGLMap {
 
   private createDatacentersLayer(): IconLayer {
     const highlightedDC = this.highlightedAssets.datacenter;
-    const data = AI_DATA_CENTERS.filter(dc => dc.status !== 'decommissioned');
+    const data = MAP_AI_DATA_CENTERS.filter(dc => dc.status !== 'decommissioned');
 
     // Datacenters: SQUARE icons - purple color, semi-transparent for layering
     return new IconLayer({

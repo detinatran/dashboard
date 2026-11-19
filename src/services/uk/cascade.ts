@@ -47,7 +47,7 @@ export interface UkCascadeSummary {
   criticalAffected: UkCascadeImpact[];
 }
 
-const DEFAULTS: Required<Omit<UkCascadeOptions, 'seedLosses'>> = {
+export const CASCADE_DEFAULTS: Required<Omit<UkCascadeOptions, 'seedLosses'>> = {
   substitutionFactor: 0.35,
   floor: 0.05,
   maxPasses: 24,
@@ -60,17 +60,12 @@ export function impactLevel(loss: number): UkImpactLevel {
   return 'minor';
 }
 
-export function simulateCascade(
-  nodes: UkTwinNode[],
-  edges: UkTwinEdge[],
-  failedIds: Iterable<string>,
-  options: UkCascadeOptions = {},
-): UkCascadeResult {
-  const { substitutionFactor, floor, maxPasses } = { ...DEFAULTS, ...options };
-  const seeds = options.seedLosses ?? new Map<string, number>();
+/** Dependency edges grouped by consumer, restricted to known node ids. */
+export function buildIncomingMap(nodes: UkTwinNode[], edges: UkTwinEdge[]): {
+  incoming: Map<string, UkTwinEdge[]>;
+  known: Set<string>;
+} {
   const known = new Set(nodes.map(n => n.id));
-  const failed = new Set([...failedIds].filter(id => known.has(id)));
-
   const incoming = new Map<string, UkTwinEdge[]>();
   for (const edge of edges) {
     if (!known.has(edge.from) || !known.has(edge.to)) continue;
@@ -78,6 +73,38 @@ export function simulateCascade(
     if (list) list.push(edge);
     else incoming.set(edge.to, [edge]);
   }
+  return { incoming, known };
+}
+
+/** Loss a consumer receives from its providers (0..1, pre-clamp sum). */
+export function transmittedPressure(
+  list: UkTwinEdge[],
+  lossOf: (id: string) => number,
+  known: Set<string>,
+  substitutionFactor: number,
+): number {
+  let total = 0;
+  for (const edge of list) {
+    const providerLoss = lossOf(edge.from);
+    if (providerLoss <= 0) continue;
+    // A healthy substitute absorbs most of the transmitted loss.
+    const hasHealthyAlternative = (edge.alternatives ?? [])
+      .some(alt => known.has(alt) && lossOf(alt) < 0.25);
+    total += edge.dependency * providerLoss * (hasHealthyAlternative ? substitutionFactor : 1);
+  }
+  return total;
+}
+
+export function simulateCascade(
+  nodes: UkTwinNode[],
+  edges: UkTwinEdge[],
+  failedIds: Iterable<string>,
+  options: UkCascadeOptions = {},
+): UkCascadeResult {
+  const { substitutionFactor, floor, maxPasses } = { ...CASCADE_DEFAULTS, ...options };
+  const seeds = options.seedLosses ?? new Map<string, number>();
+  const { incoming, known } = buildIncomingMap(nodes, edges);
+  const failed = new Set([...failedIds].filter(id => known.has(id)));
 
   const losses = new Map<string, number>();
   for (const [id, loss] of seeds) {
@@ -94,15 +121,7 @@ export function simulateCascade(
     let changed = false;
     for (const [to, list] of incoming) {
       if (failed.has(to)) continue;
-      let total = 0;
-      for (const edge of list) {
-        const providerLoss = lossOf(edge.from);
-        if (providerLoss <= 0) continue;
-        // A healthy substitute absorbs most of the transmitted loss.
-        const hasHealthyAlternative = (edge.alternatives ?? [])
-          .some(alt => known.has(alt) && lossOf(alt) < 0.25);
-        total += edge.dependency * providerLoss * (hasHealthyAlternative ? substitutionFactor : 1);
-      }
+      const total = transmittedPressure(list, lossOf, known, substitutionFactor);
       // A seeded node keeps at least its own hazard loss; providers add to it.
       const seed = seeds.get(to) ?? 0;
       const next = Math.min(1, 1 - (1 - seed) * (1 - Math.min(1, total)));

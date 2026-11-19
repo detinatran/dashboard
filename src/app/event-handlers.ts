@@ -870,6 +870,9 @@ export class EventHandlerManager implements AppModule {
   }
 
   private renderMissionPresetControl(): void {
+    // CrisisTwin UK: mission workspaces are global-variant chrome; keep the
+    // header clear for the UK panels and the guide tour.
+    if (SITE_VARIANT === 'uk') return;
     const mount = document.getElementById('missionPresetMount');
     if (!mount) return;
 
@@ -1695,6 +1698,8 @@ export class EventHandlerManager implements AppModule {
   }
 
   setupExportPanel(): void {
+    // CrisisTwin UK: the correlation-card export belongs to the global feeds.
+    if (SITE_VARIANT === 'uk') return;
     const getExportData = () => {
       const allCards = this.ctx.correlationEngine?.getAllCards() ?? [];
       const disabledCount = this.ctx.disabledSources.size;
@@ -2015,6 +2020,8 @@ export class EventHandlerManager implements AppModule {
   }
 
   setupPlaybackControl(): void {
+    // CrisisTwin UK: historical playback replays the global event store.
+    if (SITE_VARIANT === 'uk') return;
     // Always create — show/hide reactively via auth state subscription below.
     this.ctx.playbackControl = new PlaybackControl();
     this.ctx.playbackControl.onSnapshot((snapshot) => {

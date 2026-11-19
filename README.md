@@ -79,7 +79,7 @@ questions about one country instead of watching the whole world.
 
 | Question | Panel | What it does |
 | --- | --- | --- |
-| What is happening? | **Live Crisis Monitor** | Environment Agency flood warnings, Met Office warnings, NESO grid warnings, TfL disruption and BGS earthquakes ranked by severity, plus carbon intensity, renewables and demand |
+| What is happening? | **Live Crisis Monitor** | A ten-category crisis ontology — floods, severe weather, accidents, public disorder, strikes, infrastructure failures, grid, transport, cyber and quakes. Structured sources (Environment Agency, Met Office, NESO, TfL, BGS, NCSC) plus classified en-GB news signals for the categories with no keyless feed, ranked by severity, with carbon intensity, renewables and demand |
 | What will happen? | **Risk Outlook** | A 72-hour hazard score for every twin asset from Open-Meteo and GloFAS forecasts and nearby EA warnings. The model is explainable: each score lists its drivers |
 | What will be affected? | **Digital Twin & Cascade** | A knowledge graph of 112 UK assets (ports, power, interconnectors, gas/LNG, rail, hospitals, water, data centres and a sample company). Failing an asset propagates capacity loss along its 178 dependencies; the map mirrors the result |
 | What if we…? | **What-if lab** | Compares response plans (close a site, or reroute its flows) against no action over 14 days on store service, delivery time and logistics cost, and recommends one |

@@ -26,6 +26,15 @@ import {
 } from './parsers';
 
 export * from './parsers';
+export * from './ontology';
+
+import {
+  NEWS_SIGNAL_WINDOW_MS,
+  newsSignalUrl,
+  parseNcscAlerts,
+  parseNewsSignals,
+  UK_NEWS_SIGNAL_QUERIES,
+} from './ontology';
 
 const EA_ROOT = 'https://environment.data.gov.uk/flood-monitoring';
 const CARBON_ROOT = 'https://api.carbonintensity.org.uk';
@@ -33,6 +42,7 @@ const ELEXON_ROOT = 'https://data.elexon.co.uk/bmrs/api/v1';
 const TFL_STATUS_URL = 'https://api.tfl.gov.uk/Line/Mode/tube,elizabeth-line,overground,dlr/Status';
 const BGS_FEED_URL = 'https://earthquakes.bgs.ac.uk/feeds/MhSeismology.xml';
 const MET_OFFICE_FEED_URL = 'https://www.metoffice.gov.uk/public/data/PWSCache/WarningsRSS/Region/UK';
+const NCSC_FEED_URL = 'https://www.ncsc.gov.uk/api/1/services/v1/all-rss-feed.xml';
 
 const TIMEOUT_MS = 15_000;
 const QUAKE_WINDOW_MS = 7 * 24 * 3600_000;
@@ -110,6 +120,37 @@ export async function fetchGridWarnings(): Promise<UkAlert[]> {
   return parseGridWarnings(data ?? []);
 }
 
+/** NCSC advisories and incident reports — cyber context for the monitor. */
+export async function fetchCyberAdvisories(): Promise<UkAlert[]> {
+  return parseNcscAlerts(await getText(rssProxyUrl(NCSC_FEED_URL)));
+}
+
+/**
+ * UK news signals: the ontology categories with no keyless structured feed
+ * (accidents, public disorder, strikes, infrastructure failures, live cyber
+ * incidents) come from en-GB Google News queries classified per headline.
+ */
+export async function fetchNewsSignals(): Promise<UkAlert[]> {
+  const results = await Promise.allSettled(
+    UK_NEWS_SIGNAL_QUERIES.map(q => getText(rssProxyUrl(newsSignalUrl(q)))),
+  );
+  const bodies = results.filter((r): r is PromiseFulfilledResult<string> => r.status === 'fulfilled').map(r => r.value);
+  if (!bodies.length) {
+    const firstFailure = results.find((r): r is PromiseRejectedResult => r.status === 'rejected');
+    throw firstFailure?.reason ?? new Error('news signals unavailable');
+  }
+  const now = Date.now();
+  const seen = new Set<string>();
+  const alerts = bodies.flatMap(xml => parseNewsSignals(xml, now, NEWS_SIGNAL_WINDOW_MS, seen));
+  // Cap the per-category tail so headline noise never drowns the structured sources.
+  const perCategory = new Map<string, number>();
+  return alerts.sort(compareAlerts).filter(a => {
+    const n = (perCategory.get(a.category) ?? 0) + 1;
+    perCategory.set(a.category, n);
+    return n <= 6;
+  });
+}
+
 export async function fetchGridSnapshot(): Promise<UkGridSnapshot> {
   const [intensity, generation, regional, demand] = await Promise.allSettled([
     getJson<{ data: Array<{ intensity: { actual: number | null; forecast: number; index: string } }> }>(`${CARBON_ROOT}/intensity`),
@@ -159,13 +200,15 @@ export function fetchUkSituation(): Promise<UkSituation> {
   if (inflight) return inflight;
   if (lastSituation && Date.now() - lastSituation.fetchedAt < SHARE_WINDOW_MS) return Promise.resolve(lastSituation);
   inflight = (async () => {
-    const [floods, metOffice, tfl, grid, gridSnapshot, quakes] = await Promise.allSettled([
+    const [floods, metOffice, tfl, grid, gridSnapshot, quakes, cyber, news] = await Promise.allSettled([
       fetchFloodWarnings(),
       fetchMetOfficeWarnings(),
       fetchTflAlerts(),
       fetchGridWarnings(),
       fetchGridSnapshot(),
       fetchUkEarthquakes(),
+      fetchCyberAdvisories(),
+      fetchNewsSignals(),
     ]);
     const failed: UkAlertSource[] = [];
     const settled = <T>(r: PromiseSettledResult<T>, source: UkAlertSource, fallback: T): T => {
@@ -182,6 +225,8 @@ export function fetchUkSituation(): Promise<UkSituation> {
       ...settled(tfl, 'tfl', [] as UkAlert[]),
       ...settled(grid, 'neso-grid', [] as UkAlert[]),
       ...quakeList.map(earthquakeToAlert),
+      ...settled(cyber, 'ncsc', [] as UkAlert[]),
+      ...settled(news, 'uk-news', [] as UkAlert[]),
     ].sort(compareAlerts);
     const situation: UkSituation = {
       alerts,
