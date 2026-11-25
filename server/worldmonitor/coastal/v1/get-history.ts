@@ -1,7 +1,7 @@
 /**
- * GetHistory RPC — the stored observation window for the chart.
+ * GetHistory RPC: the stored observation window for the chart.
  *
- * Observations only. The forecast is a separate call so the map can render
+ * Observations only. The forecast is a separate call so the map can show
  * markers without pulling every station's 24h series.
  */
 
@@ -17,17 +17,21 @@ import { findStation, readCoastalSnapshot } from './_shared';
 const DEFAULT_HOURS = 24;
 const MAX_HOURS = 48;
 
+function emptyHistory(stationId: string): GetHistoryResponse {
+  return { stationId, observations: [], fetchedAt: 0, dataAvailable: false };
+}
+
 export const getHistory: CoastalServiceHandler['getHistory'] = async (
   _ctx: ServerContext,
   req: GetHistoryRequest,
 ): Promise<GetHistoryResponse> => {
   const stationId = String(req.stationId || '').trim();
-  if (!stationId) return { stationId: '', observations: [], fetchedAt: 0, dataAvailable: false };
+  if (!stationId) return emptyHistory('');
 
   try {
     const snapshot = await readCoastalSnapshot();
     const rec = findStation(snapshot, stationId);
-    if (!rec) return { stationId, observations: [], fetchedAt: 0, dataAvailable: false };
+    if (!rec) return emptyHistory(stationId);
 
     const requested = Number(req.hours);
     const hours = Number.isFinite(requested) && requested > 0
@@ -47,6 +51,6 @@ export const getHistory: CoastalServiceHandler['getHistory'] = async (
       dataAvailable: observations.length > 0,
     };
   } catch {
-    return { stationId, observations: [], fetchedAt: 0, dataAvailable: false };
+    return emptyHistory(stationId);
   }
 };

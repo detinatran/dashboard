@@ -52,7 +52,7 @@ export class UkRiskPanel extends Panel {
       this.twin ??= await loadUkTwin();
       const [features, situation] = await Promise.all([
         fetchHazardFeatures(this.twin.nodes),
-        // Warnings sharpen the score but are optional: reuse the monitor's round.
+        // Warnings improve the score but aren't required; reuse the monitor's fetch.
         fetchUkSituation().catch(() => getLastUkSituation()),
       ]);
       if (!this.element?.isConnected) return;

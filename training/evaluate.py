@@ -1,9 +1,9 @@
 """
-Verify that the exported ONNX artifacts reproduce the trained sklearn models.
+Checks that the exported ONNX files behave like the trained sklearn models.
 
-An export that silently diverges means every metric in the training report
-describes a model that is not the one being served. This reloads each .onnx,
-runs it over the held-out test slice, and fails if predictions drift.
+If the export doesn't match, the metrics in the training report describe a
+different model from the one we serve. This loads each .onnx, runs it on the
+test slice and fails if the output looks wrong.
 """
 
 import argparse

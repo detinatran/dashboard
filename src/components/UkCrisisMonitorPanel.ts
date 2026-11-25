@@ -14,8 +14,8 @@ import {
 
 type CategoryFilter = 'all' | UkAlertCategory;
 
-// Generated duotone set (public/uk-icons/*.png, transparent) — not the emoji
-// subset, so the tiles render identically across platforms and themes.
+// Our own icon set (public/uk-icons/*.png) instead of emoji, so the tiles look
+// the same on every platform and theme.
 const categoryIcon = (c: UkAlertCategory, cls: string): SafeHtml =>
   safeHtml`<img class="${cls}" src="/uk-icons/${c}.png" alt="" width="20" height="20" loading="lazy" decoding="async">`;
 

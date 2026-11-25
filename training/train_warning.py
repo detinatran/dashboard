@@ -1,55 +1,50 @@
 """
-Train mô hình cảnh báo kiểu TideWISE cho Liverpool.
+Trains a TideWISE-style warning model for Liverpool.
 
-=====================================================================
-KẾT QUẢ: CHƯA TRIỂN KHAI ĐƯỢC VỚI DỮ LIỆU HIỆN CÓ (2026-09-14)
-=====================================================================
-Đã chạy và đã thử ba cách chia tập. Không cách nào cho mô hình dùng được:
+Status (2026-09-14): not usable yet with the data we have.
 
-  chia thời gian 70/15/15      test có 0 mẫu dương  -> không đánh giá được
-  đông 2025 -> đông/xuân 2026  AUPRC 0.064, precision 0.00, recall 0.00
-  bỏ mùa hè, chia 75/25        AUPRC 0.042, precision 0.00, recall 0.00
+Tried three different splits, none of them gave a usable model:
 
-AUPRC cao hơn ngẫu nhiên ~8x nghe có vẻ khá, nhưng precision và recall đều
-bằng 0: ở mọi ngưỡng hữu dụng mô hình không bắt được sự kiện nào. Một mô hình
-cảnh báo bỏ sót 100% sự kiện thì tệ hơn là không có, vì nó tạo cảm giác an
-toàn giả.
+  chronological 70/15/15        0 positives in test  -> cannot be evaluated
+  winter 2025 -> winter/spring 2026  AUPRC 0.064, precision 0.00, recall 0.00
+  summer dropped, 75/25 split   AUPRC 0.042, precision 0.00, recall 0.00
 
-NGUYÊN NHÂN — là giới hạn dữ liệu, không phải lỗi thuật toán:
-  * Chuỗi 362 ngày, chưa trọn một chu kỳ mùa.
-  * Sự kiện nước dâng dồn vào mùa đông (10/2025: 5.11%, 12/2025: 2.79%),
-    còn 05, 06, 08/2026 = 0.00%.
-  * Tỷ lệ mẫu dương ~0.7%; chia theo thời gian kiểu nào cũng để một phía
-    thiếu sự kiện.
+AUPRC ~8x above random sounds OK, but precision and recall are both 0, so at
+any useful threshold it catches nothing. A warning model that misses every
+event is worse than no model, since people would trust it.
 
-CẦN GÌ ĐỂ LÀM ĐƯỢC: tối thiểu 3-5 năm quan trắc để mỗi tập chứa nhiều mùa
-bão. EA có kho lưu trữ nhưng chỉ phát hành ~1 năm gần nhất qua endpoint này.
+Why: not enough data, rather than a bug in the method.
+  * The series spans 362 days, less than one full seasonal cycle.
+  * Surge events cluster in winter (10/2025: 5.11%, 12/2025: 2.79%), while
+    05, 06 and 08/2026 are 0.00%.
+  * Positive rate is ~0.7%; any chronological split leaves one side short of
+    events.
 
-Cho tới lúc đó, hệ thống trả `model_not_configured` và giao diện nói rõ
-"Warning model not available for this site" — đúng như thiết kế. KHÔNG được
-hạ ngưỡng hay đổi cách gán nhãn để ép ra một con số đẹp.
+What we'd need: at least 3-5 years of data so each split has a few storm
+seasons. EA has an archive but this endpoint only gives about the last year.
+
+Until then the seeder returns `model_not_configured` and the UI shows "Warning
+model not available for this site", which is what we want. Don't lower the
+threshold or change the labels just to get a nicer number.
 
 
-Khác hẳn mô hình hồi quy mực nước: đây là BÀI TOÁN PHÂN LOẠI, trả lời
-"trong h giờ tới có khả năng xuất hiện residual bất thường không?".
+Unlike the water-level regression this is a classification problem: "is an
+unusual residual likely in the next h hours?"
 
-Nhãn gán theo kiểu giám sát yếu (weak supervision) của TideWISE:
+Labels follow TideWISE's weak supervision:
     R_plus(t,h) = max(residual(t), ..., residual(t+h))
-    nhãn = 1 nếu R_plus >= ngưỡng phân vị cao của giai đoạn train
+    label = 1 if R_plus >= a high percentile of the training period
 
-CỰC KỲ QUAN TRỌNG: thông tin tương lai CHỈ được dùng để tạo nhãn offline.
-Nó KHÔNG BAO GIỜ đi vào đặc trưng lúc suy luận — feature vector vẫn do
-scripts/shared/coastal-features.mjs dựng, và bộ test rò rỉ đã chứng minh
-nó không đọc bất kỳ mẫu nào sau thời điểm t.
+Future values are only used to build the labels offline. They never go into
+the features: those still come from scripts/shared/coastal-features.mjs, and
+the leakage tests check it reads nothing after time t.
 
-Outlier: chuỗi có vài điểm cảm biến hỏng (1 điểm residual -5.17 m trong khi
-stdev chỉ 0.19 m). Nếu không lọc, một điểm hỏng sẽ thành "sự kiện cực đoan"
-và dạy mô hình học nhiễu.
+Outliers: there are a few bad sensor readings (one residual of -5.17 m with a
+0.19 m stdev). Left in, a single bad point becomes an "extreme event" and the
+model learns noise.
 """
 
 import argparse
-import csv
-import glob
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -59,28 +54,20 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import (average_precision_score, f1_score, precision_score,
                              recall_score, roc_auc_score)
 
+from _ea_archive import LAT, load_tidal_rows
+
 REPO = Path(__file__).resolve().parents[1]
-MEASURE = 'E70124-level-tidal_level-Mean-15_min-m'
 HORIZONS = (1, 3, 6)
 MODEL_VERSION = 'liverpool-tidewise-v1'
-OUTLIER_ABS_M = 1.5   # |residual| lớn hơn ngưỡng này là lỗi cảm biến, không phải nước dâng
+OUTLIER_ABS_M = 1.5   # |residual| above this is a sensor fault, not a surge
 
 
 def load_residuals(raw_dir: Path, tide_path: Path):
     import utide
-    rows = []
-    for f in sorted(raw_dir.glob('*.csv')):
-        for r in csv.reader(f.open()):
-            if len(r) >= 3 and MEASURE in r[1]:
-                try:
-                    t = datetime.fromisoformat(r[0].replace('Z', '+00:00'))
-                    rows.append((t, float(r[2])))
-                except ValueError:
-                    continue
-    rows.sort()
+    rows = load_tidal_rows(raw_dir)
     T = np.array([np.datetime64(t.replace(tzinfo=None), 's') for t, _ in rows])
     L = np.array([v for _, v in rows])
-    coef = utide.solve(T, L, lat=53.44967, method='ols', conf_int='none', verbose=False)
+    coef = utide.solve(T, L, lat=LAT, method='ols', conf_int='none', verbose=False)
     tide = utide.reconstruct(T, coef, verbose=False).h
     res = L - tide
     ts_ms = np.array([int(t.timestamp() * 1000) for t, _ in rows])
@@ -105,7 +92,7 @@ def main():
 
     ts_ms, res = load_residuals(Path(args.raw_dir), REPO / args.tide)
 
-    # Lọc outlier TRƯỚC khi gán nhãn.
+    # Drop outliers before labelling.
     bad = np.abs(res) > OUTLIER_ABS_M
     print(f'lọc outlier |residual| > {OUTLIER_ABS_M} m: {int(bad.sum())} điểm '
           f'({bad.mean()*100:.4f}%)')
@@ -139,12 +126,12 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
 
     for h in HORIZONS:
-        steps = h * 4  # 15 phút mỗi bước
+        steps = h * 4  # 15 minutes per step
         y = np.full(len(base_ts), np.nan)
         for i, t in enumerate(base_ts):
             vals = [res_at.get(int(t) + k * step) for k in range(1, steps + 1)]
             vals = [v for v in vals if v is not None and not np.isnan(v)]
-            # Cần phần lớn cửa sổ tương lai mới gán nhãn được.
+            # Only label when most of the future window is present.
             if len(vals) >= steps * 0.8:
                 y[i] = max(vals)
         mask = ~np.isnan(y)
@@ -152,7 +139,7 @@ def main():
 
         tr_end = int(len(yh_raw) * 0.70)
         va_end = int(len(yh_raw) * 0.85)
-        # Ngưỡng lấy TỪ GIAI ĐOẠN TRAIN, không phải toàn bộ — dùng cả chuỗi là rò rỉ.
+        # Threshold from the training period only; using the whole series would leak.
         thr = float(np.percentile(yh_raw[:tr_end], 99))
         yh = (yh_raw >= thr).astype(int)
 
@@ -170,7 +157,7 @@ def main():
         clf.fit(Xh[tr], yh[tr])
 
         pv = clf.predict_proba(Xh[va])[:, 1]
-        # Chọn ngưỡng xác suất tối ưu F1 trên tập VAL, không phải test.
+        # Pick the F1-optimal probability threshold on VAL, not test.
         best_t, best_f1 = 0.5, -1.0
         for cand in np.linspace(0.05, 0.95, 91):
             f1 = f1_score(yh[va], (pv >= cand).astype(int), zero_division=0)

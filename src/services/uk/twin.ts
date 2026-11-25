@@ -1,6 +1,6 @@
 // CrisisTwin UK digital twin: the static infrastructure + sample-company graph
-// from shared/uk-twin-data.ts. Loaded lazily — ~1k lines of coordinates the
-// other variants never need in their startup bundle.
+// from shared/uk-twin-data.ts. Loaded lazily since it's ~1k lines of
+// coordinates the other variants don't need at startup.
 
 import type {
   UkEdgeKind,
@@ -61,12 +61,11 @@ export const UK_NODE_TYPE_LABELS: Record<UkNodeType, string> = {
 };
 
 /**
- * Four sector families, not sixteen hues: identity reads at sector level
- * (energy amber, transport blue, care/utilities green-teal, company violet)
- * with same-family types separated by lightness. The family bases pass the
- * CVD/contrast palette checks on both light and dark surfaces alongside the
- * #f03e3e failure red; per-type identity is carried by tooltip and the
- * impact list, never by hue alone.
+ * Colours are grouped into four sectors instead of sixteen separate hues
+ * (energy amber, transport blue, care/utilities green-teal, company violet),
+ * with types in the same sector told apart by lightness. The base colours were
+ * checked for colour-blind contrast on light and dark backgrounds next to the
+ * #f03e3e failure red. The exact type is shown in the tooltip and impact list.
  */
 export type UkSectorId = 'energy' | 'transport' | 'care' | 'company';
 
@@ -77,24 +76,25 @@ export const UK_SECTORS: Array<{ id: UkSectorId; label: string; color: string }>
   { id: 'company', label: 'Albion Provisions', color: '#9775fa' },
 ];
 
-export const UK_NODE_SECTOR: Record<UkNodeType, UkSectorId> = {
-  power_station: 'energy',
-  interconnector: 'energy',
-  gas_terminal: 'energy',
-  lng_terminal: 'energy',
-  port: 'transport',
-  airport: 'transport',
-  rail_hub: 'transport',
-  road_junction: 'transport',
-  logistics_hub: 'transport',
-  hospital: 'care',
-  water_works: 'care',
-  data_centre: 'care',
-  factory: 'company',
-  supplier: 'company',
-  distribution_centre: 'company',
-  store_cluster: 'company',
-};
+// Unused for now. Kept commented out in case we need it again.
+// export const UK_NODE_SECTOR: Record<UkNodeType, UkSectorId> = {
+//   power_station: 'energy',
+//   interconnector: 'energy',
+//   gas_terminal: 'energy',
+//   lng_terminal: 'energy',
+//   port: 'transport',
+//   airport: 'transport',
+//   rail_hub: 'transport',
+//   road_junction: 'transport',
+//   logistics_hub: 'transport',
+//   hospital: 'care',
+//   water_works: 'care',
+//   data_centre: 'care',
+//   factory: 'company',
+//   supplier: 'company',
+//   distribution_centre: 'company',
+//   store_cluster: 'company',
+// };
 
 export const UK_NODE_TYPE_COLORS: Record<UkNodeType, [number, number, number]> = {
   power_station: [217, 119, 6],

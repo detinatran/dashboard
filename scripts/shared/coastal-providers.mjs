@@ -1,33 +1,33 @@
 /**
- * Provider adapters for coastal data.
+ * Data providers for the coastal feature.
  *
- * Every external call in this feature happens here, server-side. The browser
- * never contacts Environment Agency or Open-Meteo directly: it reads a cached
- * prediction record through the `coastal` RPC domain.
+ * All external calls for this feature happen here, on the server. The browser
+ * never talks to the Environment Agency or Open-Meteo; it reads the cached
+ * record through the `coastal` RPC.
  *
- * Each provider normalises an upstream response into OUR shape, so swapping
- * Open-Meteo for Met Office later is a change confined to this file.
+ * Each provider maps the upstream response into our own shape, so swapping
+ * Open-Meteo for the Met Office later only touches this file.
  */
 
-import { loadTideModel, predictTideAt, predictTideSeries, tideModelMeta } from './coastal-tide.mjs';
+// Only the commented-out tide providers below used these.
+// import { loadTideModel, predictTideAt, predictTideSeries, tideModelMeta } from './coastal-tide.mjs';
 
 const EA_ROOT = 'https://environment.data.gov.uk/flood-monitoring';
 const OPEN_METEO_FORECAST = 'https://api.open-meteo.com/v1/forecast';
-const OPEN_METEO_ARCHIVE = 'https://archive-api.open-meteo.com/v1/archive';
+// Only used by getRecentHistory, which is commented out.
+// const OPEN_METEO_ARCHIVE = 'https://archive-api.open-meteo.com/v1/archive';
 
-// The EA service is reliable but SLOW: a measured `latest` call took 72s.
-// A 15-minute cron can absorb that; a short timeout would turn a healthy-but-slow
-// upstream into a fake outage.
+// EA is reliable but slow (one `latest` call took 72s). The cron runs every
+// 15 min so we can afford to wait; a short timeout would just make it look down.
 const EA_TIMEOUT_MS = 120_000;
 const WX_TIMEOUT_MS = 30_000;
 
 async function fetchText(url, timeoutMs, label) {
   const res = await fetch(url, {
     signal: AbortSignal.timeout(timeoutMs),
-    // A custom User-Agent gets the connection held open and timed out by the EA
-    // edge: measured side by side, `latest` returned 200 in 0.79s with curl's
-    // default UA and hung for the full 60s with 'worldmonitor-coastal/1'.
-    // Send an ordinary browser UA so the request is served.
+    // The EA edge holds the connection open and times out on a custom User-Agent:
+    // `latest` came back in 0.79s with curl's default UA but hung for the full 60s
+    // with 'worldmonitor-coastal/1'. A normal browser UA works fine.
     headers: {
       Accept: 'text/csv,application/json',
       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 '
@@ -57,8 +57,8 @@ function parseEaCsv(csv, measureId) {
     if (!Number.isFinite(ts) || !Number.isFinite(level)) continue;
     out.push({ ts, level });
   }
-  // `readings?date=` returns rows UNSORTED (verified: 00:00, 00:30, 00:15…),
-  // so sorting here is required, not defensive.
+  // `readings?date=` comes back unsorted (e.g. 00:00, 00:30, 00:15), so we have
+  // to sort here.
   out.sort((a, b) => a.ts - b.ts);
   return out;
 }
@@ -90,10 +90,10 @@ export const environmentAgencyWaterLevel = {
         const csv = await fetchText(url, EA_TIMEOUT_MS, `EA ${ds}`);
         out.push(...parseEaCsv(csv, station.waterLevelExternalId));
       } catch (err) {
-        // A single missing day must not void the window — the caller decides
-        // whether what remains is enough (insufficient_history). But a failure
-        // on the CURRENT day silently costs the newest samples, which is what
-        // makes the panel go blank, so name that case explicitly.
+        // One missing day shouldn't throw away the whole window; the caller decides
+        // if what's left is enough (insufficient_history). Losing today's page does
+        // drop the newest samples, though, and that's what blanks the panel, so the
+        // log calls that case out.
         const isToday = ds === new Date(toMs).toISOString().slice(0, 10);
         console.warn(
           `[coastal] EA history ${ds} failed${isToday ? ' (TODAY — window will lack its newest samples)' : ''}: `
@@ -130,7 +130,7 @@ function normaliseOpenMeteo(hourly) {
     windGust: num(windGust, i),
     precipitation: num(precip, i),
     temperature: num(temp, i),
-    soilMoisture: null, // not requested; nullable by contract, never fabricated
+    soilMoisture: null, // not requested, always null
   })).filter((x) => Number.isFinite(x.ts));
 }
 
@@ -139,27 +139,28 @@ const HOURLY_VARS = 'pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_1
 export const openMeteoWeather = {
   id: 'open-meteo',
 
-  /** Observed/analysed weather for a past window (ERA5 archive). */
-  async getRecentHistory(station, fromMs, toMs) {
-    const s = new Date(fromMs).toISOString().slice(0, 10);
-    const e = new Date(toMs).toISOString().slice(0, 10);
-    const url = `${OPEN_METEO_ARCHIVE}?latitude=${station.lat}&longitude=${station.lon}`
-      + `&start_date=${s}&end_date=${e}&hourly=${HOURLY_VARS}&timezone=UTC`;
-    const json = JSON.parse(await fetchText(url, WX_TIMEOUT_MS, 'open-meteo archive'));
-    return normaliseOpenMeteo(json.hourly);
-  },
+  // Unused for now. Kept commented out in case we need it again.
+  // /** Observed/analysed weather for a past window (ERA5 archive). */
+  // async getRecentHistory(station, fromMs, toMs) {
+  //   const s = new Date(fromMs).toISOString().slice(0, 10);
+  //   const e = new Date(toMs).toISOString().slice(0, 10);
+  //   const url = `${OPEN_METEO_ARCHIVE}?latitude=${station.lat}&longitude=${station.lon}`
+  //     + `&start_date=${s}&end_date=${e}&hourly=${HOURLY_VARS}&timezone=UTC`;
+  //   const json = JSON.parse(await fetchText(url, WX_TIMEOUT_MS, 'open-meteo archive'));
+  //   return normaliseOpenMeteo(json.hourly);
+  // },
 
-  /** Current conditions = most recent hour at or before now, from the forecast run. */
-  async getCurrentConditions(station) {
-    const rows = await this.getHourlyForecast(station, 1);
-    const now = Date.now();
-    const past = rows.filter((r) => r.ts <= now);
-    return past.length ? past[past.length - 1] : null;
-  },
+  // /** Current conditions = most recent hour at or before now, from the forecast run. */
+  // async getCurrentConditions(station) {
+  //   const rows = await this.getHourlyForecast(station, 1);
+  //   const now = Date.now();
+  //   const past = rows.filter((r) => r.ts <= now);
+  //   return past.length ? past[past.length - 1] : null;
+  // },
 
   /**
-   * Forward weather. Labelled as FORECAST by the caller and never merged into
-   * the observed-weather block of the feature vector.
+   * Hourly forecast. The caller keeps the future rows separate from the observed
+   * weather that goes into the features.
    */
   async getHourlyForecast(station, days = 2) {
     const url = `${OPEN_METEO_FORECAST}?latitude=${station.lat}&longitude=${station.lon}`
@@ -169,56 +170,58 @@ export const openMeteoWeather = {
   },
 };
 
-/**
- * Astronomical tide, from a harmonic fit of this station's own observations.
- *
- * `training/fit_tide.py` runs utide over 362 days of Environment Agency
- * readings (99.32% of variance explained, 59 constituents, M2 amplitude
- * 3.03 m), and `training/export_tide_series.py` writes a precomputed 15-minute
- * series that `coastal-tide.mjs` interpolates. Verified against the Python
- * reference to 0.0000 m.
- *
- * Still NOT an official source: these are values derived from the gauge, not
- * UKHO/Admiralty predictions, and must not be used for navigation. Outside the
- * precomputed coverage window the provider reports unavailable rather than
- * extrapolating a sine wave into nonsense.
- */
-export const harmonicTideProvider = {
-  id: 'harmonic-utide',
+// The seeder reads the tide straight from coastal-tide.mjs, so these providers
+// are never called. Commented out rather than deleted.
+// /**
+//  * Astronomical tide, from a harmonic fit of this station's own observations.
+//  *
+//  * `training/fit_tide.py` runs utide over 362 days of Environment Agency
+//  * readings (99.32% of variance explained, 59 constituents, M2 amplitude
+//  * 3.03 m), and `training/export_tide_series.py` writes a precomputed 15-minute
+//  * series that `coastal-tide.mjs` interpolates. Verified against the Python
+//  * reference to 0.0000 m.
+//  *
+//  * Not an official source: these values are derived from the gauge, not
+//  * UKHO/Admiralty predictions, and must not be used for navigation. Outside the
+//  * precomputed coverage window the provider reports unavailable rather than
+//  * extrapolating.
+//  */
+// export const harmonicTideProvider = {
+//   id: 'harmonic-utide',
 
-  /** @returns {{status:string, values?:Array<{ts:number,tide:number|null}>, meta?:object}} */
-  getPredictedTide(station, timestamps, modelDir) {
-    const loaded = loadTideModel(modelDir, station.id);
-    if (loaded.status !== 'ready') {
-      return { status: loaded.status, reason: loaded.reason, values: null };
-    }
-    return {
-      status: 'ready',
-      values: predictTideSeries(loaded, timestamps),
-      meta: tideModelMeta(loaded),
-    };
-  },
+//   /** @returns {{status:string, values?:Array<{ts:number,tide:number|null}>, meta?:object}} */
+//   getPredictedTide(station, timestamps, modelDir) {
+//     const loaded = loadTideModel(modelDir, station.id);
+//     if (loaded.status !== 'ready') {
+//       return { status: loaded.status, reason: loaded.reason, values: null };
+//     }
+//     return {
+//       status: 'ready',
+//       values: predictTideSeries(loaded, timestamps),
+//       meta: tideModelMeta(loaded),
+//     };
+//   },
 
-  /** Single instant; null when outside coverage. */
-  tideAt(station, tMs, modelDir) {
-    const loaded = loadTideModel(modelDir, station.id);
-    if (loaded.status !== 'ready') return null;
-    return predictTideAt(loaded, tMs);
-  },
-};
+//   /** Single instant; null when outside coverage. */
+//   tideAt(station, tMs, modelDir) {
+//     const loaded = loadTideModel(modelDir, station.id);
+//     if (loaded.status !== 'ready') return null;
+//     return predictTideAt(loaded, tMs);
+//   },
+// };
 
-/** Kept for stations that genuinely have no tide model configured. */
-export const nullTideProvider = {
-  id: 'none',
-  getPredictedTide() {
-    return { status: 'tide_provider_not_configured', values: null };
-  },
-};
+// /** Kept for stations that genuinely have no tide model configured. */
+// export const nullTideProvider = {
+//   id: 'none',
+//   getPredictedTide() {
+//     return { status: 'tide_provider_not_configured', values: null };
+//   },
+// };
 
 export function resolveProviders(station) {
   const water = station.waterLevelProvider === 'environment-agency' ? environmentAgencyWaterLevel : null;
   const weather = station.weatherProvider === 'open-meteo' ? openMeteoWeather : null;
-  const tide = station.tideProvider === 'harmonic-utide' ? harmonicTideProvider : nullTideProvider;
+  // const tide = station.tideProvider === 'harmonic-utide' ? harmonicTideProvider : nullTideProvider;
   if (!water) throw new Error(`no water-level provider for ${station.waterLevelProvider}`);
-  return { water, weather, tide };
+  return { water, weather };
 }

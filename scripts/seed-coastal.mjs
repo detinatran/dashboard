@@ -1,26 +1,26 @@
 #!/usr/bin/env node
 
 /**
- * Coastal water-level ingestion + scheduled inference.
+ * Coastal seeder: pulls water levels and weather, runs the models, publishes.
  *
- * Runs on the Railway cron fleet (and the self-hosted scheduler). Every
- * external call and every model run happens here, on a timer — never inside a
- * user request. The RPC handlers only read what this publishes.
+ * Runs on the Railway cron (and the self-hosted scheduler). All upstream calls
+ * and model runs happen here on a timer; the RPC handlers only read what this
+ * writes to Redis.
  *
- * Per tick, per active station:
+ * For each active station, every tick:
  *   fetch observations -> merge into a 24h window -> fetch weather ->
- *   build features -> run whichever models exist -> publish a prediction record.
+ *   build features -> run whatever models exist -> publish a record.
  *
- * When a model is absent or incompatible the record still publishes, carrying a
- * status instead of numbers. Observed level, trend and the 24h history remain
- * useful on their own; a fabricated forecast would not be.
+ * If a model is missing or doesn't match, we still publish the record, just
+ * with a status instead of numbers. The observed level, trend and 24h history
+ * are still worth showing on their own.
  */
 
 import { loadEnvFile, runSeed, readCanonicalValue, writeExtraKey } from './_seed-utils.mjs';
 import { listActiveStations, COASTAL_KEYS } from './shared/coastal-stations.mjs';
 import { resolveProviders } from './shared/coastal-providers.mjs';
 import { buildFeatures, FEATURE_VERSION, REQUIRED_HISTORY_HOURS } from './shared/coastal-features.mjs';
-import { OnnxWaterLevelModel, OnnxWarningModel, modelDir, HORIZONS } from './shared/coastal-models.mjs';
+import { OnnxWaterLevelModel, OnnxWarningModel, modelDir } from './shared/coastal-models.mjs';
 import { isTideSeriesValidAt, loadTideModel, predictTideAt, tideModelMeta } from './shared/coastal-tide.mjs';
 import { evaluateRisk } from './shared/coastal-risk.mjs';
 
@@ -35,31 +35,31 @@ const REGRESSION_DIR = modelDir('REGRESSION_MODEL_DIR', '/app/models/regression'
 const WARNING_DIR = modelDir('WARNING_MODEL_DIR', '/app/models/warning');
 const TIDE_DIR = modelDir('TIDE_MODEL_DIR', REGRESSION_DIR);
 
-// One model instance per process: ONNX sessions are created once and reused
-// across ticks, never per prediction.
+// One model per station for the life of the process, so the ONNX sessions
+// get reused across ticks.
 const regressionModels = new Map();
 const warningModels = new Map();
 
-function regressionFor(stationId) {
-  if (!regressionModels.has(stationId)) {
-    regressionModels.set(stationId, new OnnxWaterLevelModel({ dir: REGRESSION_DIR, stationId }));
-  }
-  return regressionModels.get(stationId);
+function cachedModel(cache, stationId, create) {
+  if (!cache.has(stationId)) cache.set(stationId, create());
+  return cache.get(stationId);
 }
+
+function regressionFor(stationId) {
+  return cachedModel(regressionModels, stationId,
+    () => new OnnxWaterLevelModel({ dir: REGRESSION_DIR, stationId }));
+}
+
 function warningFor(stationId) {
-  if (!warningModels.has(stationId)) {
-    warningModels.set(stationId, new OnnxWarningModel({ dir: WARNING_DIR, stationId }));
-  }
-  return warningModels.get(stationId);
+  return cachedModel(warningModels, stationId,
+    () => new OnnxWarningModel({ dir: WARNING_DIR, stationId }));
 }
 
 /** Merge new readings into the stored window, dedupe by timestamp, trim. */
 function mergeObservations(existing, incoming, nowMs) {
   const byTs = new Map();
-  for (const r of existing || []) {
-    if (Number.isFinite(r?.ts) && Number.isFinite(r?.level)) byTs.set(r.ts, r);
-  }
-  for (const r of incoming || []) {
+  // Incoming goes last so a re-published reading replaces the stored one.
+  for (const r of [...(existing || []), ...(incoming || [])]) {
     if (Number.isFinite(r?.ts) && Number.isFinite(r?.level)) byTs.set(r.ts, r);
   }
   const cutoff = nowMs - WINDOW_HOURS * HOUR_MS;
@@ -92,12 +92,11 @@ async function ingestStation(station, nowMs) {
 
   const observations = mergeObservations(prior, fetched, nowMs);
 
-  // A slow EA day makes getHistory() time out mid-page; it warns and returns
-  // what it got, so a window missing its newest hours still publishes and the
-  // panel just goes blank. Measured once: a 171s run left the window ending
-  // 936 minutes back while /data/readings.csv?latest was only 57 minutes old.
-  // Cross-check the cheap `latest` endpoint and pull the tail in rather than
-  // letting the gap through silently.
+  // When EA is slow, getHistory() can time out part way and return what it
+  // has, so the window misses its newest hours and the panel goes blank. Seen
+  // once: a 171s run left the window 936 min behind while readings.csv?latest
+  // was only 57 min old. So check the cheap `latest` endpoint and add the
+  // newest reading if the backfill fell short.
   const newestAfterMerge = observations.length ? observations[observations.length - 1].ts : 0;
   if (nowMs - newestAfterMerge > 3 * HOUR_MS) {
     try {
@@ -119,8 +118,8 @@ async function ingestStation(station, nowMs) {
   let weatherForecast = [];
   if (weather) {
     try {
-      // past_days=1 gives observed hours; the forward hours are FORECAST and
-      // are kept in a separate field so they can never enter the observed block.
+      // past_days=1 gives us the observed hours. Anything after now is forecast,
+      // so it goes in its own field and never into the observed weather.
       const rows = await weather.getHourlyForecast(station, 2);
       weatherRows = rows.filter((r) => r.ts <= nowMs);
       weatherForecast = rows.filter((r) => r.ts > nowMs);
@@ -136,7 +135,7 @@ async function predictStation(station, observations, weatherRows, nowMs) {
   const built = buildFeatures(observations, nowMs, weatherRows);
   if (built.error) {
     return {
-      waterLevelForecast: { status: built.error === 'insufficient_history' ? 'insufficient_history' : built.error },
+      waterLevelForecast: { status: built.error },
       warningForecast: { status: 'not_evaluated' },
       featureMeta: null,
     };
@@ -165,16 +164,16 @@ async function fetchCoastal() {
 
     const ageMinutes = latest ? Math.round((nowMs - latest.ts) / 60_000) : null;
 
-    // Triều thiên văn: chuỗi tính sẵn từ phân tích điều hoà trên chính quan
-    // trắc của trạm. Ngoài vùng phủ -> null, KHÔNG ngoại suy.
+    // Tide comes from a precomputed series (harmonic fit on this station's own
+    // data). Outside the series we get null; we don't extrapolate.
     const tideLoaded = loadTideModel(TIDE_DIR, station.id);
     const tideNow = latest ? predictTideAt(tideLoaded, latest.ts) : null;
     const residualNow = latest && Number.isFinite(tideNow)
       ? Number((latest.level - tideNow).toFixed(3))
       : null;
 
-    // Gắn triều + residual vào từng horizon đã dự báo. Residual dự báo suy ra
-    // từ mực nước dự báo trừ triều — không phải một đại lượng mô hình tự sinh.
+    // Add tide and residual to each forecast horizon. The residual is just the
+    // forecast level minus the tide; the model doesn't predict it directly.
     if (waterLevelForecast.status === 'ready' && waterLevelForecast.horizons) {
       for (const [key, h] of Object.entries(waterLevelForecast.horizons)) {
         const hours = Number(String(key).replace('h', ''));

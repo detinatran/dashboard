@@ -1,16 +1,15 @@
 /**
- * Observed history + forecast, on one canvas.
+ * Observed history and forecast on one canvas.
  *
- * Follows the house TransitChart pattern (src/utils/transit-chart.ts): a canvas
- * class that owns its DOM children, reads colours from CSS custom properties so
- * it tracks the theme, and redraws on resize. No chart library is added — the
- * repo deliberately has none.
+ * Same approach as TransitChart (src/utils/transit-chart.ts): a canvas class
+ * that owns its DOM, takes colours from CSS variables so it follows the theme,
+ * and redraws on resize. The repo doesn't use a chart library, so neither do we.
  *
- * Two rules this chart must not break:
- *   - Observed and forecast are drawn differently (solid vs dashed, with a NOW
- *     divider) so a prediction can never be mistaken for a measurement.
- *   - Gaps are NOT bridged. A missing hour is a break in the line, because a
- *     straight segment across it would invent readings that were never taken.
+ * Two things to keep in mind:
+ *   - Observed is solid and forecast is dashed, with a NOW line between them,
+ *     so a prediction doesn't look like a measurement.
+ *   - Gaps stay gaps. A straight line across a missing hour would show
+ *     readings that were never taken.
  */
 
 import { getCSSColor } from '@/utils';
@@ -175,8 +174,8 @@ export class CoastalForecastChart {
     }
     ctx.stroke();
 
-    // Forecast: dashed, and visually joined to the last observation so the
-    // handover point is explicit rather than a floating segment.
+    // Forecast: dashed, starting from the last observation so it's clear where
+    // the measurements stop.
     if (this.forecast.length) {
       const last = this.observations.length ? this.observations[this.observations.length - 1] : undefined;
       ctx.strokeStyle = amber;

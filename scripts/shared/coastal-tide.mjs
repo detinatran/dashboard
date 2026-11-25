@@ -1,19 +1,18 @@
 /**
- * Triều thiên văn — nội suy từ chuỗi tính sẵn.
+ * Astronomical tide, interpolated from a precomputed series.
  *
- * KHÔNG tự tái tạo từ hệ số điều hoà. Tôi đã thử và sai tới 6 m (gần như ngược
- * pha): quy ước pha của utide là pha Greenwich theo thời gian thiên văn kèm
- * hiệu chỉnh nút mặt trăng thay đổi theo thời điểm, không phải
- * `A·cos(2πft − g)` tính từ một epoch tự chọn. Thay vì đoán tiếp quy ước của
- * một thư viện hải dương học, `training/export_tide_series.py` để utide tính
- * sẵn chuỗi 15 phút và module này chỉ nội suy tuyến tính.
+ * We don't rebuild the tide from the harmonic coefficients here. I tried, and
+ * it came out up to 6 m off (nearly opposite phase): utide uses Greenwich phase
+ * in astronomical time plus nodal corrections that change over time, not a
+ * plain `A·cos(2πft − g)` from some epoch. So `training/export_tide_series.py`
+ * has utide compute a 15-minute series and this module just interpolates it.
  *
- * Sai số nội suy: trên chuỗi 15 phút của dao động 12.4h, sai số tuyến tính
- * dưới 1 cm — nhỏ hơn hai bậc so với residual stdev 0.19 m.
+ * Linear interpolation on 15-minute steps of a 12.4h tide is off by less than
+ * 1 cm, well under the 0.19 m residual stdev.
  *
- * GIỚI HẠN: triều suy ra từ quan trắc tại trạm, KHÔNG phải số liệu chính thức
- * UKHO/Admiralty; không dùng cho hàng hải. Chuỗi có hạn dùng (coverageTo) —
- * hết hạn thì trả `tide_series_expired` chứ không ngoại suy bừa.
+ * Note: the tide is derived from the station's own data, not official
+ * UKHO/Admiralty predictions, so don't use it for navigation. The series ends
+ * at coverageTo; after that lookups return null instead of extrapolating.
  */
 
 import { existsSync, readFileSync } from 'node:fs';
@@ -44,9 +43,9 @@ export function loadTideModel(dir, stationId) {
 }
 
 /**
- * Triều tại tMs, nội suy tuyến tính. Ngoài phạm vi chuỗi -> null (KHÔNG ngoại
- * suy: ngoài vùng phủ, một phép ngoại suy tuyến tính trên sóng hình sin sai
- * rất nhanh và sẽ được hiển thị như số thật).
+ * Tide at tMs, linearly interpolated. Returns null outside the series; we
+ * don't extrapolate because it drifts off quickly and would still be shown
+ * as a real value.
  */
 export function predictTideAt(loaded, tMs) {
   if (loaded?.status !== 'ready') return null;
@@ -61,13 +60,14 @@ export function predictTideAt(loaded, tMs) {
   return a + (b - a) * frac;
 }
 
-/** Triều cho nhiều mốc; phần tử nào ngoài phạm vi thì tide = null. */
-export function predictTideSeries(loaded, timestamps) {
-  if (loaded?.status !== 'ready') return null;
-  return timestamps.map((ts) => ({ ts, tide: predictTideAt(loaded, ts) }));
-}
+// Only harmonicTideProvider (commented out) called this.
+// /** Tide for several instants; any instant outside the series gets tide = null. */
+// export function predictTideSeries(loaded, timestamps) {
+//   if (loaded?.status !== 'ready') return null;
+//   return timestamps.map((ts) => ({ ts, tide: predictTideAt(loaded, ts) }));
+// }
 
-/** Chuỗi còn hiệu lực tại thời điểm này không? */
+/** Does the series cover this instant? */
 export function isTideSeriesValidAt(loaded, tMs) {
   if (loaded?.status !== 'ready') return false;
   const { startMs, stepMs, values } = loaded.model;

@@ -1,24 +1,21 @@
 """
-Train the Liverpool water-level baseline (v1), one model per horizon.
+Trains the Liverpool water-level baseline (v1), one model per horizon.
 
-v1 predicts the future water LEVEL directly. The physics-guided decomposition
-(level = astronomical tide + residual) is deliberately deferred: no harmonic
-tide source is wired for Liverpool, and splitting the signal without one would
-mean inventing both halves. When a real tide source lands, v2 switches to
-predicting the residual — the feature builder and this script are structured so
-that is a contained change.
+v1 predicts the water level directly. Splitting it into astronomical tide +
+residual is left for later: there's no tide source wired up for Liverpool yet,
+and without one we'd be guessing both parts. Once there is, v2 can predict the
+residual instead without big changes here or in the feature builder.
 
-Non-negotiables enforced here:
-  * chronological split — never shuffled; a random split on a tidal series
-    leaks neighbouring samples and reports a fantasy R².
-  * features come from the production builder via the Node bridge.
-  * every metric is reported against a persistence baseline. A model that
-    cannot beat "the level will be what it is now" has learned nothing.
+A few rules this script sticks to:
+  * the split is by time, not shuffled. A random split on a tidal series puts
+    neighbouring samples on both sides and makes R² look far better than it is.
+  * features come from the production builder through the Node bridge.
+  * every metric is compared against persistence ("the level stays where it
+    is now"). If the model can't beat that, it hasn't learned anything.
 """
 
 import argparse
 import json
-import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -120,7 +117,7 @@ def main():
             random_state=0,
         )
         # Fit on train; early stopping uses an internal split of it. The val
-        # slice stays untouched for honest model selection reporting.
+        # slice stays untouched so the reported numbers are fair.
         model.fit(Xh[tr], yh[tr])
 
         res = {}
@@ -135,8 +132,8 @@ def main():
         print(f"      TEST  persist MAE={t['persistence']['mae']:.3f}m RMSE={t['persistence']['rmse']:.3f}m R²={t['persistence']['r2']:.4f}")
         print(f"      skill vs persistence: {skill*100:+.1f}%")
 
-        # Error band from held-out residuals — an empirical spread, not a
-        # probabilistic predictive interval. Metadata records which it is.
+        # Error band from the test residuals. It is an empirical spread, not a
+        # proper predictive interval, and the metadata says so.
         resid = yh[te] - model.predict(Xh[te])
         sigma = float(np.std(resid))
         report["horizonSigma"][str(h)] = sigma

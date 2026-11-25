@@ -24,10 +24,6 @@ import {
   type UkFloodWarning,
   type UkGridSnapshot,
 } from './parsers';
-
-export * from './parsers';
-export * from './ontology';
-
 import {
   NEWS_SIGNAL_WINDOW_MS,
   newsSignalUrl,
@@ -35,6 +31,9 @@ import {
   parseNewsSignals,
   UK_NEWS_SIGNAL_QUERIES,
 } from './ontology';
+
+export * from './parsers';
+export * from './ontology';
 
 const EA_ROOT = 'https://environment.data.gov.uk/flood-monitoring';
 const CARBON_ROOT = 'https://api.carbonintensity.org.uk';
@@ -46,6 +45,8 @@ const NCSC_FEED_URL = 'https://www.ncsc.gov.uk/api/1/services/v1/all-rss-feed.xm
 
 const TIMEOUT_MS = 15_000;
 const QUAKE_WINDOW_MS = 7 * 24 * 3600_000;
+/** Max news signals kept per category so headlines don't drown out the real feeds. */
+const MAX_NEWS_SIGNALS_PER_CATEGORY = 6;
 
 async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url, { signal: AbortSignal.timeout(TIMEOUT_MS), headers: { Accept: 'application/json' } });
@@ -142,12 +143,11 @@ export async function fetchNewsSignals(): Promise<UkAlert[]> {
   const now = Date.now();
   const seen = new Set<string>();
   const alerts = bodies.flatMap(xml => parseNewsSignals(xml, now, NEWS_SIGNAL_WINDOW_MS, seen));
-  // Cap the per-category tail so headline noise never drowns the structured sources.
   const perCategory = new Map<string, number>();
   return alerts.sort(compareAlerts).filter(a => {
     const n = (perCategory.get(a.category) ?? 0) + 1;
     perCategory.set(a.category, n);
-    return n <= 6;
+    return n <= MAX_NEWS_SIGNALS_PER_CATEGORY;
   });
 }
 
@@ -195,7 +195,7 @@ export function getLastUkSituation(): UkSituation | null {
 /** The panel and the map layer refresh on the same cadence; let them share a round. */
 const SHARE_WINDOW_MS = 60_000;
 
-/** One round across every source; a dead source degrades, never fails, the round. */
+/** Fetches every source in one go. A failing source is marked degraded; the rest still load. */
 export function fetchUkSituation(): Promise<UkSituation> {
   if (inflight) return inflight;
   if (lastSituation && Date.now() - lastSituation.fetchedAt < SHARE_WINDOW_MS) return Promise.resolve(lastSituation);

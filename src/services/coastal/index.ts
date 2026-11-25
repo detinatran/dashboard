@@ -1,13 +1,13 @@
 /**
- * Coastal water-level prediction — frontend service.
+ * Frontend service for coastal water level predictions.
  *
- * Thin wrapper over the generated RPC client. It NEVER contacts Environment
- * Agency, Open-Meteo or any model: those live server-side behind the coastal
- * seed cron. Everything here reads a cached record.
+ * Just a wrapper around the generated RPC client. It doesn't call the
+ * Environment Agency, Open-Meteo or any model; that all happens server-side in
+ * the coastal seed cron, and this only reads the cached record.
  *
- * Statuses are passed through untouched. A caller must branch on
- * `waterLevelForecast.status === 'ready'` rather than on the presence of a
- * number, so a refusal can never be rendered as a forecast.
+ * Statuses are passed through as-is. Callers should check
+ * `waterLevelForecast.status === 'ready'` rather than whether a number is
+ * there, so a missing forecast never gets drawn as one.
  */
 
 import { CoastalServiceClient } from '@/services/generated-rpc-clients';
@@ -38,8 +38,8 @@ export type CoastalRiskLevel = 'normal' | 'advisory' | 'watch' | 'high' | 'unkno
 export type { CoastalStation, GetForecastResponse, GetHistoryResponse, ListStationsResponse };
 
 /**
- * Active prediction sites. Returns an empty list rather than throwing: the map
- * must still render when the domain is unavailable.
+ * Active prediction sites. Returns an empty list instead of throwing so the map
+ * still renders if the service is down.
  */
 export async function fetchCoastalStations(force = false): Promise<ListStationsResponse> {
   if (!force && stationsCache && Date.now() - stationsCache.at < STATIONS_TTL_MS) {
@@ -86,37 +86,39 @@ export async function fetchCoastalHistory(
   }
 }
 
-/** Risk → semantic token. Uses the existing ladder; never a bespoke hex. */
-export function riskColorToken(level: string): string {
-  switch (level) {
-    case 'high': return '--semantic-high';
-    case 'watch': return '--semantic-elevated';
-    case 'advisory': return '--semantic-info';
-    case 'normal': return '--semantic-normal';
-    default: return '--text-muted';
-  }
-}
+// Unused for now. Kept commented out in case we need it again.
+// /** Risk → semantic token. Uses the existing ladder; never a bespoke hex. */
+// export function riskColorToken(level: string): string {
+//   switch (level) {
+//     case 'high': return '--semantic-high';
+//     case 'watch': return '--semantic-elevated';
+//     case 'advisory': return '--semantic-info';
+//     case 'normal': return '--semantic-normal';
+//     default: return '--text-muted';
+//   }
+// }
 
 /**
- * Icon per risk level. Status is never conveyed by colour alone — this pairs
- * with a text label everywhere it is used.
+ * Icon per risk level. It's always shown next to a text label so colour isn't
+ * the only cue.
  */
 export function riskIcon(level: string): string {
   switch (level) {
-    case 'high': return '▲';      // ▲
-    case 'watch': return '△';     // △
-    case 'advisory': return '◇';  // ◇
-    case 'normal': return '●';    // ●
-    default: return '○';          // ○
+    case 'high': return '▲';
+    case 'watch': return '△';
+    case 'advisory': return '◇';
+    case 'normal': return '●';
+    default: return '○';
   }
 }
 
-export function isCoastalForecastReady(res: GetForecastResponse | null): boolean {
-  return Boolean(res?.waterLevelForecast?.status === 'ready'
-    && (res.waterLevelForecast.horizons?.length ?? 0) > 0);
-}
+// Unused for now. Kept commented out in case we need it again.
+// export function isCoastalForecastReady(res: GetForecastResponse | null): boolean {
+//   return Boolean(res?.waterLevelForecast?.status === 'ready'
+//     && (res.waterLevelForecast.horizons?.length ?? 0) > 0);
+// }
 
-export function clearCoastalCache(): void {
-  stationsCache = null;
-  forecastCache.clear();
-}
+// export function clearCoastalCache(): void {
+//   stationsCache = null;
+//   forecastCache.clear();
+// }

@@ -1,10 +1,11 @@
 /**
- * Shared read helpers for the coastal RPCs.
+ * Read helpers shared by the coastal RPCs.
  *
- * Every handler here is a pure Redis reader. External providers and model
- * inference belong to scripts/seed-coastal.mjs, which runs on a timer — a
- * request must never trigger a fetch or an inference.
+ * The handlers only read from Redis. Fetching data and running the models is
+ * done by scripts/seed-coastal.mjs on a timer, so a request never does either.
  */
+
+import type { CoastalStation } from '../../../../src/generated/server/worldmonitor/coastal/v1/service_server';
 
 import { getCachedJson } from '../../../_shared/redis';
 
@@ -27,7 +28,7 @@ export interface StoredHorizon {
   waterLevel?: number;
   lowerBound?: number | null;
   upperBound?: number | null;
-  /** Null outside the precomputed tide coverage — never a fabricated zero. */
+  /** Null outside the precomputed tide coverage (not 0). */
   predictedTide?: number | null;
   predictedResidual?: number | null;
 }
@@ -72,6 +73,31 @@ export async function readCoastalMeta(): Promise<{ fetchedAt?: number } | null> 
   return (await getCachedJson(COASTAL_META_KEY, true)) as { fetchedAt?: number } | null;
 }
 
+/** The marker-level summary shared by ListStations and GetForecast. */
+export function toStationSummary(rec: StoredStationRecord, ageMinutes: number | null): CoastalStation {
+  return {
+    id: rec.station.id,
+    name: rec.station.name,
+    displayName: rec.station.displayName,
+    city: rec.station.city,
+    country: rec.station.country,
+    lat: rec.station.lat,
+    lon: rec.station.lon,
+    timezone: rec.station.timezone,
+    capabilities: {
+      waterLevelPrediction: Boolean(rec.capabilities?.waterLevelPrediction),
+      warningPrediction: Boolean(rec.capabilities?.warningPrediction),
+      tide: Boolean(rec.capabilities?.tide),
+    },
+    dataStatus: classifyFreshness(ageMinutes),
+    ageMinutes: ageMinutes ?? 0,
+    riskLevel: rec.risk?.level ?? 'unknown',
+    currentWaterLevel: rec.current?.waterLevel ?? 0,
+    hasCurrent: Boolean(rec.current),
+    trend: rec.current?.trend ?? 'unknown',
+  };
+}
+
 export function findStation(
   snapshot: StoredCoastalSnapshot | null,
   stationId: string,
@@ -81,9 +107,9 @@ export function findStation(
 }
 
 /**
- * Recompute age at READ time. The stored ageMinutes was true when the seeder
- * ran; serving it verbatim would report a snapshot up to 15 minutes old as if
- * it were current.
+ * Works out the age at request time. The stored ageMinutes was right when the
+ * seeder ran, but serving it as-is would make a snapshot up to 15 minutes old
+ * look current.
  */
 export function ageMinutesNow(latestUpdate: number | null | undefined): number | null {
   if (!Number.isFinite(latestUpdate as number)) return null;

@@ -1,24 +1,19 @@
 /**
- * Coastal feature builder — the SINGLE implementation used by both offline
- * training and live inference.
+ * Feature builder for the coastal models, shared by training and live inference.
  *
- * Keeping one module is the whole point: if training and production build
- * features differently, every metric reported offline is a fiction. It lives in
- * `scripts/shared/` so the Railway seeder (build root `scripts/`) and the
- * Python training pipeline (which shells out to Node for parity checks) both
- * reach it.
+ * Training and production have to build features the same way or the offline
+ * metrics don't mean anything, so this is the only implementation. It sits in
+ * `scripts/shared/` so both the Railway seeder (build root `scripts/`) and the
+ * Python training scripts (which call it through Node) can use it.
  *
- * LEAKAGE CONTRACT — enforced by tests/coastal-feature-leakage.test.mts:
- *   buildFeatures(history, t) may read ONLY samples with timestamp <= t.
- *   Anything at or after t + 1 sample is a future observation and is a bug,
- *   not an optimisation. Weather FORECAST values are permitted but must arrive
- *   through `weatherForecast`, which is labelled as forecast and never mixed
- *   into the observed-weather block.
+ * No look-ahead (checked by tests/coastal-feature-leakage.test.mts):
+ *   buildFeatures(history, t) may only read samples with timestamp <= t.
+ *   Forecast weather is allowed, but only through `weatherForecast`, and it is
+ *   kept apart from the observed weather.
  *
- * FEATURE_VERSION must be bumped on ANY change to the emitted vector — order,
- * count or meaning. The model adapter refuses to run when a model's recorded
- * featureVersion differs, because a silently reordered vector produces
- * confident nonsense rather than an error.
+ * Bump FEATURE_VERSION whenever the vector changes (order, count or meaning).
+ * The model loader rejects models trained on another version, because a
+ * reordered vector still gives numbers, just wrong ones.
  */
 
 export const FEATURE_VERSION = 'coastal-v1';
@@ -27,15 +22,15 @@ export const FEATURE_VERSION = 'coastal-v1';
 export const REQUIRED_HISTORY_HOURS = 24;
 
 /**
- * How stale the newest observation may be and still anchor a prediction.
- * Not a freshness policy for display — that is classifyFreshness() — but the
- * point past which the anchor is too old for the forecast to mean anything.
+ * How old the newest observation can be and still be used for a prediction.
+ * This isn't the display freshness rule (see classifyFreshness()); past this
+ * point the forecast just wouldn't mean much.
  */
 export const MAX_ANCHOR_AGE_MIN = 180;
 
 /**
- * Ordered feature names. The ORDER IS THE CONTRACT — ONNX takes a positional
- * float32 tensor, so a reordering here silently changes what every input means.
+ * Feature names, in order. ONNX takes a positional float32 tensor, so changing
+ * the order changes what each input means.
  */
 export const FEATURE_NAMES = Object.freeze([
   // — current state —
@@ -49,9 +44,8 @@ export const FEATURE_NAMES = Object.freeze([
   'level_mean_12h', 'level_max_12h', 'level_min_12h', 'level_std_12h',
   'level_mean_24h', 'level_max_24h', 'level_min_24h', 'level_std_24h',
   // — tidal phase proxies —
-  // Without a harmonic tide source, the recent extremes and the position of
-  // the current level within the last 12h range are the honest stand-in for
-  // "where in the tidal cycle are we". Not a tide prediction; a phase hint.
+  // No tide model here, so recent highs/lows and where the current level sits
+  // in the last 12h range give a rough idea of the tide phase.
   'level_range_12h',
   'level_pos_in_range_12h',
   'hours_since_max_12h',
@@ -85,9 +79,8 @@ function stdev(xs) {
 }
 
 /**
- * Samples strictly within (t - hours, t]. Upper bound inclusive of t itself;
- * nothing after t is ever visible. This single helper is why the leakage test
- * can be exhaustive.
+ * Samples in (t - hours, t]: includes t itself, nothing after it. All window
+ * reads go through here, which keeps the leakage test simple.
  */
 function windowSamples(history, tMs, hours) {
   const from = tMs - hours * MS_PER_HOUR;
@@ -120,14 +113,11 @@ export function buildFeatures(history, tMs, weather = []) {
   if (past.length === 0) return { error: 'no_history' };
 
   const current = past[past.length - 1];
-  // Refuse to predict from a stale window: an old last-sample would otherwise
-  // be silently treated as "now".
-  // Measured against the live EA feed: the newest published sample routinely
-  // trails wall-clock by over an hour even when the gauge is healthy (a dry run
-  // saw 75 min). A 60-minute cap turned that routine lag into a permanent
-  // refusal. 3h still guarantees the prediction is anchored to a recent
-  // observation, while the reported age drives the live/delayed/stale badge so
-  // the user always sees how old the anchor really is.
+  // Don't predict from a stale window, or an old sample gets treated as "now".
+  // The EA feed often lags real time by over an hour even when the gauge is
+  // fine (75 min in one dry run), so a 60 min cap meant we almost never
+  // predicted. 3h still keeps us close to a recent reading, and the real age
+  // shows up in the live/delayed/stale badge anyway.
   const ageMin = (tMs - current.ts) / 60_000;
   if (ageMin > MAX_ANCHOR_AGE_MIN) {
     return { error: 'history_stale', ageMinutes: Math.round(ageMin) };
@@ -184,15 +174,14 @@ export function buildFeatures(history, tMs, weather = []) {
 
   const windSpeed = wxNow ? num(wxNow.windSpeed) : null;
   const windDir = wxNow ? num(wxNow.windDirection) : null;
-  // Decompose wind into u/v so direction is continuous — a raw 0-360 degree
-  // feature puts north's two neighbours at maximum numeric distance.
+  // Split wind into u/v so direction is continuous. With raw degrees, 359 and 1
+  // would look as far apart as possible.
   const dirRad = windDir === null ? null : (windDir * Math.PI) / 180;
   const windU = windSpeed !== null && dirRad !== null ? -windSpeed * Math.sin(dirRad) : null;
   const windV = windSpeed !== null && dirRad !== null ? -windSpeed * Math.cos(dirRad) : null;
 
-  // Documented imputation: 0 for deltas/accumulations, climatological standard
-  // pressure, else 0 — always paired with weather_present so the model can
-  // learn to discount imputed rows rather than trust them.
+  // Missing weather: 0 for deltas and totals, standard pressure for pressure,
+  // 0 for the rest. weather_present tells the model when values were filled in.
   const IMPUTE_PRESSURE = 1013.25;
   const f = [
     lvl,
@@ -248,8 +237,8 @@ export function buildFeatures(history, tMs, weather = []) {
 }
 
 /**
- * Trend from recent OBSERVATIONS only — never from the forecast. A forecast-derived
- * arrow would claim observational certainty for a model output.
+ * Trend arrow from recent observations only. Using the forecast here would
+ * make a model guess look like a measurement.
  */
 export function classifyTrend(current, prev15, prev1h) {
   const ref = prev15 ?? prev1h;

@@ -53,6 +53,17 @@ export const CASCADE_DEFAULTS: Required<Omit<UkCascadeOptions, 'seedLosses'>> = 
   maxPasses: 24,
 };
 
+/** The sample company's store clusters — service disruption is measured on these. */
+export function storeClusters(nodes: UkTwinNode[]): UkTwinNode[] {
+  return nodes.filter(n => n.type === 'store_cluster');
+}
+
+/** Mean capacity loss across `stores`, 0..1 (0 when there are none). */
+export function meanStoreLoss(stores: UkTwinNode[], losses: Map<string, number>): number {
+  if (!stores.length) return 0;
+  return stores.reduce((sum, s) => sum + (losses.get(s.id) ?? 0), 0) / stores.length;
+}
+
 export function impactLevel(loss: number): UkImpactLevel {
   if (loss >= 0.995) return 'down';
   if (loss >= 0.6) return 'severe';
@@ -152,14 +163,12 @@ export function summarizeCascade(nodes: UkTwinNode[], result: UkCascadeResult): 
   const counts: Record<UkImpactLevel, number> = { down: 0, severe: 0, degraded: 0, minor: 0 };
   for (const impact of impacts) counts[impact.level]++;
 
-  const stores = nodes.filter(n => n.type === 'store_cluster');
-  const storeLoss = stores.reduce((sum, s) => sum + (result.losses.get(s.id) ?? 0), 0);
   const atLeastDegraded = (i: UkCascadeImpact) => i.level !== 'minor';
 
   return {
     impacts,
     counts,
-    serviceDisruption: stores.length ? storeLoss / stores.length : 0,
+    serviceDisruption: meanStoreLoss(storeClusters(nodes), result.losses),
     companyAffected: impacts.filter(i => i.node.owner === 'sample' && atLeastDegraded(i)),
     criticalAffected: impacts.filter(i => i.node.owner === 'public' && i.node.criticality === 5 && atLeastDegraded(i)),
   };

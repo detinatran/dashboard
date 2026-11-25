@@ -1,15 +1,12 @@
 /**
- * Model adapters — the boundary between the pipeline and whatever runtime a
- * model happens to use.
+ * Model adapters, sitting between the pipeline and the model runtime.
  *
- * Two separate tasks, deliberately not fused (a station may have either, both
- * or neither):
+ * Two separate models (a station can have either, both or neither):
  *   WaterLevelForecastModel — regression, metres at +1h/+3h/+6h
  *   WarningForecastModel    — classification, anomaly probability per horizon
  *
- * Refusal is a first-class outcome. When a model is absent, incompatible or
- * fails to load, `predict()` returns a status — never a number. A fabricated
- * water level is worse than a blank panel.
+ * If a model is missing, incompatible or fails to load, `predict()` returns a
+ * status instead of a number. An empty panel is better than a made-up level.
  */
 
 import { existsSync, readFileSync } from 'node:fs';
@@ -20,10 +17,9 @@ import { FEATURE_VERSION, FEATURE_COUNT } from './coastal-features.mjs';
 export const HORIZONS = Object.freeze([1, 3, 6]);
 
 /**
- * onnxruntime-node is CommonJS. Depending on the interop path, its exports land
- * either on the namespace root or under `.default`. Normalise once so a wrong
- * guess fails with a clear message instead of
- * `Cannot read properties of undefined (reading 'create')`.
+ * onnxruntime-node is CommonJS, so depending on interop its exports end up on
+ * the namespace or under `.default`. Resolve it once and fail with a clear
+ * error instead of `Cannot read properties of undefined (reading 'create')`.
  */
 let ortModule = null;
 async function loadOrt() {
@@ -44,10 +40,9 @@ export function modelDir(envVar, fallback) {
 }
 
 /**
- * Load a model's metadata sidecar and refuse anything that does not match the
- * feature builder currently compiled in. A model trained on a different vector
- * still produces confident numbers — that silent mismatch is the failure this
- * check exists to prevent.
+ * Loads the model's metadata file and rejects it if it was trained on a
+ * different feature vector. A mismatched model still outputs numbers, they're
+ * just wrong, so we check up front.
  */
 export function loadModelMetadata(dir, stationId) {
   const path = join(dir, `${stationId}.meta.json`);
@@ -77,9 +72,8 @@ export function loadModelMetadata(dir, stationId) {
 }
 
 /**
- * ONNX-backed regression model. Sessions are created once per process and
- * reused — the seeder is long-lived enough that re-reading the graph per tick
- * would be pure waste, and per-request loading is forbidden by design.
+ * ONNX regression model. Sessions are created once per process and reused;
+ * the seeder runs long enough that reloading them every tick would be wasteful.
  */
 export class OnnxWaterLevelModel {
   constructor({ dir, stationId }) {
@@ -127,16 +121,15 @@ export class OnnxWaterLevelModel {
         return { status: 'inference_failed', reason: `non-finite output at +${h}h` };
       }
 
-      // Interval from the residual spread measured on the held-out test split
-      // at training time. It is an empirical error band, not a probabilistic
-      // predictive interval, and the metadata says so.
+      // The band comes from the residual spread on the test split at training
+      // time. It's an empirical error band, not a proper predictive interval.
       const sigma = Number(this.metadata?.horizonSigma?.[String(h)] ?? NaN);
       out[`${h}h`] = {
         waterLevel: Number(value.toFixed(3)),
         lowerBound: Number.isFinite(sigma) ? Number((value - 1.96 * sigma).toFixed(3)) : null,
         upperBound: Number.isFinite(sigma) ? Number((value + 1.96 * sigma).toFixed(3)) : null,
-        // v1 predicts the level directly: with no astronomical tide source,
-        // splitting it into tide + residual would mean inventing both.
+        // v1 predicts the level directly. Without a tide source we can't split it
+        // into tide + residual yet.
         predictedTide: null,
         predictedResidual: null,
       };
@@ -146,9 +139,9 @@ export class OnnxWaterLevelModel {
 }
 
 /**
- * TideWISE-style warning model. Structurally identical, separately gated: a
- * station may run regression with no warning model, and must then say so
- * rather than deriving a probability from the regression output.
+ * TideWISE-style warning model. Same shape as the regression model but loaded
+ * separately: a station can have regression without a warning model, and then
+ * it reports that instead of guessing a probability from the regression.
  */
 export class OnnxWarningModel {
   constructor({ dir, stationId }) {
@@ -181,7 +174,7 @@ export class OnnxWarningModel {
       const p = Number(Array.isArray(probRaw?.data) || ArrayBuffer.isView(probRaw?.data)
         ? probRaw.data[probRaw.data.length - 1] : NaN);
       if (!Number.isFinite(p)) return { status: 'inference_failed', reason: `non-finite probability +${h}h` };
-      // Thresholds are per-horizon and come from metadata — never a hardcoded 0.5.
+      // Per-horizon thresholds from the metadata (not a fixed 0.5).
       const threshold = Number(this.metadata?.warningThreshold?.[String(h)] ?? NaN);
       out[`${h}h`] = {
         probability: Number(p.toFixed(4)),

@@ -1,24 +1,23 @@
 /**
- * Coastal prediction station registry.
+ * List of coastal prediction stations.
  *
- * Lives in `scripts/shared/` rather than the repo-root `shared/` because
- * Railway builds `nixpacks-root-scripts` services with `scripts/` as the build
- * root — `../shared/` is outside that context and would not ship. Verified: no
- * scripts-rooted seeder imports `../shared/`; the ones that do are dockerfile-mode.
+ * This lives in `scripts/shared/` and not the root `shared/` because Railway
+ * builds the `nixpacks-root-scripts` services with `scripts/` as the root, so
+ * `../shared/` wouldn't be shipped. (Only the dockerfile-based seeders import
+ * from `../shared/`.)
  *
- * A station is a CONFIGURED PREDICTION SITE, not a city. One city may hold
- * several sites (London → Thames Barrier, Chelsea, Silvertown) with different
- * coordinates, providers, datums and models. Nothing downstream may branch on
- * city name.
+ * A station is a prediction site, not a city. One city can have several sites
+ * (London: Thames Barrier, Chelsea, Silvertown) with their own coordinates,
+ * providers, datums and models, so don't key anything off the city name.
  *
- * `capabilities` is derived at runtime from which model artifacts actually
- * load — never hardcoded true here. A station with no model must report
- * `model_not_configured`, never a fabricated number.
+ * `capabilities` is worked out at runtime from which model files actually
+ * load, so nothing is hardcoded to true here. A station without a model
+ * reports `model_not_configured`.
  */
 
 /** @typedef {'environment-agency'} WaterLevelProviderId */
 /** @typedef {'open-meteo'} WeatherProviderId */
-/** @typedef {'none'|'precomputed'} TideProviderId */
+/** @typedef {'none'|'harmonic-utide'} TideProviderId */
 
 export const COASTAL_STATIONS = Object.freeze([
   Object.freeze({
@@ -35,13 +34,12 @@ export const COASTAL_STATIONS = Object.freeze([
     active: true,
 
     waterLevelProvider: 'environment-agency',
-    // EA measure id. 15-min mean, metres on the LOCAL gauge datum.
+    // EA measure id. 15-min mean, metres on the local gauge datum.
     waterLevelExternalId: 'E70124-level-tidal_level-Mean-15_min-m',
 
-    // The same gauge is also published as E70139 in mAOD. Measured across a
-    // full day: local_m = mAOD + 4.9300 exactly (stdev 0.000000), so the two
-    // are one series on two datums. We train and serve on the LOCAL metre
-    // series and record the offset so mAOD can be derived without a refetch.
+    // The same gauge is also published as E70139 in mAOD. Over a full day
+    // local_m = mAOD + 4.93 exactly, so it's one series on two datums. We use the
+    // local series and keep the offset to get mAOD without refetching.
     datum: 'local-gauge-m',
     datumOffsetToAod: -4.9300,
 
@@ -49,9 +47,8 @@ export const COASTAL_STATIONS = Object.freeze([
     weatherExternalId: null, // lat/lon addressed
 
     // Harmonic fit of this station's own 362-day record (utide, 99.32% of
-    // variance explained). Derived from the gauge, NOT an official UKHO/
-    // Admiralty prediction — never present it as one, and never use for
-    // navigation.
+    // variance explained). It's derived from the gauge, not an official
+    // UKHO/Admiralty prediction, so don't present it as one or use it to navigate.
     tideProvider: 'harmonic-utide',
 
     // Sampling cadence of the upstream gauge, in minutes.

@@ -1,8 +1,8 @@
-// CrisisTwin UK guide tour: a lightweight spotlight walkthrough of the four
-// questions the edition answers (monitor → map → risk → twin → what-if). No
-// library — a fixed spotlight box (dimming via its huge box-shadow), a card
-// positioned near the target, and keyboard/resize handling. Auto-runs once per
-// browser (localStorage) on desktop; replayable from the header ✦ Tour button.
+// CrisisTwin UK guide tour: a small spotlight walkthrough of the main features
+// (monitor → map → risk → twin → what-if). No library, just a fixed spotlight
+// box (its big box-shadow dims the page), a card placed next to the target,
+// and keyboard/resize handling. Runs once per browser on desktop (localStorage)
+// and can be replayed from the ✦ Tour button in the header.
 
 import { t } from '@/services/i18n';
 
@@ -115,7 +115,7 @@ class UkGuideTour {
         ${this.index > 0 ? `<button class="uk-tour-ghost" data-tour="back">${t('components.ukTour.back')}</button>` : ''}
         <button class="uk-tour-next" data-tour="next">${last ? t('components.ukTour.done') : t('components.ukTour.next')}</button>
       </div>`;
-    // Step copy goes through textContent: no markup, no injection surface.
+    // Step text goes in via textContent, so no HTML can sneak in.
     card.querySelector('.uk-tour-title')!.textContent = t(this.step().titleKey);
     card.querySelector('.uk-tour-body')!.textContent = t(this.step().bodyKey);
     card.querySelector<HTMLButtonElement>('.uk-tour-next')?.focus();

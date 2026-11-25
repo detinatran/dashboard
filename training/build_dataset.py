@@ -1,15 +1,15 @@
 """
-Build the Liverpool training dataset from the Environment Agency daily archive.
+Builds the Liverpool training dataset from the Environment Agency daily archive.
 
-Two rules govern this file:
+Two things to know about this file:
 
-  1. Features are NOT computed here. They come from
-     `scripts/shared/coastal-features.mjs` via a Node subprocess, so training and
-     production share one implementation. A Python reimplementation would drift,
-     and the drift would be invisible until predictions were already wrong.
+  1. Features aren't computed here. They come from
+     `scripts/shared/coastal-features.mjs` through a Node subprocess, so
+     training and production use the same code. A Python copy would slowly
+     drift and we wouldn't notice until the predictions were off.
 
-  2. Targets are read strictly forward of the base timestamp; features strictly
-     backward. The split is chronological, never shuffled.
+  2. Targets only look forward from the base time and features only look
+     back. The split is by time, not shuffled.
 """
 
 import argparse
@@ -17,7 +17,7 @@ import csv
 import json
 import subprocess
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -25,7 +25,6 @@ import numpy as np
 REPO = Path(__file__).resolve().parents[1]
 FEATURE_BRIDGE = REPO / "training" / "feature_builder" / "bridge.mjs"
 HORIZONS = (1, 3, 6)
-STEP_MIN = 15
 
 
 def load_levels(raw_dir: Path, measure: str):
@@ -99,10 +98,8 @@ def main():
     print(f"weather: {len(weather)} hourly rows")
 
     # Candidate base times: need 24h of history behind and 6h of truth ahead.
-    step_ms = STEP_MIN * 60_000
     hist_ms = 24 * 3_600_000
     horizon_ms = max(HORIZONS) * 3_600_000
-    level_at = levels
 
     bases = [t for t in ts_all
              if (t - hist_ms) >= ts_all[0]
@@ -114,8 +111,6 @@ def main():
         "levels": [{"ts": t, "level": v} for t, v in levels.items()],
         "weather": list(weather.values()),
         "bases": bases,
-        "horizons": list(HORIZONS),
-        "stepMs": step_ms,
     }
     proc = subprocess.run(
         ["node", str(FEATURE_BRIDGE)],
@@ -131,7 +126,7 @@ def main():
     base_ts = np.array(built["baseTs"], dtype=np.int64)
     names = built["featureNames"]
     print(f"feature matrix: {X.shape} (version {built['featureVersion']})")
-    if len(built.get("skipped", {})):
+    if built.get("skipped"):
         print("skipped:", json.dumps(built["skipped"]))
 
     # Targets: the observed level exactly h hours after each base time.
@@ -141,7 +136,7 @@ def main():
         off = h * 3_600_000
         y = np.full(len(base_ts), np.nan, dtype=np.float32)
         for i, t in enumerate(base_ts):
-            v = level_at.get(int(t) + off)
+            v = levels.get(int(t) + off)
             if v is not None:
                 y[i] = v
         ys[h] = y

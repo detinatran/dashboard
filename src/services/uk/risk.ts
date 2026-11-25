@@ -1,7 +1,7 @@
-// CrisisTwin UK risk outlook: forecast-driven hazard scoring per twin asset
-// (next 72h) and a regional resilience index. The model is a transparent,
-// explainable scoring function over public forecasts — every score carries
-// the drivers that produced it — not an opaque ML model.
+// CrisisTwin UK risk outlook: hazard score per twin asset from the forecasts
+// (next 72h), plus a regional resilience index. It's a simple scoring function
+// over public forecasts, not an ML model, and every score comes with the
+// drivers behind it.
 //
 // Sources (keyless, CORS-open, fetched in the browser):
 // - Open-Meteo forecast API: daily precipitation sum and max wind gusts
@@ -19,9 +19,9 @@ export interface UkHazardFeatures {
   gustMax: number | null;
   /**
    * Max forecast river discharge (next 7d) ÷ the 95th percentile of the past
-   * 365 days — ≥ 1 means the river is heading above a flow it reaches only a
-   * few days a year. A climatological baseline: a 30-day median turned every
-   * late-summer low-flow channel into a false alarm.
+   * 365 days. ≥ 1 means the river is heading above a flow it only reaches a few
+   * days a year. We compare against a full year because a 30-day median flagged
+   * every low river in late summer.
    */
   riverRatio: number | null;
 }
@@ -255,11 +255,14 @@ export async function fetchHazardFeatures(nodes: UkTwinNode[]): Promise<Map<stri
   const cellIndex = new Map(cells.map((c, i) => [c, i]));
   const features = new Map<string, UkHazardFeatures>();
   for (const node of nodes) {
-    const i = cellIndex.get(cellKey(node))!;
+    const cell = cellKey(node);
+    const i = cellIndex.get(cell)!;
+    const wx = w[i];
+    const fl = f[i];
     features.set(node.id, {
-      precip72: w[i] ? sum(w[i]!.daily?.precipitation_sum) : null,
-      gustMax: w[i] ? max(w[i]!.daily?.wind_gusts_10m_max) : null,
-      riverRatio: f[i] ? riverRatio(f[i]!.daily?.river_discharge, climatology.highFlow[cellKey(node)] ?? null) : null,
+      precip72: wx ? sum(wx.daily?.precipitation_sum) : null,
+      gustMax: wx ? max(wx.daily?.wind_gusts_10m_max) : null,
+      riverRatio: fl ? riverRatio(fl.daily?.river_discharge, climatology.highFlow[cell] ?? null) : null,
     });
   }
   cache = { at: Date.now(), key, features };

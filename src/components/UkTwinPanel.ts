@@ -44,6 +44,8 @@ interface SimLink extends d3.SimulationLinkDatum<SimNode> {
   dependency: number;
 }
 
+type TwinTab = 'graph' | 'critical' | 'whatif';
+
 const LEVEL_COLORS: Record<UkImpactLevel, string> = {
   down: '#f03e3e',
   severe: '#ff7043',
@@ -52,9 +54,6 @@ const LEVEL_COLORS: Record<UkImpactLevel, string> = {
 };
 
 const GRAPH_HEIGHT = 300;
-
-type TwinTab = 'graph' | 'critical' | 'whatif';
-
 const PLAYBACK_MS = 220;
 
 /** Plans are carried in <select> values: none | close:<id> | reroute:<id>:<target>. */
@@ -158,7 +157,7 @@ export class UkTwinPanel extends Panel {
     this.summary = frame && this.failed.size > 0
       ? summarizeCascade(this.twin.nodes, { losses: this.losses, failed: this.failed, passes: 0 })
       : null;
-    // The deck layer mirrors the cascade so the map tells the same story.
+    // Send the losses to the map layer so it shows the same cascade.
     window.dispatchEvent(new CustomEvent('wm:uk-twin-impacts', {
       detail: { losses: Object.fromEntries(this.losses) },
     }));
@@ -478,11 +477,10 @@ export class UkTwinPanel extends Panel {
     if (!sidebar) return;
     const summary = this.summary;
     if (!summary) {
-      sidebar.innerHTML = '';
       const idle = document.createElement('div');
       idle.className = 'uk-twin-idle';
       idle.textContent = t('components.ukTwin.idle');
-      sidebar.appendChild(idle);
+      sidebar.replaceChildren(idle);
       return;
     }
     const pct = Math.round(summary.serviceDisruption * 100);
@@ -505,7 +503,7 @@ export class UkTwinPanel extends Panel {
         <span class="uk-service">${t('components.ukTwin.serviceDisruption', { pct: String(pct) })}</span>
       </div>
       <div class="uk-impact-list">${rows}</div>`;
-    // Same escaped-template discipline as setSafeContent, scoped to the subtree.
+    // Same escaping as setSafeContent, just for this subtree.
     setTrustedHtml(sidebar as HTMLElement, trustedHtml(html.toString(), 'Cascade summary built with safeHtml; every interpolated value is escaped'));
   }
 
@@ -602,8 +600,8 @@ export class UkTwinPanel extends Panel {
         ? `rgba(240, 62, 62, ${0.15 + sourceLoss * 0.45})`
         : 'rgba(128, 150, 140, 0.18)';
       ctx.beginPath();
-      ctx.moveTo(s.x!, s.y!);
-      ctx.lineTo(d.x!, d.y!);
+      ctx.moveTo(s.x, s.y!);
+      ctx.lineTo(d.x, d.y!);
       ctx.stroke();
     }
 

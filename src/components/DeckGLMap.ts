@@ -5830,15 +5830,14 @@ export class DeckGLMap {
       'repair-ships-layer': 'repair-ship',
     };
 
-    // Coastal sites open their own panel rather than a map popup (same
-    // precedent as webcams): the forecast view carries a chart and collapsible
-    // technical details that the shared popup has no shape for.
     if (layerId === 'uk-twin-nodes-layer') {
       const node = (info.object ?? null) as UkTwinNode | null;
       if (node?.id) window.dispatchEvent(new CustomEvent('wm:uk-twin-node-selected', { detail: { nodeId: node.id } }));
       return;
     }
 
+    // Coastal sites open their own panel instead of the shared map popup (same
+    // as webcams) since it needs room for a chart and the technical details.
     if (layerId === 'water-level-layer') {
       const marker = (info.object ?? null) as CoastalMarker | null;
       if (marker?.id) {

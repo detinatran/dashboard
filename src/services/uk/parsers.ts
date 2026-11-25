@@ -274,7 +274,7 @@ export function parseTflStatus(lines: TflLine[], now = Date.now()): UkAlert[] {
         time: now,
         lat: 51.5074,
         lon: -0.1278,
-        url: `https://tfl.gov.uk/tube-dlr-overground/status/`,
+        url: 'https://tfl.gov.uk/tube-dlr-overground/status/',
       });
     }
   }

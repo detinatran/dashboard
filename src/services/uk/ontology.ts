@@ -68,10 +68,10 @@ export function isUkRelevant(text: string): boolean {
   return UK_MARKERS.test(text);
 }
 
-// Metaphorical "collapse"/"crash"/"riot-torn" is the loudest noise: markets,
-// sport and stories that are really about somewhere else. A headline naming a
-// foreign place is about that place even when it also mentions the UK, and a
-// finance/sport headline only survives if it reports a physical incident.
+// Most of the noise is figurative "collapse"/"crash"/"riot-torn" in market,
+// sport or overseas stories. A headline that names a foreign place is about
+// that place even if it mentions the UK, and finance/sport headlines only get
+// through if they report a physical incident.
 const FOREIGN_MARKERS = /\b(paris|france|french|germany|german|berlin|spain|madrid|italy|rome|greece|ukraine|kyiv|russia|moscow|gaza|israel|iran|china|beijing|taiwan|japan|tokyo|india|pakistan|afghanistan|australia|canada|new york|washington|america|american|texas|california|florida)\b/i;
 const NEWS_NOISE = /\b(stocks?|stock market|shares|ftse|bonds?|consumer confidence|gdp|inflation|economy|batting|cricket|odi|t20|football|rugby|premier league|league cup|championship|boxing|grand prix|racing)\b/i;
 const PHYSICAL_INCIDENT = /\b(major incident|explosion|killed|dead|deaths?|injured|evacuat\w*|fire crews|derail\w*)\b/i;

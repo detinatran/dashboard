@@ -1,22 +1,20 @@
 """
-Xuất chuỗi triều tính sẵn để Node dùng — thay vì Node tự tái tạo từ hệ số.
+Exports a precomputed tide series for the Node seeder, so Node doesn't have to
+rebuild the tide from the harmonic coefficients.
 
-Lý do: quy ước pha của utide là pha Greenwich theo thời gian thiên văn, kèm
-hiệu chỉnh nút mặt trăng (nodal corrections) thay đổi theo thời điểm. Tôi đã
-thử tự viết `A·cos(2πft − g)` phía Node và sai tới 6 m — gần như ngược pha.
+utide uses Greenwich phase in astronomical time with nodal corrections that
+change over time. A hand-written `A·cos(2πft − g)` in Node came out up to 6 m
+off (almost opposite phase).
 
-Thay vì đoán tiếp, để utide (thư viện đã kiểm chứng) tính sẵn chuỗi triều rồi
-Node chỉ nội suy tuyến tính giữa hai mốc 15 phút. Sai số nội suy trên chuỗi
-15 phút của triều 12.4h là dưới 1 cm — nhỏ hơn nhiều so với residual stdev
-0.19 m, nên không ảnh hưởng gì.
+So utide computes the series here and Node just interpolates between the
+15-minute steps. That's off by less than 1 cm on a 12.4h tide, well under the
+0.19 m residual stdev.
 
-Seeder chạy 15 phút/lần và chỉ cần triều cho 6h tới, nên một file phủ vài
-tháng là quá đủ; cron train lại định kỳ sẽ làm mới.
+The seeder runs every 15 minutes and only needs the next 6h, so a file that
+covers a few months is plenty; the retraining cron refreshes it.
 """
 
 import argparse
-import csv
-import glob
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -24,9 +22,9 @@ from pathlib import Path
 import numpy as np
 import utide
 
+from _ea_archive import LAT, load_tidal_rows
+
 REPO = Path(__file__).resolve().parents[1]
-MEASURE = 'E70124-level-tidal_level-Mean-15_min-m'
-LAT = 53.44967
 
 
 def main():
@@ -38,16 +36,7 @@ def main():
     ap.add_argument('--out', default='training/models')
     args = ap.parse_args()
 
-    rows = []
-    for f in sorted(Path(args.raw_dir).glob('*.csv')):
-        for r in csv.reader(f.open()):
-            if len(r) >= 3 and MEASURE in r[1]:
-                try:
-                    t = datetime.fromisoformat(r[0].replace('Z', '+00:00'))
-                    rows.append((t, float(r[2])))
-                except ValueError:
-                    continue
-    rows.sort()
+    rows = load_tidal_rows(Path(args.raw_dir))
     T = np.array([np.datetime64(t.replace(tzinfo=None), 's') for t, _ in rows])
     L = np.array([v for _, v in rows])
 
@@ -80,7 +69,7 @@ def main():
         'count': len(tide),
         'coverageFrom': grid[0].isoformat(),
         'coverageTo': grid[-1].isoformat(),
-        # Làm tròn mm: triều đo bằng mét, giữ thêm chữ số chỉ phình file.
+        # Round to the millimetre: the tide is in metres, extra digits only bloat the file.
         'values': [round(float(v), 3) for v in tide],
         'caveats': [
             'Triều suy ra từ quan trắc tại trạm bằng phân tích điều hoà, '
@@ -96,9 +85,9 @@ def main():
     print(f'đã ghi {p} ({p.stat().st_size/1024:.0f} KB, {len(tide)} mốc, '
           f'{grid[0]:%Y-%m-%d} -> {grid[-1]:%Y-%m-%d})')
 
-    # Mốc kiểm chứng để Node đối chiếu.
+    # Reference points for cross-checking the Node interpolation.
     for h in (0, 4, 8, 11, 14, 18):
-        t = now.replace(hour=h) if h < 24 else now
+        t = now.replace(hour=h)
         i = int((t - grid[0]).total_seconds() // 900)
         if 0 <= i < len(tide):
             print(f'  {t:%Y-%m-%dT%H:%M}Z -> {tide[i]:.3f} m')

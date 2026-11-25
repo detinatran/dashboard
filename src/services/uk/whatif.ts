@@ -1,9 +1,9 @@
-// CrisisTwin UK what-if lab: compare response plans for a hazard over a
-// 14-day horizon — "what if we close the DC?" vs "what if we reroute?".
-// Pure model estimates over the twin graph; every constant is named so the
-// assumptions are reviewable, and the UI labels results as estimates.
+// CrisisTwin UK what-if lab: compare response plans for a hazard over 14 days
+// ("what if we close the DC?" vs "what if we reroute?"). These are model
+// estimates over the twin graph; the named constants below are the
+// assumptions, and the UI labels the results as estimates.
 
-import { simulateCascade } from './cascade';
+import { meanStoreLoss, simulateCascade, storeClusters } from './cascade';
 import type { UkTwinEdge, UkTwinNode } from './twin';
 
 export type UkPlan =
@@ -103,8 +103,8 @@ interface DayMetrics { service: number; hours: number; cost: number }
 function evaluateDay(nodes: UkTwinNode[], state: DayState): DayMetrics {
   const { losses } = simulateCascade(nodes, state.edges, state.failed);
   const loss = (id: string) => losses.get(id) ?? 0;
-  const stores = nodes.filter(n => n.type === 'store_cluster');
-  const service = stores.length ? 1 - stores.reduce((s, n) => s + loss(n.id), 0) / stores.length : 1;
+  const stores = storeClusters(nodes);
+  const service = 1 - meanStoreLoss(stores, losses);
 
   const inboundTime = (dc: string): number => {
     let w = 0;
@@ -147,7 +147,10 @@ function evaluateDay(nodes: UkTwinNode[], state: DayState): DayMetrics {
   return { service, hours: storesTimed ? storeHours / storesTimed : 0, cost };
 }
 
-/** The sites the hazard floods directly (and so damages unless protected). */
+/**
+ * Scores one response plan over the horizon.
+ * @param hazard ids of the sites the hazard floods directly (damaged unless protected)
+ */
 export function evaluatePlan(
   nodes: UkTwinNode[],
   edges: UkTwinEdge[],

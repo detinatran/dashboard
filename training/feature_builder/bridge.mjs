@@ -1,10 +1,9 @@
 /**
- * Node bridge between the Python training pipeline and the production feature
- * builder.
+ * Lets the Python training scripts use the production feature builder.
  *
- * The training set MUST be built by the same code that runs in production.
- * This reads one JSON job on stdin and returns the full feature matrix on
- * stdout, so the cost is one process for the whole dataset.
+ * The training set has to be built by the same code that runs in production.
+ * Reads one JSON job from stdin and writes the whole feature matrix to stdout,
+ * so it's a single Node process for the full dataset.
  */
 
 import { buildFeatures, FEATURE_NAMES, FEATURE_VERSION } from '../../scripts/shared/coastal-features.mjs';

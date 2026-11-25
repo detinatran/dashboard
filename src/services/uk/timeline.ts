@@ -9,6 +9,8 @@
 import {
   buildIncomingMap,
   CASCADE_DEFAULTS,
+  meanStoreLoss,
+  storeClusters,
   transmittedPressure,
   type UkCascadeOptions,
 } from './cascade';
@@ -80,7 +82,7 @@ export function simulateCascadeTimeline(
   const { incoming, known } = buildIncomingMap(nodes, edges);
   const byId = new Map(nodes.map(n => [n.id, n]));
   const failed = new Set([...failedIds].filter(id => known.has(id)));
-  const stores = nodes.filter(n => n.type === 'store_cluster');
+  const stores = storeClusters(nodes);
 
   let losses = new Map<string, number>();
   for (const id of failed) losses.set(id, 1);
@@ -92,11 +94,10 @@ export function simulateCascadeTimeline(
     for (const [id, loss] of current) {
       if (loss >= floor || failed.has(id)) pruned.set(id, loss);
     }
-    const storeLoss = stores.reduce((sum, s) => sum + (pruned.get(s.id) ?? 0), 0);
     return {
       hour,
       losses: pruned,
-      serviceDisruption: stores.length ? storeLoss / stores.length : 0,
+      serviceDisruption: meanStoreLoss(stores, pruned),
       affectedCount: pruned.size,
     };
   };

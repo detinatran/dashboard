@@ -1,14 +1,12 @@
 /**
- * Coastal station detail — opened when a Water Level Prediction marker is clicked.
+ * Coastal station details, opened when a water level marker is clicked.
  *
- * Built with imperative DOM (no innerHTML) so it satisfies enforce-safe-html
- * without needing a trustedHtml audit reason.
+ * Built with plain DOM calls (no innerHTML) so it passes enforce-safe-html
+ * without a trustedHtml exception.
  *
- * The contract this panel exists to honour: a forecast is rendered ONLY when
- * `waterLevelForecast.status === 'ready'`. Every other status renders an
- * explanation instead. Observed level, trend and history stay visible either
- * way, because they are real measurements and remain useful when the model is
- * absent.
+ * The forecast is only shown when `waterLevelForecast.status === 'ready'`;
+ * any other status shows an explanation instead. Observed level, trend and
+ * history are always shown since they're real measurements.
  */
 
 import { CoastalForecastChart } from '@/components/CoastalForecastChart';
@@ -55,6 +53,18 @@ function trendLabel(trend: string): string {
     case 'stable': return `→ ${t('components.coastal.trendStable')}`;
     default: return t('components.coastal.trendUnknown');
   }
+}
+
+/** One labelled cell per forecast horizon (+1H / +3H / +6H). */
+function horizonGrid(cells: Array<{ horizon: string; children: HTMLElement[] }>): HTMLElement {
+  const grid = el('div', 'coastal-horizon-grid');
+  for (const { horizon, children } of cells) {
+    const cell = el('div', 'coastal-horizon');
+    cell.appendChild(el('div', 'coastal-horizon-label', HORIZON_LABELS[horizon] ?? horizon));
+    cell.append(...children);
+    grid.appendChild(cell);
+  }
+  return grid;
 }
 
 /** Why a forecast is absent, in the user's words rather than a status code. */
@@ -109,7 +119,7 @@ export class CoastalStationPanel {
       station?.displayName || station?.name || ''));
 
     const status = el('div', `coastal-status coastal-status-${dataStatus}`);
-    // Icon + text, never colour alone.
+    // Icon plus text, so it doesn't rely on colour alone.
     status.appendChild(el('span', 'coastal-status-dot', '●'));
     status.appendChild(el('span', 'coastal-status-text', statusLabel(dataStatus)));
     if (Number.isFinite(data?.ageMinutes)) {
@@ -124,7 +134,7 @@ export class CoastalStationPanel {
     risk.appendChild(el('span', 'coastal-risk-icon', riskIcon(riskLevel)));
     risk.appendChild(el('span', 'coastal-risk-label', riskLabel(riskLevel)));
     if (res.risk?.reason) risk.appendChild(el('span', 'coastal-risk-reason', res.risk.reason));
-    // Never present model output as an official warning.
+    // Make it clear this is a model estimate, not an official warning.
     risk.appendChild(el('div', 'coastal-risk-caption', t('components.coastal.riskCaption')));
     this.root.appendChild(risk);
   }
@@ -137,8 +147,8 @@ export class CoastalStationPanel {
     sec.appendChild(el('div', 'coastal-value-lg', `${current.waterLevel.toFixed(2)} m`));
     sec.appendChild(el('div', 'coastal-trend', trendLabel(current.trend)));
 
-    // Tide/residual only when a real tide source exists — otherwise omitted
-    // entirely rather than shown as zero.
+    // Only show tide/residual when we actually have a tide; otherwise leave them
+    // out instead of showing 0.
     if (current.hasTide) {
       const tide = el('div', 'coastal-subrow');
       tide.appendChild(el('span', 'coastal-label', t('components.coastal.astronomicalTide')));
@@ -164,18 +174,16 @@ export class CoastalStationPanel {
       return;
     }
 
-    const grid = el('div', 'coastal-horizon-grid');
-    for (const h of f.horizons) {
-      const cell = el('div', 'coastal-horizon');
-      cell.appendChild(el('div', 'coastal-horizon-label', HORIZON_LABELS[h.horizon] ?? h.horizon));
-      cell.appendChild(el('div', 'coastal-horizon-value', `${h.waterLevel.toFixed(2)} m`));
-      if (h.hasBounds) {
-        cell.appendChild(el('div', 'coastal-horizon-range',
-          `${t('components.coastal.expectedRange')}: ${h.lowerBound.toFixed(2)}–${h.upperBound.toFixed(2)} m`));
-      }
-      grid.appendChild(cell);
-    }
-    sec.appendChild(grid);
+    sec.appendChild(horizonGrid(f.horizons.map((h) => ({
+      horizon: h.horizon,
+      children: [
+        el('div', 'coastal-horizon-value', `${h.waterLevel.toFixed(2)} m`),
+        ...(h.hasBounds
+          ? [el('div', 'coastal-horizon-range',
+              `${t('components.coastal.expectedRange')}: ${h.lowerBound.toFixed(2)}–${h.upperBound.toFixed(2)} m`)]
+          : []),
+      ],
+    }))));
     this.root.appendChild(sec);
   }
 
@@ -188,7 +196,7 @@ export class CoastalStationPanel {
     this.chart = new CoastalForecastChart();
     this.chart.mount(holder);
 
-    // History is fetched lazily: the map must not wait on it.
+    // Load history lazily so the map doesn't wait on it.
     void fetchCoastalHistory(stationId, 24).then((hist) => {
       if (this.destroyed || !this.chart) return;
       const observations = (hist?.observations ?? []).map((o) => ({
@@ -215,14 +223,10 @@ export class CoastalStationPanel {
       this.root.appendChild(sec);
       return;
     }
-    const grid = el('div', 'coastal-horizon-grid');
-    for (const h of w.horizons) {
-      const cell = el('div', 'coastal-horizon');
-      cell.appendChild(el('div', 'coastal-horizon-label', HORIZON_LABELS[h.horizon] ?? h.horizon));
-      cell.appendChild(el('div', 'coastal-horizon-value', `${Math.round(h.probability * 100)}%`));
-      grid.appendChild(cell);
-    }
-    sec.appendChild(grid);
+    sec.appendChild(horizonGrid(w.horizons.map((h) => ({
+      horizon: h.horizon,
+      children: [el('div', 'coastal-horizon-value', `${Math.round(h.probability * 100)}%`)],
+    }))));
     this.root.appendChild(sec);
   }
 

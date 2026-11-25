@@ -1,15 +1,15 @@
 /**
- * Risk policy — a separate, configurable service, not logic inside a component.
+ * Risk levels for coastal stations, kept here instead of in a UI component.
  *
- * WORDING MATTERS: this is a MODEL RISK estimate. It is not an official flood
- * warning and must never be presented as one; nothing here is integrated with
- * the Environment Agency's statutory warning service. The labels deliberately
- * read "model risk" / "estimated anomaly risk".
+ * This is a model-based risk estimate, not an official flood warning, and it
+ * shouldn't be shown as one. It isn't connected to the Environment Agency's
+ * warning service, which is why the labels say "model risk" / "estimated
+ * anomaly risk".
  */
 
 export const RISK_LEVELS = Object.freeze(['normal', 'advisory', 'watch', 'high']);
 
-/** Defaults; per-station overrides may replace them. Never hardcoded as 0.5. */
+/** Default thresholds; a station can override them. */
 export const DEFAULT_RISK_THRESHOLDS = Object.freeze({
   advisory: 0.30,
   watch: 0.50,
@@ -17,17 +17,16 @@ export const DEFAULT_RISK_THRESHOLDS = Object.freeze({
 });
 
 /**
- * `waterLevelForecast` and `latest` are accepted but unused in v1: risk is
- * graded purely from the warning model's anomaly probability. They stay in the
- * signature because the station-specific rules this policy is meant to grow
- * into (absolute level, residual, flood threshold) read exactly those two, and
- * changing the call shape later would touch every caller.
+ * `waterLevelForecast` and `latest` aren't used yet: v1 grades risk only from
+ * the warning model's probability. They stay in the signature for the station
+ * rules we want to add later (absolute level, residual, flood threshold), so
+ * callers won't have to change.
  */
 export function evaluateRisk({ station, warningForecast }) {
   const thresholds = { ...DEFAULT_RISK_THRESHOLDS, ...(station?.riskThresholds || {}) };
 
-  // Without a warning model there is no anomaly probability to grade. Say so
-  // rather than manufacturing a level from the regression output.
+  // No warning model means no probability to grade, so report that instead of
+  // deriving a level from the regression output.
   if (!warningForecast || warningForecast.status !== 'ready') {
     return {
       level: 'unknown',
@@ -59,9 +58,8 @@ export function evaluateRisk({ station, warningForecast }) {
 }
 
 /**
- * Data freshness. Computed server-side so the client never decides what "LIVE"
- * means — a UI that assumes freshness because the feature is enabled will show
- * a confident stale number.
+ * Data freshness, worked out on the server so every client agrees on what
+ * "live" means instead of assuming the data is fresh.
  */
 export const FRESHNESS_THRESHOLDS = Object.freeze({ liveMaxMin: 30, delayedMaxMin: 90 });
 

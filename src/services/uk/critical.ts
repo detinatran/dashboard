@@ -4,7 +4,7 @@
 // pairs of the top N-1 candidates so the pair table stays interactive. Pure
 // functions, exercised by tests/uk-critical.test.mts.
 
-import { simulateCascade } from './cascade';
+import { meanStoreLoss, simulateCascade, storeClusters } from './cascade';
 import type { UkTwinEdge, UkTwinNode } from './twin';
 
 export interface UkCriticalEntry {
@@ -31,6 +31,8 @@ interface ScoreBreakdown {
   affectedCount: number;
 }
 
+const totalCriticality = (nodes: UkTwinNode[]) => nodes.reduce((sum, n) => sum + n.criticality, 0);
+
 function scoreFailure(
   nodes: UkTwinNode[],
   edges: UkTwinEdge[],
@@ -44,10 +46,9 @@ function scoreFailure(
     const loss = losses.get(node.id);
     if (loss) weighted += loss * node.criticality;
   }
-  const storeLoss = stores.reduce((sum, s) => sum + (losses.get(s.id) ?? 0), 0);
   return {
     score: totalWeight > 0 ? weighted / totalWeight : 0,
-    serviceDisruption: stores.length ? storeLoss / stores.length : 0,
+    serviceDisruption: meanStoreLoss(stores, losses),
     affectedCount: losses.size,
   };
 }
@@ -58,8 +59,8 @@ export function rankCriticalNodes(
   edges: UkTwinEdge[],
   top = 15,
 ): UkCriticalEntry[] {
-  const totalWeight = nodes.reduce((sum, n) => sum + n.criticality, 0);
-  const stores = nodes.filter(n => n.type === 'store_cluster');
+  const totalWeight = totalCriticality(nodes);
+  const stores = storeClusters(nodes);
   return nodes
     .map((node): UkCriticalEntry => ({
       node,
@@ -81,8 +82,8 @@ export function rankCriticalPairs(
 ): UkCriticalPair[] {
   const candidates = Math.max(2, options.candidates ?? 12);
   const top = Math.max(1, options.top ?? 8);
-  const totalWeight = nodes.reduce((sum, n) => sum + n.criticality, 0);
-  const stores = nodes.filter(n => n.type === 'store_cluster');
+  const totalWeight = totalCriticality(nodes);
+  const stores = storeClusters(nodes);
   const singles = rankCriticalNodes(nodes, edges, candidates);
 
   const pairs: UkCriticalPair[] = [];

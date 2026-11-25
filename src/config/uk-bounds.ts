@@ -1,8 +1,8 @@
-// CrisisTwin UK geography clip. The global infrastructure datasets (cables,
-// pipelines, nuclear sites, AI data centres) stay canonical for the other
-// variants; the uk variant shows and indexes only what touches this box —
-// the UK and its immediate waters, wide enough to keep interconnector and
-// cable landings on both shores of the Channel and North Sea approaches.
+// UK bounding box for the CrisisTwin variant. The global datasets (cables,
+// pipelines, nuclear sites, AI data centres) stay as they are for the other
+// variants; the uk variant only shows and indexes what falls in this box. It
+// covers the UK and nearby waters, wide enough to keep interconnector and
+// cable landings on both sides of the Channel and the North Sea.
 
 export const UK_BOUNDS = {
   latMin: 49.5,
